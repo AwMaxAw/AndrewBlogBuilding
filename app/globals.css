@@ -227,8 +227,7 @@ body {
 
 /* 导航栏液态玻璃容器 */
 .liquid-glass-nav {
-  position: relative;
-  isolation: isolate; /* 必须！确保折射效果正确 */
+  isolation: isolate;
   border-bottom: 1px solid rgba(255, 255, 255, 0.25);
 }
 
