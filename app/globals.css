@@ -222,7 +222,6 @@ body {
 
 /* 导航栏液态玻璃 */
 .glass-nav {
-  position: relative;
   background: rgba(247, 245, 240, 0.6);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
