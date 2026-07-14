@@ -235,11 +235,13 @@ body {
 .glass-nav::before {
   content: '';
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
   background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.4) 0%,
-    rgba(255, 255, 255, 0.1) 40%,
     transparent 100%
   );
   pointer-events: none;
