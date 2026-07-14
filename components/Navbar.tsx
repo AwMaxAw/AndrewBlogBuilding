@@ -72,41 +72,43 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* Mobile toggle */}
-        <button
-          className="md:hidden p-2 -mr-2 text-foreground"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
-      </nav>
+        {/* Mobile nav */}
+        <div className="md:hidden flex items-center">
+          {/* Mobile popup menu - slides in from right, same row */}
+          <div
+            className={cn(
+              "flex items-center gap-1 overflow-hidden transition-all duration-300 ease-out",
+              mobileOpen ? "w-auto opacity-100 mr-2" : "w-0 opacity-0 mr-0"
+            )}
+          >
+            {NAV_LINKS.filter((link) => link.href !== "/").map((link) => {
+              const active = isActiveLink(link.href, pathname);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "text-sm px-3 py-1.5 rounded-full transition-colors whitespace-nowrap",
+                    active
+                      ? "text-accent bg-accent/10"
+                      : "text-muted hover:text-foreground"
+                  )}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </div>
 
-      {/* Mobile menu */}
-      <div
-        className={cn(
-          "md:hidden overflow-hidden transition-all duration-300 glass-nav",
-          mobileOpen ? "max-h-64" : "max-h-0"
-        )}
-      >
-        <div className="px-6 py-4 flex flex-col gap-4">
-          {NAV_LINKS.map((link) => {
-            const active = isActiveLink(link.href, pathname);
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "text-sm py-2 transition-colors",
-                  active ? "text-accent" : "text-muted"
-                )}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
+          <button
+            className="p-2 -mr-2 text-foreground"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
-      </div>
+      </nav>
     </header>
   );
 }
