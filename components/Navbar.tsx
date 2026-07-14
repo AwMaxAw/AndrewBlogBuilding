@@ -36,9 +36,7 @@ export default function Navbar() {
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled
-          ? "bg-background/80 backdrop-blur-md border-b border-border/50"
-          : "bg-transparent"
+        scrolled ? "glass-nav" : "bg-transparent"
       )}
     >
       <nav className="max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -87,7 +85,7 @@ export default function Navbar() {
       {/* Mobile menu */}
       <div
         className={cn(
-          "md:hidden overflow-hidden transition-all duration-300 bg-background/95 backdrop-blur-md border-b border-border/50",
+          "md:hidden overflow-hidden transition-all duration-300 glass-nav",
           mobileOpen ? "max-h-64" : "max-h-0"
         )}
       >

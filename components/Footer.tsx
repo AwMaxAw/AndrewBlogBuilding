@@ -3,8 +3,8 @@ import { Github, Twitter, Mail, Rss } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-border/60 mt-24">
-      <div className="max-w-3xl mx-auto px-6 py-10">
+    <footer className="glass-footer mt-24 z-10">
+      <div className="relative z-10 max-w-3xl mx-auto px-6 py-10">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="text-sm text-muted">
             © {new Date().getFullYear()} Andrew&apos;s Blog

@@ -11,8 +11,9 @@ export default function PostCard({ post }: PostCardProps) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group block py-6 border-b border-border/60 last:border-b-0 hover:bg-foreground/[0.02] -mx-6 px-6 transition-colors duration-200"
+      className="group block glass-card my-4 z-10"
     >
+      <div className="relative z-10 p-6">
       <div className="flex flex-col md:flex-row md:items-baseline md:gap-6">
         <time className="text-sm text-muted font-mono shrink-0 mb-2 md:mb-0 md:w-28">
           {formatDate(post.date, true)}
@@ -34,15 +35,16 @@ export default function PostCard({ post }: PostCardProps) {
                 {post.tags.slice(0, 3).map((tag) => (
                   <span
                     key={tag}
-                    className="text-xs px-2 py-0.5 rounded-full bg-accent/10 text-accent/80"
+                    className="glass-tag text-xs text-accent/80 z-10"
                   >
-                    {tag}
+                    <span className="relative z-10">{tag}</span>
                   </span>
                 ))}
               </div>
             )}
           </div>
         </div>
+      </div>
       </div>
     </Link>
   );

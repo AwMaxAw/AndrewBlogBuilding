@@ -27,16 +27,15 @@ export default function Hero() {
         >
           <a
             href="#posts"
-            className="inline-flex items-center gap-2 text-sm font-medium text-foreground group"
+            className="glass-btn text-sm font-medium text-foreground z-10"
           >
-            浏览文章
-            <span className="h-px w-8 bg-foreground transition-all duration-300 group-hover:w-12" />
+            <span className="z-10 relative">浏览文章</span>
           </a>
           <Link
             href="/about"
-            className="inline-flex items-center gap-2 text-sm text-muted hover:text-foreground transition-colors"
+            className="glass-btn text-sm text-foreground z-10"
           >
-            关于我 →
+            <span className="z-10 relative">关于我 →</span>
           </Link>
         </div>
       </div>

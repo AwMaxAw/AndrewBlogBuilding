@@ -39,10 +39,12 @@ export default function PostPage({ params }: PostPageProps) {
     <article className="max-w-3xl mx-auto px-6 py-16">
       <Link
         href="/blog"
-        className="inline-flex items-center gap-2 text-sm text-muted hover:text-foreground transition-colors mb-10"
+        className="glass-btn text-sm text-foreground mb-10 z-10"
       >
-        <ArrowLeft size={14} />
-        返回文章列表
+        <span className="relative z-10 inline-flex items-center gap-2">
+          <ArrowLeft size={14} />
+          返回文章列表
+        </span>
       </Link>
 
       <header className="mb-12">
@@ -63,9 +65,9 @@ export default function PostPage({ params }: PostPageProps) {
               {post.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="text-xs px-2.5 py-1 rounded-full bg-accent/10 text-accent/80"
+                  className="glass-tag text-xs text-accent/80 z-10"
                 >
-                  {tag}
+                  <span className="relative z-10">{tag}</span>
                 </span>
               ))}
             </div>

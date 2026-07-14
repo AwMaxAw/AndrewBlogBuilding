@@ -17,7 +17,8 @@ export default function AboutPage() {
         </p>
       </header>
 
-      <section className="prose-custom">
+      <section className="glass-card prose-custom z-10">
+        <div className="relative z-10 p-8">
         <h2>关于这个博客</h2>
         <p>
           这里是我记录思考和分享生活的地方。你会在这里看到关于技术、设计、阅读、旅行等各种主题的文章。
@@ -51,6 +52,7 @@ export default function AboutPage() {
         <blockquote>
           保持好奇，保持热爱。
         </blockquote>
+        </div>
       </section>
     </div>
   );
