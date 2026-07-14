@@ -34,13 +34,28 @@ export default function Navbar() {
 
   return (
     <header
-      style={{ position: "fixed" }}
       className={cn(
-        "top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled ? "glass-nav" : "bg-transparent"
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+        scrolled ? "liquid-glass-nav" : "bg-transparent"
       )}
     >
-      <nav className="max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">
+      {/* Layer 0: Refraction - 折射层 */}
+      {scrolled && (
+        <div className="liquid-glass-nav__refract" aria-hidden="true" />
+      )}
+
+      {/* Layer 1: Tint - 着色层 */}
+      {scrolled && (
+        <div className="liquid-glass-nav__tint" aria-hidden="true" />
+      )}
+
+      {/* Layer 2: Specular - 高光层 */}
+      {scrolled && (
+        <div className="liquid-glass-nav__specular" aria-hidden="true" />
+      )}
+
+      {/* Layer 3: Content - 内容层 */}
+      <nav className="relative z-10 max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link
           href="/"
           className="font-serif text-xl font-semibold tracking-tight hover:text-accent transition-colors"

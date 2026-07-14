@@ -3,6 +3,7 @@ import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import LiquidGlassFilter from "@/components/LiquidGlassFilter";
 
 const playfairDisplay = Playfair_Display({
   subsets: ["latin"],
@@ -36,6 +37,8 @@ export default function RootLayout({
       <body
         className={`${playfairDisplay.variable} ${inter.variable} font-sans antialiased min-h-screen flex flex-col`}
       >
+        {/* Apple Liquid Glass SVG Filters */}
+        <LiquidGlassFilter />
         <Navbar />
         <main className="flex-1 pt-16">{children}</main>
         <Footer />

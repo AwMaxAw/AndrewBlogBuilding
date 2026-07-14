@@ -220,7 +220,64 @@ body {
   z-index: 2;
 }
 
-/* 导航栏液态玻璃 */
+/* ============================================
+   Apple Liquid Glass - 真实光线折射效果
+   四层结构: Refraction + Tint + Specular + Content
+   ============================================ */
+
+/* 导航栏液态玻璃容器 */
+.liquid-glass-nav {
+  position: relative;
+  isolation: isolate; /* 必须！确保折射效果正确 */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* Layer 0: Refraction - 折射层 (核心！) */
+.liquid-glass-nav__refract {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  /* Chrome/Edge: SVG折射 + 模糊 */
+  backdrop-filter: blur(20px) saturate(180%) url(#liquid-glass-nav) brightness(1.03);
+  -webkit-backdrop-filter: blur(20px) saturate(180%) url(#liquid-glass-nav) brightness(1.03);
+  background: rgba(247, 245, 240, 0.55);
+}
+
+/* Layer 1: Tint - 半透明着色层 */
+.liquid-glass-nav__tint {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.04) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* Layer 2: Specular - 镜面高光层 */
+.liquid-glass-nav__specular {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  box-shadow:
+    /* 顶部高光 */
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    /* 底部柔和反光 */
+    inset 0 -1px 0 rgba(255, 255, 255, 0.15),
+    /* 微妙边缘光晕 */
+    0 1px 3px rgba(0, 0, 0, 0.03),
+    0 4px 12px rgba(0, 0, 0, 0.02);
+  pointer-events: none;
+}
+
+/* ============================================
+   旧版 Glass 效果 (兼容备用)
+   ============================================ */
+
+/* 导航栏液态玻璃 - 旧版 */
 .glass-nav {
   background: rgba(247, 245, 240, 0.6);
   backdrop-filter: blur(20px) saturate(180%);
