@@ -34,29 +34,12 @@ export default function Navbar() {
 
   return (
     <header
-      style={{ position: "fixed", transform: "translateZ(0)" }}
       className={cn(
-        "top-0 left-0 right-0 z-50 transition-all duration-300 will-change-transform",
-        scrolled ? "liquid-glass-nav" : "bg-transparent"
+        "z-50 transition-all duration-300",
+        scrolled ? "liquid-glass-nav" : "fixed top-0 left-0 right-0 bg-transparent"
       )}
     >
-      {/* Layer 0: Refraction - 折射层 */}
-      {scrolled && (
-        <div className="liquid-glass-nav__refract" aria-hidden="true" />
-      )}
-
-      {/* Layer 1: Tint - 着色层 */}
-      {scrolled && (
-        <div className="liquid-glass-nav__tint" aria-hidden="true" />
-      )}
-
-      {/* Layer 2: Specular - 高光层 */}
-      {scrolled && (
-        <div className="liquid-glass-nav__specular" aria-hidden="true" />
-      )}
-
-      {/* Layer 3: Content - 内容层 */}
-      <nav className="relative z-10 max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">
+      <nav className="max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link
           href="/"
           className="font-serif text-xl font-semibold tracking-tight hover:text-accent transition-colors"
@@ -64,7 +47,6 @@ export default function Navbar() {
           Andrew
         </Link>
 
-        {/* Desktop */}
         <div className="hidden md:flex items-center gap-8">
           {NAV_LINKS.map((link) => {
             const active = isActiveLink(link.href, pathname);
@@ -89,9 +71,7 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* Mobile nav */}
         <div className="md:hidden flex items-center">
-          {/* Mobile popup menu - slides in from right, same row */}
           <div
             className={cn(
               "flex items-center gap-1 overflow-hidden transition-all duration-300 ease-out",
