@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { PostMeta } from "@/lib/posts";
-import { formatDateShort } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { Clock } from "lucide-react";
 
 interface PostCardProps {
@@ -15,7 +15,7 @@ export default function PostCard({ post }: PostCardProps) {
     >
       <div className="flex flex-col md:flex-row md:items-baseline md:gap-6">
         <time className="text-sm text-muted font-mono shrink-0 mb-2 md:mb-0 md:w-28">
-          {formatDateShort(post.date)}
+          {formatDate(post.date, true)}
         </time>
         <div className="flex-1">
           <h2 className="font-serif text-xl md:text-2xl font-medium group-hover:text-accent transition-colors duration-200 leading-snug">

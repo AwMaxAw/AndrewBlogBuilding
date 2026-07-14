@@ -10,70 +10,52 @@ export interface PostMeta {
   description: string;
   tags: string[];
   readingTime: string;
-  cover?: string;
 }
 
 export interface Post extends PostMeta {
   content: string;
 }
 
-const postsDirectory = path.join(process.cwd(), "content", "blog");
+const POSTS_DIR = path.join(process.cwd(), "content", "blog");
+
+function resolvePostFile(slug: string): string | null {
+  for (const ext of [".mdx", ".md"]) {
+    const filePath = path.join(POSTS_DIR, `${slug}${ext}`);
+    if (fs.existsSync(filePath)) return filePath;
+  }
+  return null;
+}
 
 export function getPostSlugs(): string[] {
-  if (!fs.existsSync(postsDirectory)) {
-    return [];
-  }
+  if (!fs.existsSync(POSTS_DIR)) return [];
   return fs
-    .readdirSync(postsDirectory)
+    .readdirSync(POSTS_DIR)
     .filter((file) => file.endsWith(".mdx") || file.endsWith(".md"))
     .map((file) => file.replace(/\.mdx?$/, ""));
 }
 
 export function getPostBySlug(slug: string): Post | null {
-  const mdxPath = path.join(postsDirectory, `${slug}.mdx`);
-  const mdPath = path.join(postsDirectory, `${slug}.md`);
+  const filePath = resolvePostFile(slug);
+  if (!filePath) return null;
 
-  let fullPath = "";
-  if (fs.existsSync(mdxPath)) {
-    fullPath = mdxPath;
-  } else if (fs.existsSync(mdPath)) {
-    fullPath = mdPath;
-  } else {
-    return null;
-  }
-
-  const fileContents = fs.readFileSync(fullPath, "utf8");
-  const { data, content } = matter(fileContents);
+  const { data, content } = matter(fs.readFileSync(filePath, "utf8"));
   const stats = readingTime(content);
 
   return {
     slug,
-    title: data.title || slug,
-    date: data.date || new Date().toISOString(),
-    description: data.description || "",
-    tags: data.tags || [],
+    title: data.title ?? slug,
+    date: data.date ?? new Date().toISOString(),
+    description: data.description ?? "",
+    tags: data.tags ?? [],
     readingTime: stats.text,
-    cover: data.cover || undefined,
     content,
   };
 }
 
 export function getAllPosts(): PostMeta[] {
-  const slugs = getPostSlugs();
-  const posts = slugs
+  return getPostSlugs()
     .map((slug) => getPostBySlug(slug))
     .filter((post): post is Post => post !== null)
-    .sort((a, b) => (new Date(a.date) > new Date(b.date) ? -1 : 1))
+    .sort((a, b) => (a.date > b.date ? -1 : 1))
     .map(({ content, ...meta }) => meta);
-
-  return posts;
-}
-
-export function getAllTags(): string[] {
-  const posts = getAllPosts();
-  const tags = new Set<string>();
-  posts.forEach((post) => {
-    post.tags.forEach((tag) => tags.add(tag));
-  });
-  return Array.from(tags).sort();
 }

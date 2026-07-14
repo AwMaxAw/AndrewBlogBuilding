@@ -1,10 +1,10 @@
+import Link from "next/link";
+
 export default function Hero() {
   return (
     <section className="min-h-[80vh] flex flex-col justify-center">
       <div className="max-w-3xl mx-auto px-6 py-20">
-        <p
-          className="text-sm text-accent mb-6 tracking-widest uppercase animate-fade-in-up"
-        >
+        <p className="text-sm text-accent mb-6 tracking-widest uppercase animate-fade-in-up">
           欢迎来到我的博客
         </p>
         <h1
@@ -32,12 +32,12 @@ export default function Hero() {
             浏览文章
             <span className="h-px w-8 bg-foreground transition-all duration-300 group-hover:w-12" />
           </a>
-          <a
+          <Link
             href="/about"
             className="inline-flex items-center gap-2 text-sm text-muted hover:text-foreground transition-colors"
           >
             关于我 →
-          </a>
+          </Link>
         </div>
       </div>
     </section>

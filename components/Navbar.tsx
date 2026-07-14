@@ -6,28 +6,30 @@ import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const navLinks = [
+const NAV_LINKS = [
   { href: "/", label: "首页" },
   { href: "/blog", label: "文章" },
   { href: "/about", label: "关于" },
-];
+] as const;
+
+function isActiveLink(href: string, pathname: string) {
+  return href === "/" ? pathname === "/" : pathname.startsWith(href);
+}
 
 export default function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    handleScroll();
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    onScroll();
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
-    setMobileMenuOpen(false);
+    setMobileOpen(false);
   }, [pathname]);
 
   return (
@@ -47,26 +49,24 @@ export default function Navbar() {
           Andrew
         </Link>
 
+        {/* Desktop */}
         <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => {
-            const isActive =
-              link.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(link.href);
+          {NAV_LINKS.map((link) => {
+            const active = isActiveLink(link.href, pathname);
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
                   "relative text-sm transition-colors hover:text-accent",
-                  isActive ? "text-foreground" : "text-muted"
+                  active ? "text-foreground" : "text-muted"
                 )}
               >
                 {link.label}
                 <span
                   className={cn(
                     "absolute -bottom-1 left-0 h-px bg-accent transition-all duration-300",
-                    isActive ? "w-full" : "w-0"
+                    active ? "w-full" : "w-0"
                   )}
                 />
               </Link>
@@ -74,34 +74,33 @@ export default function Navbar() {
           })}
         </div>
 
+        {/* Mobile toggle */}
         <button
           className="md:hidden p-2 -mr-2 text-foreground"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
-          {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          {mobileOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </nav>
 
+      {/* Mobile menu */}
       <div
         className={cn(
           "md:hidden overflow-hidden transition-all duration-300 bg-background/95 backdrop-blur-md border-b border-border/50",
-          mobileMenuOpen ? "max-h-64" : "max-h-0"
+          mobileOpen ? "max-h-64" : "max-h-0"
         )}
       >
         <div className="px-6 py-4 flex flex-col gap-4">
-          {navLinks.map((link) => {
-            const isActive =
-              link.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(link.href);
+          {NAV_LINKS.map((link) => {
+            const active = isActiveLink(link.href, pathname);
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
                   "text-sm py-2 transition-colors",
-                  isActive ? "text-accent" : "text-muted"
+                  active ? "text-accent" : "text-muted"
                 )}
               >
                 {link.label}

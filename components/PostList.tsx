@@ -8,19 +8,17 @@ interface PostListProps {
 
 export default function PostList({ posts, title }: PostListProps) {
   return (
-    <section id="posts" className="py-16">
-      <div className="max-w-3xl mx-auto px-6">
-        {title && (
-          <h2 className="font-serif text-2xl font-semibold mb-10 flex items-center gap-4">
-            {title}
-            <span className="flex-1 h-px bg-border/80" />
-          </h2>
-        )}
-        <div className="flex flex-col">
-          {posts.map((post) => (
-            <PostCard key={post.slug} post={post} />
-          ))}
-        </div>
+    <section id="posts">
+      {title && (
+        <h2 className="font-serif text-2xl font-semibold mb-10 flex items-center gap-4">
+          {title}
+          <span className="flex-1 h-px bg-border/80" />
+        </h2>
+      )}
+      <div className="flex flex-col">
+        {posts.map((post) => (
+          <PostCard key={post.slug} post={post} />
+        ))}
       </div>
     </section>
   );
