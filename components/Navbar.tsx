@@ -3,17 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Menu, X, ChevronDown, Search } from "lucide-react";
+import { Menu, X, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const PRIMARY_LINKS: { href: string; label: string }[] = [
-  { href: "/", label: "首页" },
-  { href: "/blog", label: "文章" },
+  { href: "/", label: "Home" },
+  { href: "/blog", label: "Blog" },
 ];
 
 const MORE_LINKS: { href: string; label: string }[] = [
-  { href: "/changelog", label: "日志" },
-  { href: "/about", label: "关于" },
+  { href: "/changelog", label: "Changelog" },
+  { href: "/about", label: "About" },
 ];
 
 function isActiveLink(href: string, pathname: string) {
@@ -89,7 +89,7 @@ export default function Navbar() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="搜索文章..."
+              placeholder="Search"
               className="w-full pl-8 pr-3 py-1.5 bg-background/50 border border-border/40 rounded-full text-xs text-foreground placeholder:text-muted focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all"
             />
             <button
@@ -105,7 +105,7 @@ export default function Navbar() {
             <div
               className={cn(
                 "flex items-center gap-4 overflow-hidden transition-all duration-300 ease-out",
-                desktopMoreOpen ? "w-32 opacity-100 mr-0" : "w-0 opacity-0 mr-0"
+                desktopMoreOpen ? "w-44 opacity-100 mr-0" : "w-0 opacity-0 mr-0"
               )}
             >
               {MORE_LINKS.map((link) => {
@@ -133,17 +133,14 @@ export default function Navbar() {
 
             <button
               onClick={() => setDesktopMoreOpen(!desktopMoreOpen)}
-              className="flex items-center gap-1 text-sm text-muted hover:text-foreground transition-colors"
+              className="p-1.5 -mr-1.5 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50"
               aria-label="Toggle more menu"
             >
-              更多
-              <ChevronDown
-                size={16}
-                className={cn(
-                  "transition-transform duration-300",
-                  desktopMoreOpen ? "rotate-180" : ""
-                )}
-              />
+              {desktopMoreOpen ? (
+                <X size={18} />
+              ) : (
+                <Menu size={18} />
+              )}
             </button>
           </div>
         </div>
