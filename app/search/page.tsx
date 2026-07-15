@@ -22,10 +22,10 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
     <div className="max-w-3xl mx-auto px-6 py-16">
       <header className="mb-12">
         <h1 className="font-serif text-4xl md:text-5xl font-semibold mb-4">
-          搜索结果
+          Search Results
         </h1>
         <p className="text-muted text-lg">
-          「{query}」的搜索结果
+          Results for &quot;{query}&quot;
         </p>
       </header>
 
@@ -36,8 +36,8 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
       {results.length === 0 ? (
         <div className="text-center py-16">
           <FileText size={48} className="mx-auto text-muted mb-4" />
-          <p className="text-muted">没有找到相关文章</p>
-          <p className="text-sm text-muted mt-2">试试其他关键词吧</p>
+          <p className="text-muted">No related articles found</p>
+          <p className="text-sm text-muted mt-2">Try other keywords</p>
         </div>
       ) : (
         <div className="space-y-4">

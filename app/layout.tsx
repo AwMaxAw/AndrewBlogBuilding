@@ -24,22 +24,22 @@ export const metadata: Metadata = {
     default: "Andrew's Blog",
     template: "%s | Andrew's Blog",
   },
-  description: "记录思考，分享生活。关于技术、设计与日常的个人博客。",
-  keywords: ["博客", "技术", "设计", "前端", "Next.js", "React"],
+  description: "A personal blog about technology, design, and everyday life.",
+  keywords: ["blog", "technology", "design", "frontend", "Next.js", "React"],
   authors: [{ name: "Andrew" }],
   creator: "Andrew",
   publisher: "Andrew",
   metadataBase: new URL("https://andrew-blog-building.vercel.app"),
   openGraph: {
     title: "Andrew's Blog",
-    description: "记录思考，分享生活。关于技术、设计与日常的个人博客。",
+    description: "A personal blog about technology, design, and everyday life.",
     type: "website",
     siteName: "Andrew's Blog",
   },
   twitter: {
     card: "summary",
     title: "Andrew's Blog",
-    description: "记录思考，分享生活。关于技术、设计与日常的个人博客。",
+    description: "A personal blog about technology, design, and everyday life.",
   },
   robots: {
     index: true,
@@ -69,7 +69,7 @@ function generateStructuredData() {
     "@context": "https://schema.org",
     "@type": "Blog",
     "name": "Andrew's Blog",
-    "description": "记录思考，分享生活。关于技术、设计与日常的个人博客。",
+    "description": "A personal blog about technology, design, and everyday life.",
     "author": {
       "@type": "Person",
       "name": "Andrew",
@@ -89,7 +89,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="zh-CN">
+    <html lang="en">
       <body
         className={`${playfairDisplay.variable} ${inter.variable} font-sans antialiased min-h-screen flex flex-col`}
       >

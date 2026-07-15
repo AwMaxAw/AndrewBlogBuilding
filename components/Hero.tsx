@@ -5,21 +5,21 @@ export default function Hero() {
     <section className="min-h-[80vh] flex flex-col justify-center">
       <div className="max-w-3xl mx-auto px-6 py-20">
         <p className="text-sm text-accent mb-6 tracking-widest uppercase animate-fade-in-up">
-          欢迎来到我的博客
+          Welcome to my blog
         </p>
         <h1
           className="font-serif text-5xl md:text-7xl font-semibold leading-[1.1] tracking-tight mb-8 animate-fade-in-up"
           style={{ animationDelay: "0.1s" }}
         >
-          记录思考，
+          Capture thoughts,
           <br />
-          <span className="text-accent">分享生活。</span>
+          <span className="text-accent">share life.</span>
         </h1>
         <p
           className="text-lg text-muted max-w-lg leading-relaxed animate-fade-in-up"
           style={{ animationDelay: "0.2s" }}
         >
-          这里是我沉淀想法的地方。关于技术、设计、阅读，以及那些日常生活中值得被记住的瞬间。
+          This is where I gather my ideas — on technology, design, reading, and the small moments of everyday life worth remembering.
         </p>
         <div
           className="mt-10 flex items-center gap-6 animate-fade-in-up"
@@ -29,13 +29,13 @@ export default function Hero() {
             href="#posts"
             className="glass-btn text-sm font-medium text-foreground z-10"
           >
-            <span className="z-10 relative">浏览文章</span>
+            <span className="z-10 relative">Browse Posts</span>
           </a>
           <Link
             href="/about"
             className="glass-btn text-sm text-foreground z-10"
           >
-            <span className="z-10 relative">关于我 →</span>
+            <span className="z-10 relative">About Me →</span>
           </Link>
         </div>
       </div>

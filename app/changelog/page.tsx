@@ -3,8 +3,8 @@ import ChangelogList from "@/components/ChangelogList";
 import { getAllChangelogs } from "@/lib/changelogs";
 
 export const metadata: Metadata = {
-  title: "日志",
-  description: "网站更新日志",
+  title: "Changelog",
+  description: "Website update changelog",
 };
 
 export default function ChangelogPage() {
@@ -14,10 +14,10 @@ export default function ChangelogPage() {
     <div className="max-w-3xl mx-auto px-6 py-16">
       <header className="mb-12">
         <h1 className="font-serif text-4xl md:text-5xl font-semibold mb-4">
-          更新日志
+          Changelog
         </h1>
         <p className="text-muted text-lg">
-          共 {items.length} 条记录
+          {items.length} {items.length === 1 ? "entry" : "entries"}
         </p>
       </header>
       <ChangelogList items={items} />

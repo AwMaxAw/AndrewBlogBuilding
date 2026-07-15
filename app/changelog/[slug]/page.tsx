@@ -43,7 +43,7 @@ export default function ChangelogDetailPage({ params }: ChangelogPageProps) {
       >
         <span className="relative z-10 inline-flex items-center gap-2">
           <ArrowLeft size={14} />
-          返回日志列表
+          Back to Changelog
         </span>
       </Link>
 

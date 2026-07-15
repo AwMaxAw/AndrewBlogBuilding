@@ -9,7 +9,7 @@ export default function Home() {
     <>
       <Hero />
       <div className="max-w-3xl mx-auto px-6 py-16">
-        <PostList posts={posts} title="最新文章" />
+        <PostList posts={posts} title="Latest Posts" />
       </div>
     </>
   );

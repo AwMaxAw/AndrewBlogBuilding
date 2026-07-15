@@ -53,7 +53,7 @@ export default function PostPage({ params }: PostPageProps) {
           >
             <span className="relative z-10 inline-flex items-center gap-2">
               <ArrowLeft size={14} />
-              返回文章列表
+              Back to Posts
             </span>
           </Link>
 
