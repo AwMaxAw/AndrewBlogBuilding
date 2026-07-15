@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const PRIMARY_LINKS: { href: string; label: string }[] = [
@@ -25,6 +25,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [desktopMoreOpen, setDesktopMoreOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -37,6 +38,13 @@ export default function Navbar() {
     setMobileOpen(false);
     setDesktopMoreOpen(false);
   }, [pathname]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      window.location.href = `/search?q=${encodeURIComponent(searchQuery.trim())}`;
+    }
+  };
 
   return (
     <header
@@ -53,7 +61,7 @@ export default function Navbar() {
           Andrew
         </Link>
 
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-6">
           {PRIMARY_LINKS.map((link) => {
             const active = isActiveLink(link.href, pathname);
             return (
@@ -75,6 +83,23 @@ export default function Navbar() {
               </Link>
             );
           })}
+
+          <form onSubmit={handleSearch} className="relative w-32">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="搜索..."
+              className="w-full pl-8 pr-3 py-1.5 bg-background/50 border border-border/40 rounded-full text-xs text-foreground placeholder:text-muted focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all"
+            />
+            <button
+              type="submit"
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-accent transition-colors"
+              aria-label="Search"
+            >
+              <Search size={14} />
+            </button>
+          </form>
 
           <div className="relative flex items-center">
             <div

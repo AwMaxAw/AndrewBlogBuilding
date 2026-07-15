@@ -1,0 +1,41 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Search } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface SearchBarProps {
+  className?: string;
+}
+
+export default function SearchBar({ className = "" }: SearchBarProps) {
+  const [query, setQuery] = useState("");
+  const router = useRouter();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (query.trim()) {
+      router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className={cn("relative", className)}>
+      <input
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="搜索文章..."
+        className="w-full pl-10 pr-4 py-2 bg-background/50 border border-border/40 rounded-full text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all"
+      />
+      <button
+        type="submit"
+        className="absolute left-3 top-1/2 -translate-y-1/2 text-muted hover:text-accent transition-colors"
+        aria-label="Search"
+      >
+        <Search size={16} />
+      </button>
+    </form>
+  );
+}
