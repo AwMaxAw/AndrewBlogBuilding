@@ -53,7 +53,7 @@ export default function Navbar() {
         scrolled ? "liquid-glass-nav" : "fixed top-0 left-0 right-0 bg-transparent"
       )}
     >
-      <nav className="max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">
+      <nav className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link
           href="/"
           className="font-serif text-xl font-semibold tracking-tight hover:text-accent transition-colors"
@@ -61,7 +61,7 @@ export default function Navbar() {
           Andrew
         </Link>
 
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-5">
           {PRIMARY_LINKS.map((link) => {
             const active = isActiveLink(link.href, pathname);
             return (
@@ -84,12 +84,12 @@ export default function Navbar() {
             );
           })}
 
-          <form onSubmit={handleSearch} className="relative w-32">
+          <form onSubmit={handleSearch} className="relative w-40">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="搜索..."
+              placeholder="搜索文章..."
               className="w-full pl-8 pr-3 py-1.5 bg-background/50 border border-border/40 rounded-full text-xs text-foreground placeholder:text-muted focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all"
             />
             <button
