@@ -59,3 +59,12 @@ export function getAllPosts(): PostMeta[] {
     .sort((a, b) => (a.date > b.date ? -1 : 1))
     .map(({ content, ...meta }) => meta);
 }
+
+export function getNextPost(slug: string): PostMeta | null {
+  const allPosts = getAllPosts();
+  const currentIndex = allPosts.findIndex((post) => post.slug === slug);
+  if (currentIndex === -1 || currentIndex >= allPosts.length - 1) {
+    return null;
+  }
+  return allPosts[currentIndex + 1];
+}
