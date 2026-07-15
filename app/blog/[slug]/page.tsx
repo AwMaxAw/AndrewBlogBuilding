@@ -3,11 +3,11 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
-import { getPostBySlug, getPostSlugs, getNextPost } from "@/lib/posts";
+import { getPostBySlug, getPostSlugs, getNextPost, getPreviousPost } from "@/lib/posts";
 import { formatDate, extractHeadings, type HeadingItem } from "@/lib/utils";
 import { mdxComponents } from "@/components/MDXComponents";
 import TOC from "@/components/TOC";
-import NextPage from "@/components/NextPage";
+import PageNav from "@/components/PageNav";
 import { Clock, Calendar, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
@@ -44,6 +44,7 @@ export default function PostPage({ params }: PostPageProps) {
 
   const headings = extractHeadings(post.content);
   const nextPost = getNextPost(params.slug);
+  const previousPost = getPreviousPost(params.slug);
 
   return (
     <article className="max-w-6xl mx-auto px-6 py-16">
@@ -100,7 +101,7 @@ export default function PostPage({ params }: PostPageProps) {
             />
           </div>
 
-          {nextPost && <NextPage nextPost={nextPost} />}
+          <PageNav previousPost={previousPost} nextPost={nextPost} />
         </div>
 
         <TOC items={headings} />

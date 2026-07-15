@@ -68,3 +68,12 @@ export function getNextPost(slug: string): PostMeta | null {
   }
   return allPosts[currentIndex + 1];
 }
+
+export function getPreviousPost(slug: string): PostMeta | null {
+  const allPosts = getAllPosts();
+  const currentIndex = allPosts.findIndex((post) => post.slug === slug);
+  if (currentIndex === -1 || currentIndex <= 0) {
+    return null;
+  }
+  return allPosts[currentIndex - 1];
+}
