@@ -3,14 +3,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const NAV_LINKS = [
+const PRIMARY_LINKS: { href: string; label: string }[] = [
   { href: "/", label: "首页" },
   { href: "/blog", label: "文章" },
+];
+
+const MORE_LINKS: { href: string; label: string }[] = [
+  { href: "/changelog", label: "日志" },
   { href: "/about", label: "关于" },
-] as const;
+];
 
 function isActiveLink(href: string, pathname: string) {
   return href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -20,6 +24,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [desktopMoreOpen, setDesktopMoreOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -30,6 +35,7 @@ export default function Navbar() {
 
   useEffect(() => {
     setMobileOpen(false);
+    setDesktopMoreOpen(false);
   }, [pathname]);
 
   return (
@@ -48,7 +54,7 @@ export default function Navbar() {
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
-          {NAV_LINKS.map((link) => {
+          {PRIMARY_LINKS.map((link) => {
             const active = isActiveLink(link.href, pathname);
             return (
               <Link
@@ -69,6 +75,52 @@ export default function Navbar() {
               </Link>
             );
           })}
+
+          <div className="relative flex items-center">
+            <div
+              className={cn(
+                "flex items-center gap-4 overflow-hidden transition-all duration-300 ease-out",
+                desktopMoreOpen ? "w-32 opacity-100 mr-0" : "w-0 opacity-0 mr-0"
+              )}
+            >
+              {MORE_LINKS.map((link) => {
+                const active = isActiveLink(link.href, pathname);
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={cn(
+                      "relative text-sm transition-colors hover:text-accent whitespace-nowrap",
+                      active ? "text-foreground" : "text-muted"
+                    )}
+                  >
+                    {link.label}
+                    <span
+                      className={cn(
+                        "absolute -bottom-1 left-0 h-px bg-accent transition-all duration-300",
+                        active ? "w-full" : "w-0"
+                      )}
+                    />
+                  </Link>
+                );
+              })}
+            </div>
+
+            <button
+              onClick={() => setDesktopMoreOpen(!desktopMoreOpen)}
+              className="flex items-center gap-1 text-sm text-muted hover:text-foreground transition-colors"
+              aria-label="Toggle more menu"
+            >
+              更多
+              <ChevronDown
+                size={16}
+                className={cn(
+                  "transition-transform duration-300",
+                  desktopMoreOpen ? "rotate-180" : ""
+                )}
+              />
+            </button>
+          </div>
         </div>
 
         <div className="md:hidden flex items-center">
@@ -78,7 +130,7 @@ export default function Navbar() {
               mobileOpen ? "w-auto opacity-100 mr-2" : "w-0 opacity-0 mr-0"
             )}
           >
-            {NAV_LINKS.filter((link) => link.href !== "/").map((link) => {
+            {PRIMARY_LINKS.filter((link) => link.href !== "/").concat(MORE_LINKS).map((link) => {
               const active = isActiveLink(link.href, pathname);
               return (
                 <Link
