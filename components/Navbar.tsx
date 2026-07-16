@@ -25,6 +25,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [desktopMoreOpen, setDesktopMoreOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
@@ -83,23 +84,6 @@ export default function Navbar() {
             );
           })}
 
-          <form onSubmit={handleSearch} className="relative w-40">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search"
-              className="w-full pl-8 pr-3 py-1.5 bg-background/50 border border-border/40 rounded-full text-xs text-foreground placeholder:text-muted focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all"
-            />
-            <button
-              type="submit"
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-accent transition-colors"
-              aria-label="Search"
-            >
-              <Search size={14} />
-            </button>
-          </form>
-
           <div className="relative flex items-center">
             <div
               className={cn(
@@ -131,8 +115,11 @@ export default function Navbar() {
             </div>
 
             <button
-              onClick={() => setDesktopMoreOpen(!desktopMoreOpen)}
-              className="p-1.5 -mr-1.5 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50"
+              onClick={() => {
+                setDesktopMoreOpen(!desktopMoreOpen);
+                setSearchOpen(false);
+              }}
+              className="p-1.5 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50"
               aria-label="Toggle more menu"
             >
               {desktopMoreOpen ? (
@@ -141,6 +128,45 @@ export default function Navbar() {
                 <Menu size={18} />
               )}
             </button>
+
+            <div className="relative flex items-center">
+              <form
+                onSubmit={handleSearch}
+                className={cn(
+                  "relative transition-all duration-300 ease-out",
+                  searchOpen ? "w-40" : "w-0 overflow-hidden"
+                )}
+              >
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search"
+                  className="w-full pl-8 pr-3 py-1.5 bg-background/50 border border-border/40 rounded-full text-xs text-foreground placeholder:text-muted focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all"
+                  autoFocus={searchOpen}
+                />
+                <button
+                  type="submit"
+                  className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-accent transition-colors"
+                  aria-label="Search"
+                >
+                  <Search size={14} />
+                </button>
+              </form>
+
+              <button
+                onClick={() => {
+                  setSearchOpen(!searchOpen);
+                  if (!searchOpen) {
+                    setDesktopMoreOpen(false);
+                  }
+                }}
+                className="p-1.5 -mr-1.5 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50"
+                aria-label="Toggle search"
+              >
+                <Search size={18} />
+              </button>
+            </div>
           </div>
         </div>
 
