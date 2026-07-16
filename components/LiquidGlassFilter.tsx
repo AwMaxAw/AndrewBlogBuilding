@@ -1,15 +1,5 @@
 "use client";
 
-/**
- * Apple Liquid Glass SVG Filter
- * 用于创建真实的光线折射效果
- * 
- * 原理：feDisplacementMap 通过位移像素模拟光线穿过玻璃的折射
- * - R通道控制X方向位移，G通道控制Y方向位移
- * - 128 = 中性点（无位移）
- * - 负 scale 值产生放大/凸透镜效果
- */
-
 export default function LiquidGlassFilter() {
   return (
     <svg
@@ -19,36 +9,60 @@ export default function LiquidGlassFilter() {
       aria-hidden="true"
     >
       <defs>
-        {/* 导航栏用的液态玻璃滤镜 - 长条形状 */}
         <filter
           id="liquid-glass-nav"
           colorInterpolationFilters="sRGB"
-          x="0%"
-          y="0%"
-          width="100%"
-          height="100%"
+          x="-5%"
+          y="-5%"
+          width="110%"
+          height="110%"
         >
-          {/* 噪声生成 - 创建有机的玻璃纹理 */}
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.02"
-            numOctaves="3"
-            seed="15"
-            result="noise"
+          <feGaussianBlur in="SourceGraphic" stdDeviation="1" result="blur" />
+
+          <feImage
+            href={`data:image/svg+xml,${encodeURIComponent(`
+              <svg width='100%' height='100%' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'>
+                <defs>
+                  <linearGradient id='gX' x1='0%' y1='0%' x2='100%' y2='0%'>
+                    <stop offset='0%' stop-color='#000'/>
+                    <stop offset='50%' stop-color='#808080'/>
+                    <stop offset='100%' stop-color='#F00'/>
+                  </linearGradient>
+                  <linearGradient id='gY' x1='0%' y1='0%' x2='0%' y2='100%'>
+                    <stop offset='0%' stop-color='#000'/>
+                    <stop offset='50%' stop-color='#808080'/>
+                    <stop offset='100%' stop-color='#0F0'/>
+                  </linearGradient>
+                </defs>
+                <rect x='0' y='0' width='100%' height='100%' fill='url(#gX)' style='mix-blend-mode:screen'/>
+                <rect x='0' y='0' width='100%' height='100%' fill='url(#gY)' style='mix-blend-mode:screen'/>
+                <rect width='100%' height='100%' fill='#808080CC' style='filter:blur(15px)'/>
+              </svg>
+            `)}`}
+            x="0%"
+            y="0%"
+            width="100%"
+            height="100%"
+            result="refractMap"
           />
-          {/* 模糊噪声使边缘更柔和 */}
-          <feGaussianBlur in="noise" stdDeviation="1.5" result="blurred" />
-          {/* 位移映射 - scale 负值产生凸透镜效果 */}
+
           <feDisplacementMap
-            in="SourceGraphic"
-            in2="blurred"
-            scale="-25"
+            in="blur"
+            in2="refractMap"
+            scale="-40"
             xChannelSelector="R"
             yChannelSelector="G"
+            result="disp"
+          />
+
+          <feBlend
+            in="disp"
+            in2="SourceGraphic"
+            mode="normal"
+            result="blended"
           />
         </filter>
 
-        {/* 通用液态玻璃滤镜 - 适用于卡片和按钮 */}
         <filter
           id="liquid-glass"
           colorInterpolationFilters="sRGB"
@@ -57,24 +71,52 @@ export default function LiquidGlassFilter() {
           width="120%"
           height="120%"
         >
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.015"
-            numOctaves="3"
-            seed="42"
-            result="noise"
+          <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur" />
+
+          <feImage
+            href={`data:image/svg+xml,${encodeURIComponent(`
+              <svg width='100%' height='100%' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'>
+                <defs>
+                  <linearGradient id='gX' x1='0%' y1='0%' x2='100%' y2='0%'>
+                    <stop offset='0%' stop-color='#000'/>
+                    <stop offset='50%' stop-color='#808080'/>
+                    <stop offset='100%' stop-color='#F00'/>
+                  </linearGradient>
+                  <linearGradient id='gY' x1='0%' y1='0%' x2='0%' y2='100%'>
+                    <stop offset='0%' stop-color='#000'/>
+                    <stop offset='50%' stop-color='#808080'/>
+                    <stop offset='100%' stop-color='#0F0'/>
+                  </linearGradient>
+                </defs>
+                <rect x='0' y='0' width='100%' height='100%' fill='url(#gX)' style='mix-blend-mode:screen'/>
+                <rect x='0' y='0' width='100%' height='100%' fill='url(#gY)' style='mix-blend-mode:screen'/>
+                <rect width='100%' height='100%' fill='#808080CC' style='filter:blur(12px)'/>
+              </svg>
+            `)}`}
+            x="0%"
+            y="0%"
+            width="100%"
+            height="100%"
+            result="refractMap"
           />
-          <feGaussianBlur in="noise" stdDeviation="2" result="blurred" />
+
           <feDisplacementMap
-            in="SourceGraphic"
-            in2="blurred"
-            scale="-30"
+            in="blur"
+            in2="refractMap"
+            scale="-50"
             xChannelSelector="R"
             yChannelSelector="G"
+            result="disp"
+          />
+
+          <feBlend
+            in="disp"
+            in2="SourceGraphic"
+            mode="normal"
+            result="blended"
           />
         </filter>
 
-        {/* 按钮专用 - 更强的折射效果 */}
         <filter
           id="liquid-glass-btn"
           colorInterpolationFilters="sRGB"
@@ -83,20 +125,49 @@ export default function LiquidGlassFilter() {
           width="110%"
           height="110%"
         >
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.025"
-            numOctaves="2"
-            seed="7"
-            result="noise"
+          <feGaussianBlur in="SourceGraphic" stdDeviation="1" result="blur" />
+
+          <feImage
+            href={`data:image/svg+xml,${encodeURIComponent(`
+              <svg width='100%' height='100%' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'>
+                <defs>
+                  <linearGradient id='gX' x1='0%' y1='0%' x2='100%' y2='0%'>
+                    <stop offset='0%' stop-color='#000'/>
+                    <stop offset='50%' stop-color='#808080'/>
+                    <stop offset='100%' stop-color='#F00'/>
+                  </linearGradient>
+                  <linearGradient id='gY' x1='0%' y1='0%' x2='0%' y2='100%'>
+                    <stop offset='0%' stop-color='#000'/>
+                    <stop offset='50%' stop-color='#808080'/>
+                    <stop offset='100%' stop-color='#0F0'/>
+                  </linearGradient>
+                </defs>
+                <rect x='0' y='0' width='100%' height='100%' fill='url(#gX)' style='mix-blend-mode:screen'/>
+                <rect x='0' y='0' width='100%' height='100%' fill='url(#gY)' style='mix-blend-mode:screen'/>
+                <rect width='100%' height='100%' fill='#808080CC' style='filter:blur(10px)'/>
+              </svg>
+            `)}`}
+            x="0%"
+            y="0%"
+            width="100%"
+            height="100%"
+            result="refractMap"
           />
-          <feGaussianBlur in="noise" stdDeviation="1" result="blurred" />
+
           <feDisplacementMap
-            in="SourceGraphic"
-            in2="blurred"
-            scale="-20"
+            in="blur"
+            in2="refractMap"
+            scale="-35"
             xChannelSelector="R"
             yChannelSelector="G"
+            result="disp"
+          />
+
+          <feBlend
+            in="disp"
+            in2="SourceGraphic"
+            mode="normal"
+            result="blended"
           />
         </filter>
       </defs>
