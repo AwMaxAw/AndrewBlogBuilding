@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Github, Twitter, Mail, Rss } from "lucide-react";
+import { Github, Twitter, Mail, Rss, ArrowUpRight } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 
 interface FooterLink {
@@ -60,16 +60,23 @@ export default function Footer() {
             <div key={section.title}>
               <h3 className="text-sm font-semibold mb-4">{section.title}</h3>
               <ul className="space-y-3">
-                {section.links.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-muted hover:text-foreground transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
+                {section.links.map((link) => {
+                  const isExternal = link.href.startsWith("http") || link.href.startsWith("mailto:");
+                  return (
+                    <li key={link.label}>
+                      <Link
+                        href={link.href}
+                        className="text-sm text-muted hover:text-foreground transition-colors inline-flex items-center gap-0.5 group"
+                        {...(link.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                      >
+                        {link.label}
+                        {isExternal && (
+                          <ArrowUpRight size={12} className="opacity-40 group-hover:opacity-100 transition-opacity" />
+                        )}
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}

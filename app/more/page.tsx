@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, ArrowUpRight } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "More",
@@ -61,8 +61,9 @@ export default function MorePage() {
             >
               <div className="relative z-10 p-6 flex items-center justify-between">
                 <div>
-                  <h3 className="font-serif text-lg font-medium mb-1 group-hover:text-accent transition-colors">
+                  <h3 className="font-serif text-lg font-medium mb-1 group-hover:text-accent transition-colors flex items-center gap-1">
                     {link.name}
+                    <ArrowUpRight size={14} className="opacity-50 group-hover:opacity-100 transition-opacity" />
                   </h3>
                   <p className="text-sm text-muted">{link.description}</p>
                 </div>
