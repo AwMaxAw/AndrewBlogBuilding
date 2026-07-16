@@ -29,7 +29,7 @@ export default function Footer() {
               <Twitter size={18} />
             </Link>
             <Link
-              href="mailto:hello@example.com"
+              href="mailto:max.li.ggm@gmail.com"
               className="text-muted hover:text-foreground transition-colors"
               aria-label="Email"
             >

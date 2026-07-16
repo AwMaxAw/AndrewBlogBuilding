@@ -44,8 +44,8 @@ export default function AboutPage() {
           If you&apos;d like to chat, feel free to reach me through any of the following:
         </p>
         <ul>
-          <li>Email: hello@example.com</li>
-          <li>GitHub: @andrew</li>
+          <li>Email: max.li.ggm@gmail.com</li>
+          <li>GitHub: @AwMaxAw</li>
           <li>Twitter: @andrew</li>
         </ul>
 
