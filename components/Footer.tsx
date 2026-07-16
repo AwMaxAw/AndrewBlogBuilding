@@ -11,7 +11,7 @@ export default function Footer() {
           </div>
           <div className="flex items-center gap-5">
             <Link
-              href="https://github.com"
+              href="https://github.com/AwMaxAw"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted hover:text-foreground transition-colors"
