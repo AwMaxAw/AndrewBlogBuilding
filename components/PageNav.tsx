@@ -16,7 +16,7 @@ export default function PageNav({ previousPost, nextPost }: PageNavProps) {
         {previousPost && (
           <Link
             href={`/blog/${previousPost.slug}`}
-            className="flex items-center gap-3 px-6 py-3 border border-border/60 rounded-full text-sm hover:border-accent/60 hover:text-accent transition-colors"
+            className="flex items-center gap-3 px-5 py-3 border border-border/60 rounded-md text-sm hover:border-accent/60 hover:text-accent transition-colors"
           >
             <ArrowLeft size={14} />
             <div className="text-left">
@@ -29,7 +29,7 @@ export default function PageNav({ previousPost, nextPost }: PageNavProps) {
         {nextPost && (
           <Link
             href={`/blog/${nextPost.slug}`}
-            className="flex items-center gap-3 px-6 py-3 border border-border/60 rounded-full text-sm hover:border-accent/60 hover:text-accent transition-colors"
+            className="flex items-center gap-3 px-5 py-3 border border-border/60 rounded-md text-sm hover:border-accent/60 hover:text-accent transition-colors"
           >
             <div className="text-right">
               <div className="text-muted">Next page</div>
