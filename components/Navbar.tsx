@@ -49,8 +49,7 @@ export default function Navbar() {
   return (
     <header
       className={cn(
-        "z-50 transition-all duration-300",
-        scrolled ? "liquid-glass-nav" : "fixed top-0 left-0 right-0 bg-transparent"
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 glass-nav",
       )}
     >
       <nav className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
