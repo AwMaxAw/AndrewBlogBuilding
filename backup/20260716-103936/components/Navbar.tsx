@@ -175,8 +175,8 @@ export default function Navbar() {
         <div className="md:hidden flex items-center">
           <div
             className={cn(
-              "flex items-center gap-1 overflow-x-auto overflow-y-hidden scrollbar-hide transition-all duration-300 ease-out flex-nowrap",
-              mobileOpen ? "w-auto max-w-[65vw] opacity-100 mr-2" : "w-0 opacity-0 mr-0"
+              "flex items-center gap-1 overflow-hidden transition-all duration-300 ease-out",
+              mobileOpen ? "w-auto opacity-100 mr-2" : "w-0 opacity-0 mr-0"
             )}
           >
             {PRIMARY_LINKS.filter((link) => link.href !== "/").concat(MORE_LINKS).map((link) => {
