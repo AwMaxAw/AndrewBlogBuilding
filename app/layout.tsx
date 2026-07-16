@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LiquidGlassFilter from "@/components/LiquidGlassFilter";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const playfairDisplay = Playfair_Display({
   subsets: ["latin"],
@@ -99,10 +100,12 @@ export default function RootLayout({
             __html: JSON.stringify(generateStructuredData()),
           }}
         />
-        <LiquidGlassFilter />
-        <Navbar />
-        <main className="flex-1 pt-16">{children}</main>
-        <Footer />
+        <ThemeProvider>
+          <LiquidGlassFilter />
+          <Navbar />
+          <main className="flex-1 pt-16">{children}</main>
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

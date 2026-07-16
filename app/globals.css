@@ -5,6 +5,37 @@
 :root {
   --background: #F7F5F0;
   --foreground: #1A1A1A;
+  --card: rgba(255, 255, 255, 0.7);
+  --card-foreground: #1A1A1A;
+  --primary: #D97706;
+  --primary-foreground: #FFFFFF;
+  --secondary: #E5E2DB;
+  --secondary-foreground: #1A1A1A;
+  --muted: #6B7280;
+  --muted-foreground: #9CA3AF;
+  --accent: #D97706;
+  --accent-foreground: #FFFFFF;
+  --border: #E5E2DB;
+  --input: #E5E2DB;
+  --ring: #D97706;
+}
+
+.dark {
+  --background: #0F0F0F;
+  --foreground: #F7F5F0;
+  --card: rgba(26, 26, 26, 0.7);
+  --card-foreground: #F7F5F0;
+  --primary: #F59E0B;
+  --primary-foreground: #0F0F0F;
+  --secondary: #1F1F1F;
+  --secondary-foreground: #F7F5F0;
+  --muted: #6B7280;
+  --muted-foreground: #9CA3AF;
+  --accent: #F59E0B;
+  --accent-foreground: #0F0F0F;
+  --border: #1F1F1F;
+  --input: #1F1F1F;
+  --ring: #F59E0B;
 }
 
 html {
@@ -167,10 +198,6 @@ body {
   animation: fadeInUp 0.8s ease-out both;
 }
 
-/* ============================================
-   Liquid Glass (液态玻璃) - Apple Style
-   ============================================ */
-
 /* 基础液态玻璃 */
 .glass {
   position: relative;
@@ -183,6 +210,15 @@ body {
     inset 0 -1px 1px rgba(0, 0, 0, 0.04),
     0 4px 24px rgba(0, 0, 0, 0.06);
   overflow: hidden;
+}
+
+.dark .glass {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.1),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.2),
+    0 4px 24px rgba(0, 0, 0, 0.3);
 }
 
 /* 高光反射层 */
@@ -242,6 +278,16 @@ body {
     0 4px 12px rgba(0, 0, 0, 0.02);
 }
 
+.dark .liquid-glass-nav {
+  background: rgba(15, 15, 15, 0.7);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.03),
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
 /* ============================================
    旧版 Glass 效果 (兼容备用)
    ============================================ */
@@ -255,6 +301,14 @@ body {
   box-shadow:
     inset 0 1px 1px rgba(255, 255, 255, 0.4),
     0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.dark .glass-nav {
+  background: rgba(15, 15, 15, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.05),
+    0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .glass-nav::before {
@@ -273,6 +327,14 @@ body {
   z-index: 1;
 }
 
+.dark .glass-nav::before {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    transparent 100%
+  );
+}
+
 /* 卡片液态玻璃 */
 .glass-card {
   position: relative;
@@ -289,6 +351,15 @@ body {
   transition: all 0.3s ease;
 }
 
+.dark .glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.03),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.2),
+    0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
 .glass-card::before {
   content: '';
   position: absolute;
@@ -303,6 +374,16 @@ body {
   );
   pointer-events: none;
   z-index: 1;
+}
+
+.dark .glass-card::before {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.02) 40%,
+    transparent 55%,
+    transparent 100%
+  );
 }
 
 .glass-card::after {
@@ -322,6 +403,15 @@ body {
   z-index: 2;
 }
 
+.dark .glass-card::after {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+}
+
 .glass-card:hover {
   background: rgba(255, 255, 255, 0.28);
   box-shadow:
@@ -329,6 +419,14 @@ body {
     inset 0 -1px 1px rgba(0, 0, 0, 0.03),
     0 12px 40px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
+}
+
+.dark .glass-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.05),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.2),
+    0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 /* 按钮液态玻璃 */
@@ -352,6 +450,15 @@ body {
   cursor: pointer;
 }
 
+.dark .glass-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.08),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
 .glass-btn::before {
   content: '';
   position: absolute;
@@ -366,6 +473,16 @@ body {
   );
   pointer-events: none;
   z-index: 1;
+}
+
+.dark .glass-btn::before {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.03) 40%,
+    transparent 50%,
+    transparent 100%
+  );
 }
 
 .glass-btn::after {
@@ -394,6 +511,14 @@ body {
   transform: translateY(-1px);
 }
 
+.dark .glass-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.12),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.3),
+    0 6px 24px rgba(0, 0, 0, 0.4);
+}
+
 /* 标签液态玻璃 */
 .glass-tag {
   position: relative;
@@ -409,6 +534,14 @@ body {
     inset 0 1px 1px rgba(255, 255, 255, 0.4),
     0 1px 3px rgba(0, 0, 0, 0.04);
   overflow: hidden;
+}
+
+.dark .glass-tag {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.05),
+    0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .glass-tag::before {
@@ -438,6 +571,14 @@ body {
   overflow: hidden;
 }
 
+.dark .glass-footer {
+  background: rgba(255, 255, 255, 0.03);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.03),
+    0 -4px 24px rgba(0, 0, 0, 0.3);
+}
+
 .glass-footer::before {
   content: '';
   position: absolute;
@@ -450,4 +591,13 @@ body {
   );
   pointer-events: none;
   z-index: 1;
+}
+
+.dark .glass-footer::before {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.02) 50%,
+    transparent 100%
+  );
 }
