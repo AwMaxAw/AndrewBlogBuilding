@@ -163,6 +163,14 @@ export function getDocTitle(slug: string): string {
   return "";
 }
 
+export function getDocSection(slug: string): DocSection | null {
+  for (const section of DOCS_SECTIONS) {
+    const page = section.pages.find((p) => p.slug === slug);
+    if (page) return section;
+  }
+  return null;
+}
+
 export function getAdjacentDocs(slug: string): { prev: DocPage | null; next: DocPage | null } {
   const allPages = DOCS_SECTIONS.flatMap((s) => s.pages);
   const index = allPages.findIndex((p) => p.slug === slug);

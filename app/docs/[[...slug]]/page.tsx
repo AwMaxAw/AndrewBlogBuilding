@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronRight } from "lucide-react";
 import type { Metadata } from "next";
 import DocsSidebar from "@/components/DocsSidebar";
 import DocsTOC from "@/components/DocsTOC";
@@ -8,6 +8,7 @@ import {
   getDocBySlug,
   getFirstDocSlug,
   getAdjacentDocs,
+  getDocSection,
 } from "@/lib/docs";
 
 interface DocPageProps {
@@ -47,6 +48,7 @@ export default function DocPage({ params }: DocPageProps) {
   }
 
   const { prev, next } = getAdjacentDocs(slug);
+  const section = getDocSection(slug);
 
   return (
     <div className="max-w-7xl mx-auto px-6">
@@ -55,6 +57,20 @@ export default function DocPage({ params }: DocPageProps) {
 
         <main className="flex-1 min-w-0">
           <article className="prose-custom max-w-2xl mx-auto">
+            <nav className="flex items-center gap-2 text-sm text-muted mb-6">
+              <Link href="/docs" className="hover:text-foreground transition-colors">
+                Docs
+              </Link>
+              <ChevronRight size={14} />
+              {section && (
+                <>
+                  <span>{section.title}</span>
+                  <ChevronRight size={14} />
+                </>
+              )}
+              <span className="text-foreground font-medium">{doc.title}</span>
+            </nav>
+
             <h1 className="font-serif text-4xl font-semibold mb-8">
               {doc.title}
             </h1>

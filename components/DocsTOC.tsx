@@ -41,7 +41,7 @@ export default function DocsTOC({ headings }: DocsTOCProps) {
   if (headings.length === 0) return null;
 
   return (
-    <aside className="w-64 shrink-0 hidden xl:block">
+    <aside className="w-64 shrink-0 hidden md:block">
       <nav className="sticky top-24">
         <h3 className="text-sm font-semibold mb-3 text-foreground">
           On this page
