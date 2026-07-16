@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 const PRIMARY_LINKS: { href: string; label: string }[] = [
   { href: "/", label: "Home" },
   { href: "/blog", label: "Blog" },
+  { href: "/docs", label: "Docs" },
 ];
 
 const MORE_LINKS: { href: string; label: string }[] = [
