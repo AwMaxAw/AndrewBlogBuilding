@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, ChevronRight } from "lucide-react";
 import type { Metadata } from "next";
 import DocsSidebar from "@/components/DocsSidebar";
 import DocsTOC from "@/components/DocsTOC";
+import DocsMobileMenu from "@/components/DocsMobileMenu";
 import {
   getDocBySlug,
   getFirstDocSlug,
@@ -57,7 +58,8 @@ export default function DocPage({ params }: DocPageProps) {
 
         <main className="flex-1 min-w-0">
           <article className="prose-custom max-w-2xl mx-auto">
-            <nav className="flex items-center gap-2 text-sm text-muted mb-6">
+            <DocsMobileMenu />
+            <nav className="flex items-center gap-2 text-sm text-muted mb-6 mt-2">
               <Link href="/docs" className="hover:text-foreground transition-colors">
                 Docs
               </Link>
