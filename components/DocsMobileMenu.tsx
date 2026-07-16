@@ -5,17 +5,21 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { DOCS_SECTIONS } from "@/lib/docs";
+import { DOCS_SECTIONS, getDocSection } from "@/lib/docs";
 
 export default function DocsMobileMenu() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
+  const slug = pathname.replace("/docs/", "").replace("/", "");
+  const section = getDocSection(slug);
+  const title = DOCS_SECTIONS.flatMap(s => s.pages).find(p => p.slug === slug)?.title || "";
+
   return (
-    <div className="lg:hidden">
+    <div className="lg:hidden sticky top-14 z-30 -mx-6 px-6 pb-3 pt-3 glass-nav -mt-8">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-sm font-medium text-foreground"
+        className="flex items-center gap-2 text-sm font-medium text-foreground mb-2"
       >
         <ChevronRight
           size={16}
@@ -24,8 +28,22 @@ export default function DocsMobileMenu() {
         Menu
       </button>
 
+      <nav className="flex items-center gap-2 text-sm text-muted">
+        <Link href="/docs" className="hover:text-foreground transition-colors">
+          Docs
+        </Link>
+        <ChevronRight size={12} />
+        {section && (
+          <>
+            <span className="truncate">{section.title}</span>
+            <ChevronRight size={12} />
+          </>
+        )}
+        <span className="text-foreground font-medium truncate">{title}</span>
+      </nav>
+
       {open && (
-        <nav className="mt-4 pb-6 mb-6 border-b border-border">
+        <nav className="mt-4 pb-4 max-h-[60vh] overflow-y-auto">
           {DOCS_SECTIONS.map((section) => (
             <div key={section.title} className="mb-6">
               <h3 className="text-sm font-semibold mb-3 text-foreground">
