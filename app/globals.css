@@ -54,6 +54,10 @@ body {
   background-color: rgba(217, 119, 6, 0.25);
 }
 
+.dark ::selection {
+  background-color: rgba(245, 158, 11, 0.25);
+}
+
 .prose-custom {
   line-height: 1.8;
 }
@@ -90,11 +94,15 @@ body {
 }
 
 .prose-custom blockquote {
-  border-left: 3px solid #D97706;
+  border-left: 3px solid var(--accent);
   padding-left: 1.25rem;
   margin: 2rem 0;
   font-style: italic;
-  color: #4B5563;
+  color: var(--muted);
+}
+
+.dark .prose-custom blockquote {
+  color: var(--muted-foreground);
 }
 
 .prose-custom ul,
@@ -108,7 +116,7 @@ body {
 }
 
 .prose-custom a {
-  color: #D97706;
+  color: var(--accent);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
@@ -116,14 +124,18 @@ body {
 }
 
 .prose-custom a:hover {
-  color: #92400E;
+  color: var(--primary);
 }
 
 .prose-custom code {
-  background: rgba(26, 26, 26, 0.08);
+  background: rgba(128, 128, 128, 0.12);
   padding: 0.2rem 0.4rem;
   border-radius: 0.25rem;
   font-size: 0.875em;
+}
+
+.dark .prose-custom code {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .prose-custom pre {
@@ -145,7 +157,7 @@ body {
 
 .prose-custom hr {
   border: none;
-  border-top: 1px solid #E5E2DB;
+  border-top: 1px solid var(--border);
   margin: 3rem 0;
 }
 
@@ -162,14 +174,18 @@ body {
 
 .prose-custom th,
 .prose-custom td {
-  border: 1px solid #E5E2DB;
+  border: 1px solid var(--border);
   padding: 0.75rem 1rem;
   text-align: left;
 }
 
 .prose-custom th {
-  background: rgba(26, 26, 26, 0.04);
+  background: rgba(128, 128, 128, 0.08);
   font-weight: 600;
+}
+
+.dark .prose-custom th {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .first-letter::first-letter {
@@ -180,7 +196,7 @@ body {
   line-height: 0.85;
   padding-right: 0.75rem;
   padding-top: 0.25rem;
-  color: #D97706;
+  color: var(--accent);
 }
 
 @keyframes fadeInUp {
