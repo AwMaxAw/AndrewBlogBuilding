@@ -1,6 +1,10 @@
+'use client';
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Github, Twitter, Mail, Rss, ArrowUpRight } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
+import { cn } from "@/lib/utils";
 
 interface FooterLink {
   label: string;
@@ -39,7 +43,13 @@ const footerSections: FooterSection[] = [
   },
 ];
 
+function isActiveLink(href: string, pathname: string) {
+  return href === "/" ? pathname === "/" : pathname.startsWith(href);
+}
+
 export default function Footer() {
+  const pathname = usePathname();
+
   return (
     <footer className="border-t border-border bg-secondary/20 mt-24">
       <div className="max-w-6xl mx-auto px-6 py-12">
@@ -62,16 +72,29 @@ export default function Footer() {
               <ul className="space-y-3">
                 {section.links.map((link) => {
                   const isExternal = link.href.startsWith("http") || link.href.startsWith("mailto:");
+                  const isInternal = !isExternal && !link.href.startsWith("#");
+                  const active = isInternal && isActiveLink(link.href, pathname);
                   return (
                     <li key={link.label}>
                       <Link
                         href={link.href}
-                        className="text-sm text-muted hover:text-foreground transition-colors inline-flex items-center gap-0.5 group"
+                        className={cn(
+                          "relative text-sm transition-colors inline-flex items-center gap-0.5 group",
+                          active ? "text-accent" : "text-muted hover:text-foreground"
+                        )}
                         {...(link.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                       >
                         {link.label}
                         {isExternal && (
                           <ArrowUpRight size={12} className="opacity-40 group-hover:opacity-100 transition-opacity" />
+                        )}
+                        {isInternal && (
+                          <span
+                            className={cn(
+                              "absolute -bottom-0.5 left-0 h-px transition-all duration-300 ease-out",
+                              active ? "w-full bg-accent" : "w-0 bg-foreground dark:bg-white group-hover:w-full"
+                            )}
+                          />
                         )}
                       </Link>
                     </li>

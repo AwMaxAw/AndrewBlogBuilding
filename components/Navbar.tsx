@@ -65,55 +65,55 @@ export default function Navbar() {
 
         <div className="hidden md:flex items-center gap-5">
           {PRIMARY_LINKS.map((link) => {
-            const active = isActiveLink(link.href, pathname);
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "group relative text-sm transition-colors",
-                  active ? "text-foreground" : "text-muted hover:text-foreground"
-                )}
-              >
-                {link.label}
-                <span
-                  className={cn(
-                    "absolute -bottom-1 left-1/2 -translate-x-1/2 h-px bg-foreground dark:bg-white transition-all duration-300 ease-out",
-                    active ? "w-full" : "w-0 group-hover:w-full"
-                  )}
-                />
-              </Link>
-            );
-          })}
-
-          <div className="relative flex items-center">
-            <div
-              className={cn(
-                "flex items-center gap-4 overflow-hidden transition-all duration-300 ease-out",
-                desktopMoreOpen ? "w-44 opacity-100 mr-0" : "w-0 opacity-0 mr-0"
-              )}
-            >
-              {MORE_LINKS.map((link) => {
                 const active = isActiveLink(link.href, pathname);
                 return (
                   <Link
                     key={link.href}
                     href={link.href}
                     className={cn(
-                      "group relative text-sm transition-colors whitespace-nowrap",
-                      active ? "text-foreground" : "text-muted hover:text-foreground"
+                      "group relative text-sm transition-colors",
+                      active ? "text-accent" : "text-muted hover:text-foreground"
                     )}
                   >
                     {link.label}
                     <span
                       className={cn(
-                        "absolute -bottom-1 left-1/2 -translate-x-1/2 h-px bg-foreground dark:bg-white transition-all duration-300 ease-out",
-                        active ? "w-full" : "w-0 group-hover:w-full"
+                        "absolute -bottom-1 left-0 h-px transition-all duration-300 ease-out",
+                        active ? "w-full bg-accent" : "w-0 bg-foreground dark:bg-white group-hover:w-full"
                       )}
                     />
                   </Link>
                 );
               })}
+
+              <div className="relative flex items-center">
+                <div
+                  className={cn(
+                    "flex items-center gap-4 overflow-hidden transition-all duration-300 ease-out",
+                    desktopMoreOpen ? "w-44 opacity-100 mr-0" : "w-0 opacity-0 mr-0"
+                  )}
+                >
+                  {MORE_LINKS.map((link) => {
+                    const active = isActiveLink(link.href, pathname);
+                    return (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className={cn(
+                          "group relative text-sm transition-colors whitespace-nowrap",
+                          active ? "text-accent" : "text-muted hover:text-foreground"
+                        )}
+                      >
+                        {link.label}
+                        <span
+                          className={cn(
+                            "absolute -bottom-1 left-0 h-px transition-all duration-300 ease-out",
+                            active ? "w-full bg-accent" : "w-0 bg-foreground dark:bg-white group-hover:w-full"
+                          )}
+                        />
+                      </Link>
+                    );
+                  })}
             </div>
 
             <button
