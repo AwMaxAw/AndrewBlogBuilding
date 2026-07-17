@@ -3,25 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import {
-  DOCS_CATEGORIES,
-  getDocCategoryBySlug,
-} from "@/lib/docs";
-import DocsCategorySelector from "./DocsCategorySelector";
+import { DOCS_SECTIONS } from "@/lib/docs";
 
 export default function DocsSidebar() {
   const pathname = usePathname();
-  const slug = pathname.replace("/docs/", "").replace("/", "");
-
-  const currentCategory = getDocCategoryBySlug(slug);
-  const sections = currentCategory?.sections || DOCS_CATEGORIES[0].sections;
 
   return (
     <aside className="w-64 shrink-0 hidden lg:block">
       <nav className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto pr-4">
-        <DocsCategorySelector />
-
-        {sections.map((section) => (
+        {DOCS_SECTIONS.map((section) => (
           <div key={section.title} className="mb-8">
             <h3 className="text-sm font-semibold mb-3 text-foreground">
               {section.title}

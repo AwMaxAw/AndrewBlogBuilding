@@ -5,12 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  DOCS_CATEGORIES,
-  getDocCategoryBySlug,
-  getDocSection,
-} from "@/lib/docs";
-import DocsCategorySelector from "./DocsCategorySelector";
+import { DOCS_SECTIONS, getDocSection } from "@/lib/docs";
 
 export default function DocsMobileMenu() {
   const pathname = usePathname();
@@ -18,14 +13,7 @@ export default function DocsMobileMenu() {
 
   const slug = pathname.replace("/docs/", "").replace("/", "");
   const section = getDocSection(slug);
-
-  const currentCategory = getDocCategoryBySlug(slug);
-  const sections = currentCategory?.sections || DOCS_CATEGORIES[0].sections;
-
-  const allPages = DOCS_CATEGORIES.flatMap((cat) =>
-    cat.sections.flatMap((s) => s.pages)
-  );
-  const title = allPages.find((p) => p.slug === slug)?.title || "";
+  const title = DOCS_SECTIONS.flatMap(s => s.pages).find(p => p.slug === slug)?.title || "";
 
   return (
     <div className="lg:hidden sticky top-14 z-30 -mx-6 px-6 pb-3 pt-3 glass-nav -mt-8">
@@ -55,10 +43,8 @@ export default function DocsMobileMenu() {
       </nav>
 
       {open && (
-        <div className="mt-4 pb-4 max-h-[60vh] overflow-y-auto">
-          <DocsCategorySelector />
-          <nav>
-            {sections.map((section) => (
+        <nav className="mt-4 pb-4 max-h-[60vh] overflow-y-auto">
+          {DOCS_SECTIONS.map((section) => (
             <div key={section.title} className="mb-6">
               <h3 className="text-sm font-semibold mb-3 text-foreground">
                 {section.title}
@@ -86,8 +72,7 @@ export default function DocsMobileMenu() {
               </ul>
             </div>
           ))}
-          </nav>
-        </div>
+        </nav>
       )}
     </div>
   );
