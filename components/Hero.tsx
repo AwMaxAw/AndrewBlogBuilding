@@ -25,12 +25,12 @@ export default function Hero() {
           className="mt-10 flex items-center gap-6 animate-fade-in-up"
           style={{ animationDelay: "0.3s" }}
         >
-          <a
-            href="#posts"
+          <Link
+            href="/blog"
             className="glass-btn text-sm font-medium text-foreground z-10"
           >
             <span className="z-10 relative">Browse Posts</span>
-          </a>
+          </Link>
           <Link
             href="/about"
             className="glass-btn text-sm text-foreground z-10"
