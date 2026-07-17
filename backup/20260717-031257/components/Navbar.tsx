@@ -55,7 +55,7 @@ export default function Navbar() {
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 glass-nav",
       )}
     >
-      <nav className="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 h-16 flex items-center justify-between">
+      <nav className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link
           href="/"
           className="font-serif text-xl font-semibold tracking-tight hover:text-accent transition-colors"
