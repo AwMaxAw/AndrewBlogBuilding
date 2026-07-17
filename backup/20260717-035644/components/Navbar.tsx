@@ -71,15 +71,15 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "group relative text-sm transition-colors",
-                  active ? "text-foreground" : "text-muted hover:text-foreground"
+                  "relative text-sm transition-colors hover:text-accent",
+                  active ? "text-foreground" : "text-muted"
                 )}
               >
                 {link.label}
                 <span
                   className={cn(
-                    "absolute -bottom-1 left-1/2 -translate-x-1/2 h-px bg-foreground dark:bg-white transition-all duration-300 ease-out",
-                    active ? "w-full" : "w-0 group-hover:w-full"
+                    "absolute -bottom-1 left-0 h-px bg-accent transition-all duration-300",
+                    active ? "w-full" : "w-0"
                   )}
                 />
               </Link>
@@ -100,15 +100,15 @@ export default function Navbar() {
                     key={link.href}
                     href={link.href}
                     className={cn(
-                      "group relative text-sm transition-colors whitespace-nowrap",
-                      active ? "text-foreground" : "text-muted hover:text-foreground"
+                      "relative text-sm transition-colors hover:text-accent whitespace-nowrap",
+                      active ? "text-foreground" : "text-muted"
                     )}
                   >
                     {link.label}
                     <span
                       className={cn(
-                        "absolute -bottom-1 left-1/2 -translate-x-1/2 h-px bg-foreground dark:bg-white transition-all duration-300 ease-out",
-                        active ? "w-full" : "w-0 group-hover:w-full"
+                        "absolute -bottom-1 left-0 h-px bg-accent transition-all duration-300",
+                        active ? "w-full" : "w-0"
                       )}
                     />
                   </Link>
