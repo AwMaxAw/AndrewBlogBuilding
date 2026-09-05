@@ -54,11 +54,14 @@ export default function Navbar() {
       className={cn(
         "fixed z-50 transition-all duration-500 ease-out",
         scrolled
-          ? "top-3 left-4 right-4 md:left-6 md:right-6 lg:left-8 lg:right-8 rounded-full bg-white/15 dark:bg-[#0f0f0f]/15 backdrop-blur-[2px] border border-white/20 dark:border-white/10 shadow-lg shadow-black/10 dark:shadow-black/40"
+          ? "top-3 left-1/2 -translate-x-1/2 w-[calc(100%-4rem)] md:w-[calc(100%-8rem)] lg:max-w-3xl rounded-full bg-white/15 dark:bg-[#0f0f0f]/15 backdrop-blur-[2px] border border-white/20 dark:border-white/10 shadow-lg shadow-black/10 dark:shadow-black/40"
           : "top-0 left-0 right-0 bg-transparent"
       )}
     >
-      <nav className="w-full px-6 md:px-8 lg:px-12 h-16 flex items-center justify-between">
+      <nav className={cn(
+        "w-full px-6 md:px-8 lg:px-10 flex items-center justify-between transition-all duration-500 ease-out",
+        scrolled ? "h-12" : "h-16"
+      )}>
         <Link
           href="/"
           className="font-serif text-xl font-semibold tracking-tight hover:text-accent transition-colors"
