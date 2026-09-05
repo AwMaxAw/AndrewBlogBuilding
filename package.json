@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:cf": "next-on-pages",
+    "build:cf": "next-on-pages && rm -rf dist && cp -r .vercel/output/static dist",
     "start": "next start",
     "lint": "next lint"
   },
