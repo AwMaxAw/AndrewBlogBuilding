@@ -50,15 +50,12 @@ export default function Navbar() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 px-4 pt-3">
-      <nav
-        className={cn(
-          "max-w-3xl mx-auto h-12 rounded-full flex items-center justify-between px-4 md:px-5 transition-all duration-300 ease-out",
-          scrolled
-            ? "bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 backdrop-blur-xl saturate-150 shadow-sm"
-            : "bg-transparent border border-transparent backdrop-blur-none"
-        )}
-      >
+    <header
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 glass-nav",
+      )}
+    >
+      <nav className="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 h-16 flex items-center justify-between">
         <Link
           href="/"
           className="font-serif text-xl font-semibold tracking-tight hover:text-accent transition-colors"
