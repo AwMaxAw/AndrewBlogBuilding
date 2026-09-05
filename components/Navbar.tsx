@@ -59,7 +59,7 @@ export default function Navbar() {
       )}
     >
       <nav className={cn(
-        "w-full px-8 md:px-12 lg:px-16 flex items-center justify-between transition-all duration-600 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        "w-full px-10 md:px-16 lg:px-20 flex items-center justify-between transition-all duration-600 ease-[cubic-bezier(0.22,1,0.36,1)]",
         scrolled ? "h-12" : "h-16"
       )}>
         <Link
