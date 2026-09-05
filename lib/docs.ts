@@ -79,7 +79,7 @@ export const DOCS_CATEGORIES: DocCategory[] = [
   },
 ];
 
-function getAllDocSlugs(): string[] {
+export function getAllDocSlugs(): string[] {
   return DOCS_CATEGORIES.flatMap((cat) =>
     cat.sections.flatMap((section) => section.pages.map((page) => page.slug))
   );
