@@ -94,7 +94,7 @@ export default function Navbar() {
                 <div
                   className={cn(
                     "flex items-center gap-4 overflow-hidden transition-all duration-300 ease-out",
-                    desktopMoreOpen ? "w-44 opacity-100 mr-0" : "w-0 opacity-0 mr-0"
+                    desktopMoreOpen ? "w-72 opacity-100 mr-0" : "w-0 opacity-0 mr-0"
                   )}
                 >
                   {MORE_LINKS.map((link) => {
