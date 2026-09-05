@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
@@ -8,20 +9,10 @@ import {
   getDocBySlug,
   getFirstDocSlug,
   getAdjacentDocs,
-  getAllDocSlugs,
 } from "@/lib/docs";
-
-export const runtime = "edge";
 
 interface DocPageProps {
   params: { slug?: string[] };
-}
-
-export function generateStaticParams() {
-  return [
-    { slug: [] },
-    ...getAllDocSlugs().map((slug) => ({ slug: [slug] })),
-  ];
 }
 
 export async function generateMetadata({
@@ -35,7 +26,12 @@ export async function generateMetadata({
 }
 
 export default function DocPage({ params }: DocPageProps) {
-  const slug = params.slug?.[0] || getFirstDocSlug();
+  const slug = params.slug?.[0] || "";
+
+  if (!slug) {
+    redirect(`/docs/${getFirstDocSlug()}`);
+  }
+
   const doc = getDocBySlug(slug);
 
   if (!doc) {
