@@ -14,6 +14,7 @@ const PRIMARY_LINKS: { href: string; label: string }[] = [
 
 const MORE_LINKS: { href: string; label: string }[] = [
   { href: "/changelog", label: "Changelog" },
+  { href: "/guestbook", label: "Guestbook" },
   { href: "/about", label: "About" },
   { href: "/more", label: "More" },
 ];

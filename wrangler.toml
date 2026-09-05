@@ -1,0 +1,9 @@
+name = "andrew-blog"
+compatibility_date = "2026-09-03"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "dist"
+
+[[d1_databases]]
+binding = "blog_db"
+database_name = "blog-db"
+database_id = "9c852641-b9cf-46c5-b0ef-3068b48584a2"
