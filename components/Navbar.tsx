@@ -54,7 +54,7 @@ export default function Navbar() {
       className={cn(
         "fixed z-50 transition-all duration-600 ease-[cubic-bezier(0.22,1,0.36,1)]",
         scrolled
-          ? "top-3 left-1/2 -translate-x-1/2 w-[calc(100%-4rem)] md:w-[calc(100%-8rem)] lg:max-w-4xl rounded-full bg-white/15 dark:bg-[#0f0f0f]/15 backdrop-blur-[2px] border border-white/20 dark:border-white/10 shadow-lg shadow-black/10 dark:shadow-black/40"
+          ? "top-3 left-1/2 -translate-x-1/2 w-[calc(100%-4rem)] md:w-[calc(100%-8rem)] lg:max-w-5xl rounded-full bg-white/15 dark:bg-[#0f0f0f]/15 backdrop-blur-[2px] border border-white/20 dark:border-white/10 shadow-lg shadow-black/10 dark:shadow-black/40"
           : "top-0 left-0 right-0 bg-transparent"
       )}
     >
