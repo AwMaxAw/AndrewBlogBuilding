@@ -5,24 +5,26 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  DOCS_CATEGORIES,
-  getDocCategoryBySlug,
-  getDocSection,
-} from "@/lib/docs";
+import type { DocCategory } from "@/lib/docs";
 import DocsCategorySelector from "./DocsCategorySelector";
 
-export default function DocsMobileMenu() {
+interface Props {
+  categories: DocCategory[];
+}
+
+export default function DocsMobileMenu({ categories }: Props) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
   const slug = pathname.replace("/docs/", "").replace("/", "");
-  const section = getDocSection(slug);
 
-  const currentCategory = getDocCategoryBySlug(slug);
-  const sections = currentCategory?.sections || DOCS_CATEGORIES[0].sections;
+  const currentCategory =
+    categories.find((cat) =>
+      cat.sections.some((s) => s.pages.find((p) => p.slug === slug))
+    ) || categories[0];
+  const sections = currentCategory?.sections || [];
 
-  const allPages = DOCS_CATEGORIES.flatMap((cat) =>
+  const allPages = categories.flatMap((cat) =>
     cat.sections.flatMap((s) => s.pages)
   );
   const title = allPages.find((p) => p.slug === slug)?.title || "";
@@ -45,9 +47,9 @@ export default function DocsMobileMenu() {
           Docs
         </Link>
         <ChevronRight size={12} />
-        {section && (
+        {sections[0] && (
           <>
-            <span className="truncate">{section.title}</span>
+            <span className="truncate">{sections[0].title}</span>
             <ChevronRight size={12} />
           </>
         )}
@@ -56,7 +58,7 @@ export default function DocsMobileMenu() {
 
       {open && (
         <div className="mt-4 pb-4 max-h-[60vh] overflow-y-auto">
-          <DocsCategorySelector />
+          <DocsCategorySelector categories={categories} />
           <nav>
             {sections.map((section) => (
             <div key={section.title} className="mb-6">

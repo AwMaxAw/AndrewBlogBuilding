@@ -9,9 +9,11 @@ import {
   getDocBySlug,
   getFirstDocSlug,
   getAdjacentDocs,
+  getDocsCategories,
 } from "@/lib/docs";
 
 export const runtime = "edge";
+export const dynamic = "force-dynamic";
 
 interface DocPageProps {
   params: { slug?: string[] };
@@ -20,21 +22,25 @@ interface DocPageProps {
 export async function generateMetadata({
   params,
 }: DocPageProps): Promise<Metadata> {
-  const slug = params.slug?.[0] || getFirstDocSlug();
-  const doc = getDocBySlug(slug);
+  const slug = params.slug?.[0] || (await getFirstDocSlug());
+  const doc = await getDocBySlug(slug);
   return {
     title: doc ? `${doc.title} - Docs` : "Docs",
   };
 }
 
-export default function DocPage({ params }: DocPageProps) {
+export default async function DocPage({ params }: DocPageProps) {
   const slug = params.slug?.[0] || "";
 
   if (!slug) {
-    redirect(`/docs/${getFirstDocSlug()}`);
+    redirect(`/docs/${await getFirstDocSlug()}`);
   }
 
-  const doc = getDocBySlug(slug);
+  const [doc, categories, adjacent] = await Promise.all([
+    getDocBySlug(slug),
+    getDocsCategories(),
+    getAdjacentDocs(slug),
+  ]);
 
   if (!doc) {
     return (
@@ -49,16 +55,16 @@ export default function DocPage({ params }: DocPageProps) {
     );
   }
 
-  const { prev, next } = getAdjacentDocs(slug);
+  const { prev, next } = adjacent;
 
   return (
     <div className="max-w-7xl mx-auto px-6">
       <div className="flex gap-8 py-8">
-        <DocsSidebar />
+        <DocsSidebar categories={categories} />
 
         <main className="flex-1 min-w-0">
           <article className="prose-custom max-w-2xl mx-auto">
-            <DocsMobileMenu />
+            <DocsMobileMenu categories={categories} />
             <div className="mt-6 lg:mt-0">
               <h1 className="font-serif text-4xl font-semibold mb-8">
                 {doc.title}

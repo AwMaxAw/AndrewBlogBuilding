@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
-import { getPostBySlug, getPostSlugs, getNextPost, getPreviousPost } from "@/lib/posts";
+import { getPostBySlug, getNextPost, getPreviousPost } from "@/lib/posts";
 import { formatDate, extractHeadings, type HeadingItem } from "@/lib/utils";
 import { mdxComponents } from "@/components/MDXComponents";
 import TOC from "@/components/TOC";
@@ -11,16 +11,15 @@ import PageNav from "@/components/PageNav";
 import { Clock, Calendar, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
+export const runtime = "edge";
+export const dynamic = "force-dynamic";
+
 interface PostPageProps {
   params: { slug: string };
 }
 
-export function generateStaticParams() {
-  return getPostSlugs().map((slug) => ({ slug }));
-}
-
-export function generateMetadata({ params }: PostPageProps): Metadata {
-  const post = getPostBySlug(params.slug);
+export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
+  const post = await getPostBySlug(params.slug);
   if (!post) {
     return {};
   }
@@ -35,16 +34,18 @@ export function generateMetadata({ params }: PostPageProps): Metadata {
   };
 }
 
-export default function PostPage({ params }: PostPageProps) {
-  const post = getPostBySlug(params.slug);
+export default async function PostPage({ params }: PostPageProps) {
+  const post = await getPostBySlug(params.slug);
 
   if (!post) {
     notFound();
   }
 
   const headings = extractHeadings(post.content);
-  const nextPost = getNextPost(params.slug);
-  const previousPost = getPreviousPost(params.slug);
+  const [nextPost, previousPost] = await Promise.all([
+    getNextPost(params.slug),
+    getPreviousPost(params.slug),
+  ]);
 
   return (
     <article className="max-w-6xl mx-auto px-6 py-16">

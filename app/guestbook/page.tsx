@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { formatDate } from "@/lib/utils";
+import { formatDateTime } from "@/lib/utils";
 
 interface GuestbookEntry {
   id: number;
@@ -117,7 +117,7 @@ export default function GuestbookPage() {
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-medium text-sm">{entry.name}</span>
                   <time className="text-xs text-muted font-mono">
-                    {formatDate(entry.created_at, true)}
+                    {formatDateTime(entry.created_at)}
                   </time>
                 </div>
                 <p className="text-sm text-foreground/80 whitespace-pre-wrap break-words">

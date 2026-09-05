@@ -3,13 +3,16 @@ import PostCard from "@/components/PostCard";
 import PostTimeline from "@/components/PostTimeline";
 import { getAllPosts } from "@/lib/posts";
 
+export const runtime = "edge";
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Posts",
   description: "All blog posts",
 };
 
-export default function BlogPage() {
-  const posts = getAllPosts();
+export default async function BlogPage() {
+  const posts = await getAllPosts();
 
   // Group posts by year-month
   const groups: { id: string; label: string; count: number }[] = [];

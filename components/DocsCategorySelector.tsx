@@ -4,11 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import {
-  DOCS_CATEGORIES,
-  getDocCategoryBySlug,
-  getFirstDocSlug,
-} from "@/lib/docs";
+import type { DocCategory } from "@/lib/docs";
 import { Hammer, Sparkles, ChevronDown } from "lucide-react";
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -16,14 +12,21 @@ const iconMap: Record<string, React.ReactNode> = {
   Sparkles: <Sparkles size={16} />,
 };
 
-export default function DocsCategorySelector() {
+interface Props {
+  categories: DocCategory[];
+}
+
+export default function DocsCategorySelector({ categories }: Props) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const currentSlug = pathname.replace("/docs/", "");
-  const currentCategory = getDocCategoryBySlug(currentSlug);
-  const activeCategoryId = currentCategory?.id || DOCS_CATEGORIES[0].id;
+  const currentSlug = pathname.replace("/docs/", "").replace("/", "");
+  const currentCategory =
+    categories.find((cat) =>
+      cat.sections.some((s) => s.pages.find((p) => p.slug === currentSlug))
+    ) || categories[0];
+  const activeCategoryId = currentCategory?.id || categories[0]?.id || "";
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -34,6 +37,8 @@ export default function DocsCategorySelector() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  if (!categories.length) return null;
 
   return (
     <div ref={ref} className="relative mb-6">
@@ -46,14 +51,14 @@ export default function DocsCategorySelector() {
         )}
       >
         <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center text-primary shrink-0">
-          {iconMap[currentCategory?.icon || DOCS_CATEGORIES[0].icon]}
+          {iconMap[currentCategory?.icon] || <Sparkles size={16} />}
         </div>
         <div className="flex-1 min-w-0">
           <div className="text-sm font-medium text-foreground">
-            {currentCategory?.label || DOCS_CATEGORIES[0].label}
+            {currentCategory?.label || ""}
           </div>
           <div className="text-xs text-muted truncate">
-            {currentCategory?.description || DOCS_CATEGORIES[0].description}
+            {currentCategory?.description || ""}
           </div>
         </div>
         <ChevronDown
@@ -73,9 +78,9 @@ export default function DocsCategorySelector() {
             "shadow-lg overflow-hidden"
           )}
         >
-          {DOCS_CATEGORIES.map((cat) => {
+          {categories.map((cat) => {
             const isActive = cat.id === activeCategoryId;
-            const firstSlug = getFirstDocSlug(cat.id);
+            const firstSlug = cat.sections[0]?.pages[0]?.slug || "";
             return (
               <Link
                 key={cat.id}
@@ -94,7 +99,7 @@ export default function DocsCategorySelector() {
                     isActive ? "bg-accent/20" : "bg-primary/10 text-primary"
                   )}
                 >
-                  {iconMap[cat.icon]}
+                  {iconMap[cat.icon] || <Sparkles size={16} />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium">{cat.label}</div>

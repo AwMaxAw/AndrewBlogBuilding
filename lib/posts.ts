@@ -1,8 +1,3 @@
-import fs from "fs";
-import path from "path";
-import matter from "gray-matter";
-import readingTime from "reading-time";
-
 export interface PostMeta {
   slug: string;
   title: string;
@@ -16,64 +11,92 @@ export interface Post extends PostMeta {
   content: string;
 }
 
-const POSTS_DIR = path.join(process.cwd(), "content", "blog");
+interface PostRow {
+  slug: string;
+  title: string;
+  date: string;
+  description: string;
+  tags: string;
+  content: string;
+  reading_time: string;
+}
 
-function resolvePostFile(slug: string): string | null {
-  for (const ext of [".mdx", ".md"]) {
-    const filePath = path.join(POSTS_DIR, `${slug}${ext}`);
-    if (fs.existsSync(filePath)) return filePath;
+function getDb(): D1Database | null {
+  return (process.env.blog_db as D1Database) || null;
+}
+
+function parsePostRow(row: PostRow): Post {
+  let tags: string[] = [];
+  try {
+    tags = JSON.parse(row.tags || "[]");
+  } catch {
+    tags = [];
   }
-  return null;
-}
-
-export function getPostSlugs(): string[] {
-  if (!fs.existsSync(POSTS_DIR)) return [];
-  return fs
-    .readdirSync(POSTS_DIR)
-    .filter((file) => file.endsWith(".mdx") || file.endsWith(".md"))
-    .map((file) => file.replace(/\.mdx?$/, ""));
-}
-
-export function getPostBySlug(slug: string): Post | null {
-  const filePath = resolvePostFile(slug);
-  if (!filePath) return null;
-
-  const { data, content } = matter(fs.readFileSync(filePath, "utf8"));
-  const stats = readingTime(content);
-
   return {
-    slug,
-    title: data.title ?? slug,
-    date: data.date ?? new Date().toISOString(),
-    description: data.description ?? "",
-    tags: data.tags ?? [],
-    readingTime: stats.text,
-    content,
+    slug: row.slug,
+    title: row.title,
+    date: row.date,
+    description: row.description || "",
+    tags,
+    readingTime: row.reading_time || "",
+    content: row.content,
   };
 }
 
-export function getAllPosts(): PostMeta[] {
-  return getPostSlugs()
-    .map((slug) => getPostBySlug(slug))
-    .filter((post): post is Post => post !== null)
-    .sort((a, b) => (a.date > b.date ? -1 : 1))
-    .map(({ content, ...meta }) => meta);
+export async function getPostSlugs(): Promise<string[]> {
+  const db = getDb();
+  if (!db) return [];
+  const result = await db.prepare("SELECT slug FROM posts ORDER BY date DESC").all<{ slug: string }>();
+  return result.results.map((r) => r.slug);
 }
 
-export function getNextPost(slug: string): PostMeta | null {
-  const allPosts = getAllPosts();
-  const currentIndex = allPosts.findIndex((post) => post.slug === slug);
-  if (currentIndex === -1 || currentIndex >= allPosts.length - 1) {
-    return null;
-  }
-  return allPosts[currentIndex + 1];
+export async function getPostBySlug(slug: string): Promise<Post | null> {
+  const db = getDb();
+  if (!db) return null;
+  const result = await db
+    .prepare("SELECT slug, title, date, description, tags, content, reading_time FROM posts WHERE slug = ?")
+    .bind(slug)
+    .first<PostRow>();
+  if (!result) return null;
+  return parsePostRow(result);
 }
 
-export function getPreviousPost(slug: string): PostMeta | null {
-  const allPosts = getAllPosts();
-  const currentIndex = allPosts.findIndex((post) => post.slug === slug);
-  if (currentIndex === -1 || currentIndex <= 0) {
-    return null;
-  }
-  return allPosts[currentIndex - 1];
+export async function getAllPosts(): Promise<PostMeta[]> {
+  const db = getDb();
+  if (!db) return [];
+  const result = await db
+    .prepare("SELECT slug, title, date, description, tags, reading_time FROM posts ORDER BY date DESC")
+    .all<PostRow>();
+  return result.results.map((r) => {
+    const { content, ...meta } = parsePostRow(r);
+    return meta;
+  });
+}
+
+export async function getNextPost(slug: string): Promise<PostMeta | null> {
+  const db = getDb();
+  if (!db) return null;
+  const current = await db.prepare("SELECT date FROM posts WHERE slug = ?").bind(slug).first<{ date: string }>();
+  if (!current) return null;
+  const result = await db
+    .prepare("SELECT slug, title, date, description, tags, reading_time FROM posts WHERE date > ? ORDER BY date ASC LIMIT 1")
+    .bind(current.date)
+    .first<PostRow>();
+  if (!result) return null;
+  const { content, ...meta } = parsePostRow(result);
+  return meta;
+}
+
+export async function getPreviousPost(slug: string): Promise<PostMeta | null> {
+  const db = getDb();
+  if (!db) return null;
+  const current = await db.prepare("SELECT date FROM posts WHERE slug = ?").bind(slug).first<{ date: string }>();
+  if (!current) return null;
+  const result = await db
+    .prepare("SELECT slug, title, date, description, tags, reading_time FROM posts WHERE date < ? ORDER BY date DESC LIMIT 1")
+    .bind(current.date)
+    .first<PostRow>();
+  if (!result) return null;
+  const { content, ...meta } = parsePostRow(result);
+  return meta;
 }

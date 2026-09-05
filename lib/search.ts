@@ -1,5 +1,4 @@
-import { getAllPosts } from "@/lib/posts";
-import { formatDate } from "@/lib/utils";
+import type { PostMeta } from "./posts";
 
 export interface SearchResult {
   slug: string;
@@ -10,8 +9,7 @@ export interface SearchResult {
   snippet: string;
 }
 
-export function searchPosts(query: string): SearchResult[] {
-  const posts = getAllPosts();
+export function searchPosts(query: string, posts: PostMeta[]): SearchResult[] {
   const lowerQuery = query.toLowerCase().trim();
 
   if (!lowerQuery) return [];
