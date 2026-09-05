@@ -54,7 +54,7 @@ export default function Navbar() {
       className={cn(
         "fixed z-50 transition-all duration-500 ease-out",
         scrolled
-          ? "top-3 left-4 right-4 md:left-6 md:right-6 lg:left-8 lg:right-8 rounded-full bg-white/70 dark:bg-[#0f0f0f]/70 backdrop-blur-xl border border-white/30 dark:border-white/10 shadow-lg shadow-black/10 dark:shadow-black/40"
+          ? "top-3 left-4 right-4 md:left-6 md:right-6 lg:left-8 lg:right-8 rounded-full bg-white/40 dark:bg-[#0f0f0f]/40 backdrop-blur-xl border border-white/30 dark:border-white/10 shadow-lg shadow-black/10 dark:shadow-black/40"
           : "top-0 left-0 right-0 bg-transparent"
       )}
     >
