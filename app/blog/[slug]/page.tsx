@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { MDXRemote } from "next-mdx-remote/rsc";
-import rehypeSlug from "rehype-slug";
-import remarkGfm from "remark-gfm";
 import { getPostBySlug, getNextPost, getPreviousPost } from "@/lib/posts";
-import { formatDate, extractHeadings, type HeadingItem } from "@/lib/utils";
-import { mdxComponents } from "@/components/MDXComponents";
+import { formatDate } from "@/lib/utils";
+import { renderMarkdownWithHeadings } from "@/lib/markdown";
 import TOC from "@/components/TOC";
 import PageNav from "@/components/PageNav";
 import { Clock, Calendar, ArrowLeft } from "lucide-react";
@@ -41,7 +38,7 @@ export default async function PostPage({ params }: PostPageProps) {
     notFound();
   }
 
-  const headings = extractHeadings(post.content);
+  const { html, headings } = renderMarkdownWithHeadings(post.content);
   const [nextPost, previousPost] = await Promise.all([
     getNextPost(params.slug),
     getPreviousPost(params.slug),
@@ -89,18 +86,10 @@ export default async function PostPage({ params }: PostPageProps) {
             </div>
           </header>
 
-          <div className="prose-custom first-letter">
-            <MDXRemote
-              source={post.content}
-              components={mdxComponents}
-              options={{
-                mdxOptions: {
-                  remarkPlugins: [remarkGfm],
-                  rehypePlugins: [rehypeSlug],
-                },
-              }}
-            />
-          </div>
+          <div
+            className="prose-custom first-letter"
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
 
           <PageNav previousPost={previousPost} nextPost={nextPost} />
         </div>

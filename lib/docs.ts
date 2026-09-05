@@ -1,3 +1,7 @@
+import { renderMarkdown, extractHeadingsFromHtml, type MarkdownHeading } from "@/lib/markdown";
+
+export type DocHeading = MarkdownHeading;
+
 export interface DocPage {
   slug: string;
   title: string;
@@ -25,12 +29,6 @@ export interface DocContent {
   categoryId: string;
 }
 
-export interface DocHeading {
-  id: string;
-  text: string;
-  level: number;
-}
-
 interface CategoryRow {
   slug: string;
   name: string;
@@ -56,20 +54,6 @@ function getDb(): D1Database | null {
 let requestCache: { categories: DocCategory[]; docs: Map<string, DocContent> } | null = null;
 let requestCachePromise: Promise<void> | null = null;
 
-function extractHeadingsFromHtml(html: string): DocHeading[] {
-  const headings: DocHeading[] = [];
-  const regex = /<h([2-3])\s+id="([^"]+)"[^>]*>([\s\S]*?)<\/h[2-3]>/g;
-  let match;
-  while ((match = regex.exec(html)) !== null) {
-    const level = parseInt(match[1], 10);
-    const id = match[2];
-    // 提取纯文本（去掉标签）
-    const text = match[3].replace(/<[^>]+>/g, "").trim();
-    headings.push({ id, text, level });
-  }
-  return headings;
-}
-
 async function loadData() {
   const db = getDb();
   if (!db) {
@@ -94,11 +78,12 @@ async function loadData() {
   // 构建文档
   const docs = new Map<string, DocContent>();
   for (const row of docResult.results) {
+    const html = renderMarkdown(row.content);
     docs.set(row.slug, {
       slug: row.slug,
       title: row.title,
-      content: row.content,
-      headings: extractHeadingsFromHtml(row.content),
+      content: html,
+      headings: extractHeadingsFromHtml(html),
       categoryId: row.category_slug,
     });
 

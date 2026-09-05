@@ -13,7 +13,8 @@ export async function login(password: string): Promise<string | null> {
 }
 
 export async function verifyAdminRequest(req: Request): Promise<boolean> {
-  const token = getTokenFromHeader(req);
+  // 先检查 Authorization header，再检查 cookie
+  const token = getTokenFromHeader(req) || getTokenFromCookie(req);
   if (!token) return false;
   return verifyToken(token, TOKEN_SECRET);
 }
@@ -27,7 +28,12 @@ export function getTokenFromCookie(req: Request): string | null {
   const cookie = req.headers.get("cookie");
   if (!cookie) return null;
   const match = cookie.match(/admin_token=([^;]+)/);
-  return match ? match[1] : null;
+  if (!match) return null;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return match[1];
+  }
 }
 
 export async function verifyAdminCookie(req: Request): Promise<boolean> {

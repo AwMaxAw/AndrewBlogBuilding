@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { login, verifyAdminRequest } from "@/lib/admin-auth";
+import { login, verifyAdminRequest, verifyAdminCookie } from "@/lib/admin-auth";
 
 export const runtime = "edge";
 
@@ -24,8 +24,8 @@ export async function POST(req: NextRequest) {
   return res;
 }
 
-// 验证登录状态
+// 验证登录状态（同时检查 Authorization header 和 cookie）
 export async function GET(req: NextRequest) {
-  const valid = await verifyAdminRequest(req);
+  const valid = (await verifyAdminRequest(req)) || (await verifyAdminCookie(req));
   return NextResponse.json({ authenticated: valid });
 }

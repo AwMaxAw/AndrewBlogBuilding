@@ -1,7 +1,6 @@
 -- 内容迁移：posts + doc_categories + docs
--- 生成时间: 2026-09-05T16:19:26.095Z
-
-BEGIN TRANSACTION;
+-- 生成时间: 2026-09-05T16:55:28.649Z
+-- 注意：D1 不支持 BEGIN TRANSACTION，逐条执行
 
 -- 清空现有数据（如果有）
 DELETE FROM posts;
@@ -205,5 +204,3 @@ INSERT INTO docs (slug, category_slug, title, description, content, sort_order) 
 <li>Is Friday approaching? (Run away)</li>
 </ol>
 <p>Remember: code that works is a miracle. Code that works <em>and</em> is clean is a myth. Code that works, is clean, and is well-documented? That''s just someone lying on their resume.</p>', '5');
-
-COMMIT;

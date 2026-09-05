@@ -71,7 +71,7 @@ const categoriesSql = categories.map((c) => insert("doc_categories", c));
 // 这里通过 import 方式加载（需要先编译或用 esbuild）
 // 为简单起见，我们直接用 regex 解析 docs.ts 文件
 
-const docsTsPath = path.join(root, "lib", "docs.ts");
+const docsTsPath = "/tmp/docs-original.ts";
 const docsTs = fs.readFileSync(docsTsPath, "utf8");
 
 // 提取每个 doc 对象: slug, title, categoryId, content
@@ -103,8 +103,7 @@ const docsSql = docEntries.map((d) => {
 // ---------- 输出 SQL ----------
 const output = `-- 内容迁移：posts + doc_categories + docs
 -- 生成时间: ${new Date().toISOString()}
-
-BEGIN TRANSACTION;
+-- 注意：D1 不支持 BEGIN TRANSACTION，逐条执行
 
 -- 清空现有数据（如果有）
 DELETE FROM posts;
@@ -119,8 +118,6 @@ ${categoriesSql.join("\n")}
 
 -- ===== 文档 =====
 ${docsSql.join("\n")}
-
-COMMIT;
 `;
 
 const outPath = path.join(root, "db", "migrate-content.sql");
