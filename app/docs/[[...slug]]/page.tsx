@@ -11,6 +11,8 @@ import {
   getAllDocSlugs,
 } from "@/lib/docs";
 
+export const runtime = "edge";
+
 interface DocPageProps {
   params: { slug?: string[] };
 }
