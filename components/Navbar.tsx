@@ -54,14 +54,14 @@ export default function Navbar() {
       className={cn(
         "fixed z-50 transition-all duration-800 ease-[cubic-bezier(0.22,1,0.36,1)]",
         scrolled
-          ? "top-3 left-1/2 -translate-x-1/2 w-[calc(100%-4rem)] md:w-[calc(100%-8rem)] lg:max-w-5xl rounded-full bg-white/15 dark:bg-[#0f0f0f]/15 backdrop-blur-[2px] border border-white/20 dark:border-white/10 shadow-lg shadow-black/10 dark:shadow-black/40"
+          ? "top-3 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:max-w-6xl rounded-full bg-white/15 dark:bg-[#0f0f0f]/15 backdrop-blur-[2px] border border-white/20 dark:border-white/10 shadow-lg shadow-black/10 dark:shadow-black/40"
           : "top-0 left-0 right-0 bg-transparent"
       )}
     >
       <nav className={cn(
         "w-full flex items-center justify-between transition-all duration-800 ease-[cubic-bezier(0.22,1,0.36,1)]",
         scrolled
-          ? "h-14 px-10 md:px-16 lg:px-20"
+          ? "h-14 px-8 md:px-12 lg:px-16"
           : "h-16 px-16 md:px-28 lg:px-36"
       )}>
         <Link
