@@ -52,13 +52,10 @@ export default function Navbar() {
   return (
     <header
       className={cn(
-        "fixed z-50 transition-all duration-500 ease-out",
-        scrolled
-          ? "top-3 left-4 right-4 md:left-6 md:right-6 lg:left-8 lg:right-8 rounded-full bg-white/70 dark:bg-[#0f0f0f]/70 backdrop-blur-xl border border-white/30 dark:border-white/10 shadow-lg shadow-black/10 dark:shadow-black/40"
-          : "top-0 left-0 right-0 bg-transparent"
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 glass-nav",
       )}
     >
-      <nav className="w-full px-6 md:px-8 lg:px-12 h-16 flex items-center justify-between">
+      <nav className="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 h-16 flex items-center justify-between">
         <Link
           href="/"
           className="font-serif text-xl font-semibold tracking-tight hover:text-accent transition-colors"
