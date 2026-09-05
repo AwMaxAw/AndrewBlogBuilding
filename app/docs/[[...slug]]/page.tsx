@@ -11,6 +11,8 @@ import {
   getAdjacentDocs,
 } from "@/lib/docs";
 
+export const runtime = "edge";
+
 interface DocPageProps {
   params: { slug?: string[] };
 }
