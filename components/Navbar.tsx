@@ -51,23 +51,31 @@ export default function Navbar() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 px-4 pt-3">
+    <header
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out",
+        scrolled ? "px-4 pt-3" : "px-6 md:px-10 pt-4"
+      )}
+    >
       <nav
         className={cn(
-          "max-w-3xl mx-auto h-12 rounded-full flex items-center justify-between px-4 md:px-5 transition-all duration-300 ease-out",
+          "flex items-center justify-between h-12 rounded-full transition-all duration-500 ease-out",
           scrolled
-            ? "bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 backdrop-blur-xl saturate-150 shadow-sm"
-            : "bg-transparent border border-transparent backdrop-blur-none"
+            ? "max-w-3xl mx-auto px-4 md:px-5 bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 backdrop-blur-xl saturate-150 shadow-sm"
+            : "w-full px-2 bg-transparent border border-transparent backdrop-blur-none"
         )}
       >
         <Link
           href="/"
-          className="font-serif text-xl font-semibold tracking-tight hover:text-accent transition-colors"
+          className={cn(
+            "font-serif text-xl font-semibold tracking-tight hover:text-accent transition-all duration-500 ease-out shrink-0",
+            scrolled ? "ml-0" : "ml-2"
+          )}
         >
           Andrew
         </Link>
 
-        <div className="hidden md:flex items-center gap-5">
+        <div className="hidden md:flex items-center gap-5 transition-all duration-500 ease-out">
           {PRIMARY_LINKS.map((link) => {
                 const active = isActiveLink(link.href, pathname);
                 return (
