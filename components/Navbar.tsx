@@ -198,13 +198,19 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    "text-sm px-3 py-1.5 rounded-full transition-colors whitespace-nowrap",
+                    "group relative text-sm px-3 py-1.5 rounded-full transition-colors whitespace-nowrap",
                     active
-                      ? "text-accent bg-accent/10"
+                      ? "text-accent"
                       : "text-muted hover:text-foreground"
                   )}
                 >
                   {link.label}
+                  <span
+                    className={cn(
+                      "absolute -bottom-0.5 left-3 right-3 h-px transition-all duration-300 ease-out",
+                      active ? "w-auto bg-accent" : "w-0 bg-foreground dark:bg-white group-hover:w-auto"
+                    )}
+                  />
                 </Link>
               );
             })}
