@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Edit2, Trash2, Save, X } from "lucide-react";
+import { Plus, Edit2, Trash2, Save, X, Eye, ExternalLink } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import { renderMarkdown } from "@/lib/markdown";
 
 interface Post {
   id: number;
@@ -40,6 +41,7 @@ export default function PostsManager() {
   const [form, setForm] = useState<PostForm>(emptyForm);
   const [originalSlug, setOriginalSlug] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [previewPost, setPreviewPost] = useState<Post | null>(null);
 
   const loadPosts = async () => {
     setLoading(true);
@@ -265,6 +267,13 @@ export default function PostsManager() {
               </div>
               <div className="flex gap-2 shrink-0">
                 <button
+                  onClick={() => setPreviewPost(post)}
+                  className="p-2 text-muted hover:text-accent transition-colors"
+                  title="预览"
+                >
+                  <Eye size={16} />
+                </button>
+                <button
                   onClick={() => startEdit(post)}
                   className="p-2 text-muted hover:text-accent transition-colors"
                   title="编辑"
@@ -281,6 +290,65 @@ export default function PostsManager() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* 文章预览弹窗 */}
+      {previewPost && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 p-4 backdrop-blur-sm">
+          <div className="my-8 w-full max-w-3xl rounded-2xl bg-background border border-border/60 shadow-2xl">
+            {/* 弹窗头部 */}
+            <div className="sticky top-0 z-10 flex items-center justify-between rounded-t-2xl border-b border-border/60 bg-background/95 px-6 py-4 backdrop-blur">
+              <h2 className="font-serif text-lg font-semibold">预览文章</h2>
+              <div className="flex items-center gap-2">
+                <a
+                  href={`/blog/${previewPost.slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-accent hover:opacity-80"
+                >
+                  <ExternalLink size={14} />
+                  新窗口打开
+                </a>
+                <button
+                  onClick={() => setPreviewPost(null)}
+                  className="p-1.5 text-muted hover:text-foreground"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+
+            {/* 预览内容 */}
+            <div className="px-6 py-8">
+              <header className="mb-8">
+                <h1 className="font-serif text-3xl md:text-4xl font-semibold leading-tight mb-4">
+                  {previewPost.title}
+                </h1>
+                <div className="flex flex-wrap items-center gap-4 text-sm text-muted pb-6 border-b border-border/60">
+                  <span>{formatDate(previewPost.date)}</span>
+                  <span>{previewPost.reading_time}</span>
+                  {previewPost.tags.length > 0 && (
+                    <div className="flex items-center gap-2">
+                      {previewPost.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="glass-tag text-xs text-accent/80"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </header>
+
+              <div
+                className="prose-custom"
+                dangerouslySetInnerHTML={{ __html: renderMarkdown(previewPost.content) }}
+              />
+            </div>
+          </div>
         </div>
       )}
     </div>
