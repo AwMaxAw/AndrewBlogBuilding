@@ -112,14 +112,14 @@ export default function Navbar() {
                         key={link.href}
                         href={link.href}
                         className={cn(
-                          "group relative text-sm transition-colors whitespace-nowrap",
+                          "group relative text-sm pb-1 transition-colors whitespace-nowrap",
                           active ? "text-accent" : "text-muted hover:text-foreground"
                         )}
                       >
                         {link.label}
                         <span
                           className={cn(
-                            "absolute -bottom-1 left-0 h-px transition-all duration-300 ease-out",
+                            "absolute bottom-0 left-0 h-px transition-all duration-300 ease-out",
                             active ? "w-full bg-accent" : "w-0 bg-foreground dark:bg-white group-hover:w-full"
                           )}
                         />
@@ -207,7 +207,7 @@ export default function Navbar() {
                   {link.label}
                   <span
                     className={cn(
-                      "absolute -bottom-0.5 left-3 right-3 h-px origin-left transition-transform duration-300 ease-out",
+                      "absolute bottom-0 left-3 right-3 h-px origin-left transition-transform duration-300 ease-out",
                       active ? "scale-x-100 bg-accent" : "scale-x-0 bg-foreground dark:bg-white group-hover:scale-x-100"
                     )}
                   />
