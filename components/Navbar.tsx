@@ -207,8 +207,8 @@ export default function Navbar() {
                   {link.label}
                   <span
                     className={cn(
-                      "absolute -bottom-0.5 left-3 right-3 h-px transition-all duration-300 ease-out",
-                      active ? "w-auto bg-accent" : "w-0 bg-foreground dark:bg-white group-hover:w-auto"
+                      "absolute -bottom-0.5 left-3 right-3 h-px origin-left transition-transform duration-300 ease-out",
+                      active ? "scale-x-100 bg-accent" : "scale-x-0 bg-foreground dark:bg-white group-hover:scale-x-100"
                     )}
                   />
                 </Link>
