@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdminRequest } from "@/lib/admin-auth";
+import { decodeSlug } from "@/lib/utils";
 
 export const runtime = "edge";
 
@@ -9,10 +10,11 @@ export async function GET(req: NextRequest, { params }: { params: { slug: string
     return NextResponse.json({ error: "未授权" }, { status: 401 });
   }
 
+  const slug = decodeSlug(params.slug);
   const db = process.env.blog_db as D1Database;
   const result = await db
     .prepare("SELECT id, slug, title, date, description, tags, content, reading_time FROM posts WHERE slug = ?")
-    .bind(params.slug)
+    .bind(slug)
     .first();
 
   if (!result) {
@@ -36,6 +38,7 @@ export async function PUT(req: NextRequest, { params }: { params: { slug: string
     return NextResponse.json({ error: "未授权" }, { status: 401 });
   }
 
+  const slug = decodeSlug(params.slug);
   const body = (await req.json()) as {
     slug?: string;
     title?: string;
@@ -48,14 +51,14 @@ export async function PUT(req: NextRequest, { params }: { params: { slug: string
   const db = process.env.blog_db as D1Database;
   const existing = await db
     .prepare("SELECT id FROM posts WHERE slug = ?")
-    .bind(params.slug)
+    .bind(slug)
     .first();
 
   if (!existing) {
     return NextResponse.json({ error: "文章不存在" }, { status: 404 });
   }
 
-  const newSlug = body.slug?.trim() || params.slug;
+  const newSlug = body.slug?.trim() || slug;
   const title = body.title?.trim();
   const date = body.date;
   const description = body.description ?? "";
@@ -73,7 +76,7 @@ export async function PUT(req: NextRequest, { params }: { params: { slug: string
   const fields: string[] = [];
   const values: any[] = [];
 
-  if (newSlug !== params.slug) { fields.push("slug = ?"); values.push(newSlug); }
+  if (newSlug !== slug) { fields.push("slug = ?"); values.push(newSlug); }
   if (title !== undefined) { fields.push("title = ?"); values.push(title); }
   if (date !== undefined) { fields.push("date = ?"); values.push(date); }
   if (description !== undefined) { fields.push("description = ?"); values.push(description); }
@@ -85,7 +88,7 @@ export async function PUT(req: NextRequest, { params }: { params: { slug: string
     return NextResponse.json({ success: true });
   }
 
-  values.push(params.slug);
+  values.push(slug);
   const sql = `UPDATE posts SET ${fields.join(", ")} WHERE slug = ?`;
 
   try {
@@ -105,7 +108,8 @@ export async function DELETE(req: NextRequest, { params }: { params: { slug: str
     return NextResponse.json({ error: "未授权" }, { status: 401 });
   }
 
+  const slug = decodeSlug(params.slug);
   const db = process.env.blog_db as D1Database;
-  await db.prepare("DELETE FROM posts WHERE slug = ?").bind(params.slug).run();
+  await db.prepare("DELETE FROM posts WHERE slug = ?").bind(slug).run();
   return NextResponse.json({ success: true });
 }

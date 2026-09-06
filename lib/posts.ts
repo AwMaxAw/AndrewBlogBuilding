@@ -1,3 +1,5 @@
+import { decodeSlug } from "./utils";
+
 export interface PostMeta {
   slug: string;
   title: string;
@@ -53,7 +55,7 @@ export async function getPostSlugs(): Promise<string[]> {
 export async function getPostBySlug(slug: string): Promise<Post | null> {
   const db = getDb();
   if (!db) return null;
-  const decodedSlug = decodeURIComponent(slug);
+  const decodedSlug = decodeSlug(slug);
   const result = await db
     .prepare("SELECT slug, title, date, description, tags, content, reading_time FROM posts WHERE slug = ?")
     .bind(decodedSlug)
@@ -77,7 +79,7 @@ export async function getAllPosts(): Promise<PostMeta[]> {
 export async function getNextPost(slug: string): Promise<PostMeta | null> {
   const db = getDb();
   if (!db) return null;
-  const decodedSlug = decodeURIComponent(slug);
+  const decodedSlug = decodeSlug(slug);
   const current = await db.prepare("SELECT date FROM posts WHERE slug = ?").bind(decodedSlug).first<{ date: string }>();
   if (!current) return null;
   const result = await db
@@ -92,7 +94,7 @@ export async function getNextPost(slug: string): Promise<PostMeta | null> {
 export async function getPreviousPost(slug: string): Promise<PostMeta | null> {
   const db = getDb();
   if (!db) return null;
-  const decodedSlug = decodeURIComponent(slug);
+  const decodedSlug = decodeSlug(slug);
   const current = await db.prepare("SELECT date FROM posts WHERE slug = ?").bind(decodedSlug).first<{ date: string }>();
   if (!current) return null;
   const result = await db

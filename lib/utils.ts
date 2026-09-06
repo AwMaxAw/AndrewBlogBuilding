@@ -30,6 +30,20 @@ export interface HeadingItem {
   level: number;
 }
 
+/**
+ * 安全地解码 URL 中的 slug 参数。
+ * 在 Cloudflare Pages edge runtime 中，params.slug 可能是 URL 编码后的字符串，
+ * 而数据库存储的是原始字符，需要解码后才能匹配。
+ * 如果解码失败（例如 slug 包含 % 字符），则返回原始字符串。
+ */
+export function decodeSlug(slug: string): string {
+  try {
+    return decodeURIComponent(slug);
+  } catch {
+    return slug;
+  }
+}
+
 export function extractHeadings(content: string): HeadingItem[] {
   const regex = /^(#{2,3})\s+(.+)$/gm;
   const items: HeadingItem[] = [];

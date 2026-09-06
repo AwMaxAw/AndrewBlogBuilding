@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdminRequest } from "@/lib/admin-auth";
+import { decodeSlug } from "@/lib/utils";
 
 export const runtime = "edge";
 
@@ -9,12 +10,13 @@ export async function PUT(req: NextRequest, { params }: { params: { slug: string
     return NextResponse.json({ error: "未授权" }, { status: 401 });
   }
 
+  const slug = decodeSlug(params.slug);
   const body = (await req.json()) as { slug?: string; name?: string; sort_order?: number };
   const db = process.env.blog_db as D1Database;
 
   const existing = await db
     .prepare("SELECT id FROM doc_categories WHERE slug = ?")
-    .bind(params.slug)
+    .bind(slug)
     .first();
 
   if (!existing) {
@@ -28,11 +30,11 @@ export async function PUT(req: NextRequest, { params }: { params: { slug: string
   const fields: string[] = [];
   const values: any[] = [];
 
-  if (newSlug && newSlug !== params.slug) {
+  if (newSlug && newSlug !== slug) {
     fields.push("slug = ?");
     values.push(newSlug);
     // 同时更新该分类下所有 docs 的 category_slug
-    await db.prepare("UPDATE docs SET category_slug = ? WHERE category_slug = ?").bind(newSlug, params.slug).run();
+    await db.prepare("UPDATE docs SET category_slug = ? WHERE category_slug = ?").bind(newSlug, slug).run();
   }
   if (name !== undefined) { fields.push("name = ?"); values.push(name); }
   if (sort_order !== undefined) { fields.push("sort_order = ?"); values.push(sort_order); }
@@ -41,12 +43,12 @@ export async function PUT(req: NextRequest, { params }: { params: { slug: string
     return NextResponse.json({ success: true });
   }
 
-  values.push(params.slug);
+  values.push(slug);
   const sql = `UPDATE doc_categories SET ${fields.join(", ")} WHERE slug = ?`;
 
   try {
     await db.prepare(sql).bind(...values).run();
-    return NextResponse.json({ success: true, slug: newSlug || params.slug });
+    return NextResponse.json({ success: true, slug: newSlug || slug });
   } catch (e: any) {
     if (e?.message?.includes("UNIQUE")) {
       return NextResponse.json({ error: "该分类 slug 已存在" }, { status: 409 });
@@ -61,8 +63,9 @@ export async function DELETE(req: NextRequest, { params }: { params: { slug: str
     return NextResponse.json({ error: "未授权" }, { status: 401 });
   }
 
+  const slug = decodeSlug(params.slug);
   const db = process.env.blog_db as D1Database;
-  await db.prepare("DELETE FROM docs WHERE category_slug = ?").bind(params.slug).run();
-  await db.prepare("DELETE FROM doc_categories WHERE slug = ?").bind(params.slug).run();
+  await db.prepare("DELETE FROM docs WHERE category_slug = ?").bind(slug).run();
+  await db.prepare("DELETE FROM doc_categories WHERE slug = ?").bind(slug).run();
   return NextResponse.json({ success: true });
 }
