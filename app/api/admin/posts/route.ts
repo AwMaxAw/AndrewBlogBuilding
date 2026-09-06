@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
 
   const db = process.env.blog_db as D1Database;
   const result = await db
-    .prepare("SELECT id, slug, title, date, description, tags, content, reading_time, created_at FROM posts ORDER BY date DESC")
+    .prepare("SELECT id, slug, title, date, description, tags, content, reading_time, created_at FROM posts ORDER BY date DESC, id DESC")
     .all();
   return NextResponse.json(result.results);
 }
