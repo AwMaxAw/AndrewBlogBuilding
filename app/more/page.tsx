@@ -34,6 +34,11 @@ const FRIEND_LINKS: FriendLink[] = [
     url: "https://tailwindcss.com",
     description: "A utility-first CSS framework",
   },
+  {
+    name: "hconzlvra.top",
+    url: "https://hconzlvra.top",
+    description: "A friend's site",
+  },
 ];
 
 export default function MorePage() {
