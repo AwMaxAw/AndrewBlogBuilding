@@ -17,12 +17,12 @@ export async function GET(req: NextRequest) {
 
   if (category) {
     result = await db
-      .prepare("SELECT id, slug, category_slug, title, description, sort_order FROM docs WHERE category_slug = ? ORDER BY sort_order ASC")
+      .prepare("SELECT id, slug, category_slug, title, description, content, sort_order FROM docs WHERE category_slug = ? ORDER BY sort_order ASC")
       .bind(category)
       .all();
   } else {
     result = await db
-      .prepare("SELECT id, slug, category_slug, title, description, sort_order FROM docs ORDER BY category_slug, sort_order ASC")
+      .prepare("SELECT id, slug, category_slug, title, description, content, sort_order FROM docs ORDER BY category_slug, sort_order ASC")
       .all();
   }
 
