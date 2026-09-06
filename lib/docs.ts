@@ -120,8 +120,9 @@ export async function getDocsCategories(): Promise<DocCategory[]> {
 
 export async function getDocCategoryBySlug(slug: string): Promise<DocCategory | null> {
   await ensureLoaded();
+  const decodedSlug = decodeURIComponent(slug);
   for (const cat of requestCache?.categories || []) {
-    if (cat.sections.some((s) => s.pages.find((p) => p.slug === slug))) {
+    if (cat.sections.some((s) => s.pages.find((p) => p.slug === decodedSlug))) {
       return cat;
     }
   }
@@ -135,7 +136,7 @@ export async function getDocCategoryById(id: string): Promise<DocCategory | null
 
 export async function getDocBySlug(slug: string): Promise<DocContent | null> {
   await ensureLoaded();
-  return requestCache?.docs.get(slug) || null;
+  return requestCache?.docs.get(decodeURIComponent(slug)) || null;
 }
 
 export async function getFirstDocSlug(categoryId?: string): Promise<string> {
@@ -149,7 +150,7 @@ export async function getFirstDocSlug(categoryId?: string): Promise<string> {
 
 export async function getDocTitle(slug: string): Promise<string> {
   await ensureLoaded();
-  return requestCache?.docs.get(slug)?.title || "";
+  return requestCache?.docs.get(decodeURIComponent(slug))?.title || "";
 }
 
 export async function getDocSection(slug: string): Promise<DocSection | null> {
@@ -161,11 +162,12 @@ export async function getDocSection(slug: string): Promise<DocSection | null> {
 
 export async function getAdjacentDocs(slug: string): Promise<{ prev: DocPage | null; next: DocPage | null }> {
   await ensureLoaded();
-  const category = await getDocCategoryBySlug(slug);
+  const decodedSlug = decodeURIComponent(slug);
+  const category = await getDocCategoryBySlug(decodedSlug);
   if (!category) return { prev: null, next: null };
 
   const allPages = category.sections.flatMap((s) => s.pages);
-  const index = allPages.findIndex((p) => p.slug === slug);
+  const index = allPages.findIndex((p) => p.slug === decodedSlug);
   if (index === -1) return { prev: null, next: null };
   return {
     prev: index > 0 ? allPages[index - 1] : null,
