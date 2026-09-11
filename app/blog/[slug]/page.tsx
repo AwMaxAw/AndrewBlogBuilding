@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getPostBySlug, getNextPost, getPreviousPost } from "@/lib/posts";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatDateTime } from "@/lib/utils";
 import { renderMarkdownWithHeadings } from "@/lib/markdown";
 import TOC from "@/components/TOC";
 import PageNav from "@/components/PageNav";
@@ -63,9 +63,14 @@ export default async function PostPage({ params }: PostPageProps) {
               {post.title}
             </h1>
             <div className="flex flex-wrap items-center gap-6 text-sm text-muted pb-8 border-b border-border/60">
-              <span className="inline-flex items-center gap-2">
+              <span className="inline-flex items-center gap-2" title={formatDateTime(post.createdAt)}>
                 <Calendar size={14} />
                 {formatDate(post.date)}
+                {post.createdAt && (
+                  <span className="text-muted font-mono text-xs">
+                    {new Date(post.createdAt).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false })}
+                  </span>
+                )}
               </span>
               <span className="inline-flex items-center gap-2">
                 <Clock size={14} />

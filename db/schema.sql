@@ -3,10 +3,13 @@ CREATE TABLE IF NOT EXISTS guestbook (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
   message TEXT NOT NULL,
-  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  parent_id INTEGER,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (parent_id) REFERENCES guestbook(id) ON DELETE CASCADE
 );
 
 CREATE INDEX IF NOT EXISTS idx_guestbook_created_at ON guestbook(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_guestbook_parent_id ON guestbook(parent_id);
 
 -- 博客文章表
 CREATE TABLE IF NOT EXISTS posts (
