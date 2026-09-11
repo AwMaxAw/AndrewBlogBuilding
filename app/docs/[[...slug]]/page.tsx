@@ -33,7 +33,25 @@ export default async function DocPage({ params }: DocPageProps) {
   const slug = params.slug?.[0] || "";
 
   if (!slug) {
-    redirect(`/docs/${await getFirstDocSlug()}`);
+    const firstSlug = await getFirstDocSlug();
+    if (!firstSlug) {
+      // 没有任何文档，显示空状态而非无限重定向
+      const categories = await getDocsCategories();
+      return (
+        <div className="max-w-6xl mx-auto px-6 py-16">
+          <div className="flex gap-8 py-8">
+            <DocsSidebar categories={categories} />
+            <main className="flex-1 min-w-0">
+              <div className="prose-custom max-w-2xl mx-auto text-center py-20">
+                <h1 className="font-serif text-3xl font-semibold mb-4">No Docs Yet</h1>
+                <p className="text-muted">还没有文档内容。</p>
+              </div>
+            </main>
+          </div>
+        </div>
+      );
+    }
+    redirect(`/docs/${firstSlug}`);
   }
 
   const [doc, categories, adjacent] = await Promise.all([

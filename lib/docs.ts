@@ -79,23 +79,27 @@ async function loadData() {
   // 构建文档
   const docs = new Map<string, DocContent>();
   for (const row of docResult.results) {
-    const html = renderMarkdown(row.content);
-    docs.set(row.slug, {
-      slug: row.slug,
-      title: row.title,
-      content: html,
-      headings: extractHeadingsFromHtml(html),
-      categoryId: row.category_slug,
-    });
-
-    // 把页面加入对应分类的 section
-    const cat = categories.find((c) => c.id === row.category_slug);
-    if (cat) {
-      cat.sections[0].pages.push({
+    try {
+      const html = renderMarkdown(row.content || "");
+      docs.set(row.slug, {
         slug: row.slug,
         title: row.title,
-        href: `/docs/${row.slug}`,
+        content: html,
+        headings: extractHeadingsFromHtml(html),
+        categoryId: row.category_slug,
       });
+
+      // 把页面加入对应分类的 section
+      const cat = categories.find((c) => c.id === row.category_slug);
+      if (cat) {
+        cat.sections[0].pages.push({
+          slug: row.slug,
+          title: row.title,
+          href: `/docs/${row.slug}`,
+        });
+      }
+    } catch (e) {
+      console.error(`Failed to render doc "${row.slug}":`, e);
     }
   }
 
@@ -146,7 +150,12 @@ export async function getFirstDocSlug(categoryId?: string): Promise<string> {
     const cat = requestCache?.categories.find((c) => c.id === categoryId);
     return cat?.sections[0]?.pages[0]?.slug || "";
   }
-  return requestCache?.categories[0]?.sections[0]?.pages[0]?.slug || "";
+  // 找到第一个有页面的分类，避免空分类导致返回空字符串引发无限重定向
+  for (const cat of requestCache?.categories || []) {
+    const firstPage = cat.sections[0]?.pages[0];
+    if (firstPage) return firstPage.slug;
+  }
+  return "";
 }
 
 export async function getDocTitle(slug: string): Promise<string> {
