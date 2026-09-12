@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Trash2, Edit2, Save, X, MessageSquare } from "lucide-react";
+import { Trash2, Edit2, Save, X, MessageSquare, ExternalLink, FileText } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
+import Link from "next/link";
 
 interface Comment {
   id: number;
@@ -18,6 +19,13 @@ interface TreeNode extends Comment {
   replies: TreeNode[];
 }
 
+interface PostGroup {
+  slug: string;
+  title: string;
+  roots: TreeNode[];
+  total: number;
+}
+
 export default function CommentsManager() {
   const [comments, setComments] = useState<TreeNode[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,6 +34,7 @@ export default function CommentsManager() {
   const [editMessage, setEditMessage] = useState("");
   const [saving, setSaving] = useState(false);
   const [filterSlug, setFilterSlug] = useState("");
+  const [collapsedPosts, setCollapsedPosts] = useState<Set<string>>(new Set());
 
   const buildTree = (flat: Comment[]): TreeNode[] => {
     const map = new Map<number, TreeNode>();
@@ -129,6 +138,15 @@ export default function CommentsManager() {
     }
   };
 
+  const toggleCollapse = (slug: string) => {
+    setCollapsedPosts((prev) => {
+      const next = new Set(prev);
+      if (next.has(slug)) next.delete(slug);
+      else next.add(slug);
+      return next;
+    });
+  };
+
   const findReplyTargetName = (nodes: TreeNode[], id: number): string => {
     for (const node of nodes) {
       if (node.id === id) return node.name;
@@ -147,20 +165,37 @@ export default function CommentsManager() {
   };
 
   // 按文章分组
-  const slugs = new Map<string, { title: string; count: number }>();
+  const groups: PostGroup[] = [];
+  const groupMap = new Map<string, PostGroup>();
+
   for (const node of comments) {
     const slug = node.post_slug;
-    if (!slugs.has(slug)) {
-      slugs.set(slug, { title: node.post_title || slug, count: 0 });
+    let group = groupMap.get(slug);
+    if (!group) {
+      group = {
+        slug,
+        title: node.post_title || slug,
+        roots: [],
+        total: 0,
+      };
+      groupMap.set(slug, group);
+      groups.push(group);
     }
-    slugs.get(slug)!.count += countAll([node]);
+    group.roots.push(node);
+    group.total += countAll([node]);
   }
 
-  const filteredComments = filterSlug
-    ? comments.filter((n) => n.post_slug === filterSlug)
-    : comments;
+  // 按最新评论时间排序
+  groups.sort((a, b) => {
+    const aTime = a.roots[0] ? new Date(a.roots[0].created_at).getTime() : 0;
+    const bTime = b.roots[0] ? new Date(b.roots[0].created_at).getTime() : 0;
+    return bTime - aTime;
+  });
 
-  const renderNode = (node: TreeNode, depth: number) => {
+  const visibleGroups = filterSlug ? groups.filter((g) => g.slug === filterSlug) : groups;
+  const totalComments = countAll(comments);
+
+  const renderNode = (node: TreeNode, depth: number, groupSlug: string) => {
     const isEditing = editingId === node.id;
     const targetName = node.parent_id !== null ? findReplyTargetName(comments, node.parent_id) : "";
 
@@ -168,10 +203,10 @@ export default function CommentsManager() {
       <div key={node.id} className={depth > 0 ? "ml-5 border-l-2 border-border/60 pl-4" : ""}>
         <div className="glass-card p-4 z-10 my-3">
           <div className="relative z-10">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center justify-between mb-2 gap-2">
+              <div className="flex items-center gap-3 flex-wrap min-w-0">
                 {node.parent_id !== null && (
-                  <span className="text-xs text-accent bg-accent/10 px-2 py-0.5 rounded">
+                  <span className="text-xs text-accent bg-accent/10 px-2 py-0.5 rounded shrink-0">
                     回复 @{targetName || "?"}
                   </span>
                 )}
@@ -185,19 +220,11 @@ export default function CommentsManager() {
                 ) : (
                   <span className="font-medium text-sm">{node.name}</span>
                 )}
-                <time className="text-xs text-muted font-mono">
+                <time className="text-xs text-muted font-mono shrink-0">
                   {formatDateTime(node.created_at)}
                 </time>
-                {depth === 0 && !filterSlug && (
-                  <button
-                    onClick={() => setFilterSlug(node.post_slug)}
-                    className="text-xs text-muted hover:text-accent transition-colors"
-                  >
-                    {node.post_title || node.post_slug}
-                  </button>
-                )}
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 shrink-0">
                 {isEditing ? (
                   <>
                     <button
@@ -254,7 +281,7 @@ export default function CommentsManager() {
 
         {node.replies.length > 0 && (
           <div>
-            {node.replies.map((child) => renderNode(child, depth + 1))}
+            {node.replies.map((child) => renderNode(child, depth + 1, groupSlug))}
           </div>
         )}
       </div>
@@ -263,31 +290,43 @@ export default function CommentsManager() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-muted text-sm">
-          {countAll(comments)} 条评论（含回复）
-        </p>
+      {/* 顶部统计 */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <p className="text-muted text-sm">
+            共 <span className="text-foreground font-medium">{totalComments}</span> 条评论
+          </p>
+          <span className="text-muted text-xs">·</span>
+          <p className="text-muted text-sm">
+            <span className="text-foreground font-medium">{groups.length}</span> 篇文章
+          </p>
+        </div>
         {filterSlug && (
           <button
             onClick={() => setFilterSlug("")}
-            className="text-xs text-accent hover:underline"
+            className="glass-btn text-xs text-accent z-10"
           >
-            ← 查看全部
+            <span className="relative z-10 inline-flex items-center gap-1.5">
+              <X size={12} />
+              查看全部
+            </span>
           </button>
         )}
       </div>
 
-      {/* 按文章筛选 */}
-      {!filterSlug && slugs.size > 0 && (
+      {/* 快速筛选：仅在不筛选时显示 */}
+      {!filterSlug && groups.length > 1 && (
         <div className="flex flex-wrap gap-2 mb-6">
-          {Array.from(slugs.entries()).map(([slug, info]) => (
+          {groups.map((group) => (
             <button
-              key={slug}
-              onClick={() => setFilterSlug(slug)}
-              className="glass-tag text-xs text-foreground/70 z-10"
+              key={group.slug}
+              onClick={() => setFilterSlug(group.slug)}
+              className="glass-tag text-xs text-foreground/70 z-10 max-w-[200px] truncate"
+              title={group.title}
             >
-              <span className="relative z-10">
-                {info.title} ({info.count})
+              <span className="relative z-10 inline-flex items-center gap-1">
+                <span className="truncate">{group.title}</span>
+                <span className="text-muted">({group.total})</span>
               </span>
             </button>
           ))}
@@ -296,14 +335,66 @@ export default function CommentsManager() {
 
       {loading ? (
         <p className="text-muted text-center py-8">加载中...</p>
-      ) : filteredComments.length === 0 ? (
+      ) : visibleGroups.length === 0 ? (
         <div className="text-center py-12">
           <MessageSquare size={32} className="mx-auto text-muted mb-3" />
           <p className="text-muted">暂无评论</p>
         </div>
       ) : (
-        <div>
-          {filteredComments.map((comment) => renderNode(comment, 0))}
+        <div className="space-y-8">
+          {visibleGroups.map((group) => {
+            const isCollapsed = collapsedPosts.has(group.slug);
+            return (
+              <section
+                key={group.slug}
+                className="glass-card p-5 z-10"
+              >
+                <div className="relative z-10">
+                  {/* 文章区块头部 */}
+                  <div className="flex items-center justify-between gap-3 pb-4 mb-2 border-b border-border/40">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <FileText size={18} className="text-accent shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-serif text-lg font-medium truncate" title={group.title}>
+                          {group.title}
+                        </h3>
+                        <p className="text-xs text-muted font-mono truncate">
+                          /blog/{group.slug}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="glass-tag text-xs text-accent/80 z-10">
+                        <span className="relative z-10">{group.total} 条</span>
+                      </span>
+                      <Link
+                        href={`/blog/${group.slug}`}
+                        target="_blank"
+                        className="p-1.5 text-muted hover:text-accent transition-colors"
+                        title="查看文章"
+                      >
+                        <ExternalLink size={16} />
+                      </Link>
+                      <button
+                        onClick={() => toggleCollapse(group.slug)}
+                        className="text-xs text-muted hover:text-foreground transition-colors px-2"
+                        title={isCollapsed ? "展开" : "收起"}
+                      >
+                        {isCollapsed ? "展开" : "收起"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* 评论列表 */}
+                  {!isCollapsed && (
+                    <div>
+                      {group.roots.map((node) => renderNode(node, 0, group.slug))}
+                    </div>
+                  )}
+                </div>
+              </section>
+            );
+          })}
         </div>
       )}
     </div>
