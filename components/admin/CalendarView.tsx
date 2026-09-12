@@ -189,6 +189,7 @@ export default function CalendarView() {
 
   const closeMemo = () => {
     setEditingMemo(null);
+    setMemoDate("");
     setMemoContent("");
   };
 
