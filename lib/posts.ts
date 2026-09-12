@@ -80,6 +80,15 @@ export async function getAllPosts(): Promise<PostMeta[]> {
   });
 }
 
+export async function getAllPostsFull(): Promise<Post[]> {
+  const db = getDb();
+  if (!db) return [];
+  const result = await db
+    .prepare("SELECT id, slug, title, date, description, tags, content, reading_time, created_at FROM posts ORDER BY date DESC, id DESC")
+    .all<PostRow>();
+  return result.results.map(parsePostRow);
+}
+
 export async function getNextPost(slug: string): Promise<PostMeta | null> {
   const db = getDb();
   if (!db) return null;

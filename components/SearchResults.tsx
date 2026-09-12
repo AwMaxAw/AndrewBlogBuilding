@@ -5,10 +5,10 @@ import Link from "next/link";
 import { formatDate } from "@/lib/utils";
 import SearchBar from "@/components/SearchBar";
 import { FileText } from "lucide-react";
-import type { PostMeta } from "@/lib/posts";
+import type { Post } from "@/lib/posts";
 
 interface SearchResultsProps {
-  posts: PostMeta[];
+  posts: Post[];
 }
 
 interface SearchResult {
@@ -20,14 +20,14 @@ interface SearchResult {
   snippet: string;
 }
 
-function searchPostsLocal(query: string, posts: PostMeta[]): SearchResult[] {
+function searchPostsLocal(query: string, posts: Post[]): SearchResult[] {
   const lowerQuery = query.toLowerCase().trim();
   if (!lowerQuery) return [];
 
   return posts
     .map((post) => {
-      const content = `${post.title} ${post.description} ${post.tags.join(" ")}`;
-      const lowerContent = content.toLowerCase();
+      const searchText = `${post.title} ${post.description} ${post.tags.join(" ")} ${post.content}`;
+      const lowerContent = searchText.toLowerCase();
 
       if (!lowerContent.includes(lowerQuery)) {
         return null;
@@ -37,10 +37,10 @@ function searchPostsLocal(query: string, posts: PostMeta[]): SearchResult[] {
       const index = lowerContent.indexOf(lowerQuery);
       if (index !== -1) {
         const start = Math.max(0, index - 30);
-        const end = Math.min(lowerContent.length, index + lowerQuery.length + 30);
-        snippet = content.slice(start, end);
+        const end = Math.min(searchText.length, index + lowerQuery.length + 50);
+        snippet = searchText.slice(start, end);
         if (start > 0) snippet = "..." + snippet;
-        if (end < content.length) snippet = snippet + "...";
+        if (end < searchText.length) snippet = snippet + "...";
       }
 
       return {
