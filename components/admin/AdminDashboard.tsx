@@ -4,10 +4,11 @@ import { useState } from "react";
 import PostsManager from "./PostsManager";
 import DocsManager from "./DocsManager";
 import GuestbookManager from "./GuestbookManager";
+import CommentsManager from "./CommentsManager";
 import CalendarView from "./CalendarView";
 import { LogOut, CalendarDays } from "lucide-react";
 
-type Tab = "posts" | "docs" | "calendar" | "guestbook";
+type Tab = "posts" | "docs" | "calendar" | "guestbook" | "comments";
 
 interface Props {
   onLogout: () => void;
@@ -27,6 +28,7 @@ export default function AdminDashboard({ onLogout }: Props) {
     { id: "docs", label: "文档 Docs" },
     { id: "calendar", label: "日历 Calendar", icon: <CalendarDays size={14} /> },
     { id: "guestbook", label: "留言 Guestbook" },
+    { id: "comments", label: "评论 Comments" },
   ];
 
   return (
@@ -66,6 +68,7 @@ export default function AdminDashboard({ onLogout }: Props) {
         {tab === "docs" && <DocsManager />}
         {tab === "calendar" && <CalendarView />}
         {tab === "guestbook" && <GuestbookManager />}
+        {tab === "comments" && <CommentsManager />}
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import TOC from "@/components/TOC";
 import PageNav from "@/components/PageNav";
 import { Clock, Calendar, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import PostComments from "@/components/PostComments";
 
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
@@ -97,6 +98,8 @@ export default async function PostPage({ params }: PostPageProps) {
           />
 
           <PageNav previousPost={previousPost} nextPost={nextPost} />
+
+          <PostComments slug={params.slug} />
         </div>
 
         <TOC items={headings} />

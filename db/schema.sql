@@ -50,6 +50,21 @@ CREATE TABLE IF NOT EXISTS docs (
 
 CREATE INDEX IF NOT EXISTS idx_docs_category ON docs(category_slug, sort_order);
 
+-- 文章评论表
+CREATE TABLE IF NOT EXISTS comments (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  post_slug TEXT NOT NULL,
+  name TEXT NOT NULL,
+  message TEXT NOT NULL,
+  parent_id INTEGER,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (parent_id) REFERENCES comments(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_comments_post_slug ON comments(post_slug);
+CREATE INDEX IF NOT EXISTS idx_comments_created_at ON comments(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_comments_parent_id ON comments(parent_id);
+
 -- 备忘录表
 CREATE TABLE IF NOT EXISTS memos (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
