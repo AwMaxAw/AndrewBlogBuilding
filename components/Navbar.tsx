@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Menu } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const PRIMARY_LINKS: { href: string; label: string }[] = [
@@ -29,6 +29,8 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [desktopMoreOpen, setDesktopMoreOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -41,6 +43,13 @@ export default function Navbar() {
     setMobileOpen(false);
     setDesktopMoreOpen(false);
   }, [pathname]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      window.location.href = `/search?q=${encodeURIComponent(searchQuery.trim())}`;
+    }
+  };
 
   return (
     <header
@@ -129,6 +138,45 @@ export default function Navbar() {
             >
               <Menu size={18} />
             </button>
+
+            <div className="relative flex items-center">
+              <form
+                onSubmit={handleSearch}
+                className={cn(
+                  "relative transition-all duration-300 ease-out",
+                  searchOpen ? "w-40" : "w-0 overflow-hidden"
+                )}
+              >
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search"
+                  className="w-full pl-8 pr-3 py-1.5 bg-white/90 dark:bg-gray-900/90 border border-border/40 dark:border-gray-700/40 rounded-full text-xs text-gray-900 dark:text-gray-100 placeholder:text-muted focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all"
+                  autoFocus={searchOpen}
+                />
+                <button
+                  type="submit"
+                  className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-accent transition-colors"
+                  aria-label="Search"
+                >
+                  <Search size={14} />
+                </button>
+              </form>
+
+              <button
+                onClick={() => {
+                  setSearchOpen(!searchOpen);
+                  if (!searchOpen) {
+                    setDesktopMoreOpen(false);
+                  }
+                }}
+                className="p-1.5 -mr-1.5 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50"
+                aria-label="Toggle search"
+              >
+                <Search size={18} />
+              </button>
+            </div>
           </div>
         </div>
 
