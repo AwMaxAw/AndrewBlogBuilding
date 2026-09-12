@@ -3,6 +3,14 @@ import { verifyAdminRequest } from "@/lib/admin-auth";
 
 export const runtime = "edge";
 
+async function ensureTable(db: D1Database) {
+  await db
+    .prepare(
+      "CREATE TABLE IF NOT EXISTS memos (id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT NOT NULL, content TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT (datetime('now')))"
+    )
+    .run();
+}
+
 // 更新备忘录
 export async function PUT(
   req: NextRequest,
@@ -31,6 +39,7 @@ export async function PUT(
   const db = process.env.blog_db as D1Database;
 
   try {
+    await ensureTable(db);
     await db
       .prepare("UPDATE memos SET date = ?, content = ? WHERE id = ?")
       .bind(date.trim(), content.trim(), id)
@@ -58,6 +67,7 @@ export async function DELETE(
   const db = process.env.blog_db as D1Database;
 
   try {
+    await ensureTable(db);
     await db
       .prepare("DELETE FROM memos WHERE id = ?")
       .bind(id)
