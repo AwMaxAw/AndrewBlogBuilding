@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, Save, X, Eye, ExternalLink } from "lucide-react";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatDateTime } from "@/lib/utils";
 import { renderMarkdown } from "@/lib/markdown";
+import MarkdownToolbar from "./MarkdownToolbar";
+import PostTimeline from "@/components/PostTimeline";
 
 interface Post {
   id: number;
@@ -14,6 +16,7 @@ interface Post {
   tags: string[];
   content: string;
   reading_time: string;
+  created_at: string;
 }
 
 interface PostForm {
@@ -216,17 +219,30 @@ export default function PostsManager() {
         </div>
 
         <div>
-          <label className="block text-sm text-muted mb-1">内容（MDX）</label>
-          <textarea
+          <label className="block text-sm text-muted mb-1">内容（Markdown）</label>
+          <MarkdownToolbar
             value={form.content}
-            onChange={(e) => setForm({ ...form, content: e.target.value })}
-            rows={20}
-            className="w-full px-3 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm font-mono focus:outline-none focus:border-accent/60 resize-y"
+            onChange={(v) => setForm({ ...form, content: v })}
             placeholder="## 标题&#10;&#10;正文内容..."
           />
         </div>
       </div>
     );
+  }
+
+  // 按月份分组
+  const groups: { id: string; label: string; count: number }[] = [];
+  const groupMap: Record<string, Post[]> = {};
+  for (const post of posts) {
+    const d = new Date(post.date);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    const label = `${d.getFullYear()}年${d.getMonth() + 1}月`;
+    if (!groupMap[key]) {
+      groupMap[key] = [];
+      groups.push({ id: `admin-${key}`, label, count: 0 });
+    }
+    groupMap[key].push(post);
+    groups[groups.length - 1].count++;
   }
 
   return (
@@ -247,49 +263,68 @@ export default function PostsManager() {
       ) : posts.length === 0 ? (
         <p className="text-muted text-center py-8">暂无文章</p>
       ) : (
-        <div className="space-y-2">
-          {posts.map((post) => (
-            <div
-              key={post.id}
-              className="flex items-center gap-4 p-4 glass-card z-10"
-            >
-              <div className="relative z-10 flex-1 min-w-0">
-                <div className="flex items-center gap-3">
-                  <h3 className="font-medium text-sm truncate">{post.title}</h3>
-                  <span className="text-xs text-muted font-mono">/{post.slug}</span>
+        <div className="flex flex-col lg:flex-row gap-12">
+          <div className="flex-1 min-w-0">
+            {groups.map((group) => (
+              <section key={group.id} id={group.id} className="mb-8 scroll-mt-24">
+                <h2 className="font-serif text-base font-medium text-muted mb-4 flex items-center gap-4">
+                  {group.label}
+                  <span className="flex-1 h-px bg-border/60" />
+                  <span className="text-xs text-muted/60">{group.count}</span>
+                </h2>
+                <div className="space-y-2">
+                  {groupMap[group.id.replace("admin-", "")].map((post) => (
+                    <div
+                      key={post.id}
+                      className="flex items-center gap-4 p-4 glass-card z-10"
+                    >
+                      <div className="relative z-10 flex-1 min-w-0">
+                        <div className="flex items-center gap-3">
+                          <h3 className="font-medium text-sm truncate">{post.title}</h3>
+                          <span className="text-xs text-muted font-mono">/{post.slug}</span>
+                        </div>
+                        <div className="flex items-center gap-3 mt-1 text-xs text-muted">
+                          <span>{formatDate(post.date, true)}</span>
+                          {post.created_at && (
+                            <span className="font-mono text-muted/60">
+                              {new Date(post.created_at).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false })}
+                            </span>
+                          )}
+                          {post.tags.length > 0 && (
+                            <span>{post.tags.join(", ")}</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex gap-2 shrink-0">
+                        <button
+                          onClick={() => setPreviewPost(post)}
+                          className="p-2 text-muted hover:text-accent transition-colors"
+                          title="预览"
+                        >
+                          <Eye size={16} />
+                        </button>
+                        <button
+                          onClick={() => startEdit(post)}
+                          className="p-2 text-muted hover:text-accent transition-colors"
+                          title="编辑"
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(post.slug)}
+                          className="p-2 text-muted hover:text-red-500 transition-colors"
+                          title="删除"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex items-center gap-3 mt-1 text-xs text-muted">
-                  <span>{formatDate(post.date, true)}</span>
-                  {post.tags.length > 0 && (
-                    <span>{post.tags.join(", ")}</span>
-                  )}
-                </div>
-              </div>
-              <div className="flex gap-2 shrink-0">
-                <button
-                  onClick={() => setPreviewPost(post)}
-                  className="p-2 text-muted hover:text-accent transition-colors"
-                  title="预览"
-                >
-                  <Eye size={16} />
-                </button>
-                <button
-                  onClick={() => startEdit(post)}
-                  className="p-2 text-muted hover:text-accent transition-colors"
-                  title="编辑"
-                >
-                  <Edit2 size={16} />
-                </button>
-                <button
-                  onClick={() => handleDelete(post.slug)}
-                  className="p-2 text-muted hover:text-red-500 transition-colors"
-                  title="删除"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            </div>
-          ))}
+              </section>
+            ))}
+          </div>
+          <PostTimeline groups={groups} />
         </div>
       )}
 

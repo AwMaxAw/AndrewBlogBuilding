@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, Save, X, FolderPlus, Eye, ExternalLink, ChevronUp, ChevronDown } from "lucide-react";
 import { renderMarkdown } from "@/lib/markdown";
 import { formatDateTime } from "@/lib/utils";
+import MarkdownToolbar from "./MarkdownToolbar";
 
 interface Category {
   id: number;
@@ -398,13 +399,11 @@ export default function DocsManager() {
         </div>
 
         <div>
-          <label className="block text-sm text-muted mb-1">内容（HTML）</label>
-          <textarea
+          <label className="block text-sm text-muted mb-1">内容（Markdown）</label>
+          <MarkdownToolbar
             value={docForm.content}
-            onChange={(e) => setDocForm({ ...docForm, content: e.target.value })}
-            rows={20}
-            className="w-full px-3 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm font-mono focus:outline-none focus:border-accent/60 resize-y"
-            placeholder="<h2 id='section'>标题</h2>&#10;<p>内容...</p>"
+            onChange={(v) => setDocForm({ ...docForm, content: v })}
+            placeholder="## 标题&#10;&#10;正文内容..."
           />
         </div>
       </div>
