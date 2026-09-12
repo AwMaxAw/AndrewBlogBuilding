@@ -125,7 +125,7 @@ export default function SearchResults({ posts }: SearchResultsProps) {
           {results.map((result) => (
             <Link
               key={result.slug}
-              href={`/blog/${result.slug}`}
+              href={`/blog/${result.slug}?q=${encodeURIComponent(query)}`}
               className="block glass-card p-6 group z-10"
             >
               <div className="relative z-10">
