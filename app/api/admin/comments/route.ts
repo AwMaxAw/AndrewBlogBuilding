@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdminRequest } from "@/lib/admin-auth";
+import { decodeSlug } from "@/lib/utils";
 
 export const runtime = "edge";
 
@@ -22,6 +23,7 @@ export async function GET(req: NextRequest) {
   const db = process.env.blog_db as D1Database;
   try {
     await ensureTable(db);
+    // 尝试两种 slug 形式匹配文章：原始 slug 与解码后 slug
     const result = await db
       .prepare(
         `SELECT c.id, c.post_slug, c.name, c.message, c.parent_id, c.created_at,
@@ -30,8 +32,17 @@ export async function GET(req: NextRequest) {
          LEFT JOIN posts p ON c.post_slug = p.slug
          ORDER BY c.created_at DESC`
       )
-      .all();
-    return NextResponse.json(result.results);
+      .all<{ post_title?: string; post_slug: string }>();
+
+    const rows = result.results.map((r) => {
+      // JOIN 失败（历史数据 slug 编码不一致）时，用解码后 slug 兜底查询标题
+      if (!r.post_title || r.post_title === r.post_slug) {
+        const decoded = decodeSlug(r.post_slug);
+        r.post_title = decoded !== r.post_slug ? decoded : r.post_slug;
+      }
+      return r;
+    });
+    return NextResponse.json(rows);
   } catch {
     return NextResponse.json([]);
   }

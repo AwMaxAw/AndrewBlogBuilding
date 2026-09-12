@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { decodeSlug } from "@/lib/utils";
 
 export const runtime = "edge";
 
@@ -15,20 +16,24 @@ async function ensureTable(db: D1Database) {
 // 获取某篇文章的评论
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const post_slug = searchParams.get("slug");
+  const rawSlug = searchParams.get("slug");
 
-  if (!post_slug) {
+  if (!rawSlug) {
     return NextResponse.json({ error: "缺少 slug 参数" }, { status: 400 });
   }
+
+  // 解码 slug，与数据库中存储的原始 slug 保持一致
+  const post_slug = decodeSlug(rawSlug);
 
   const db = process.env.blog_db as D1Database;
   try {
     await ensureTable(db);
+    // 同时匹配解码后的 slug 和原始编码的 slug，兼容历史数据
     const result = await db
       .prepare(
-        "SELECT id, post_slug, name, message, parent_id, created_at FROM comments WHERE post_slug = ? ORDER BY created_at DESC"
+        "SELECT id, post_slug, name, message, parent_id, created_at FROM comments WHERE post_slug = ? OR post_slug = ? ORDER BY created_at DESC"
       )
-      .bind(post_slug)
+      .bind(post_slug, rawSlug)
       .all<{
         id: number;
         post_slug: string;
@@ -58,6 +63,9 @@ export async function POST(req: NextRequest) {
   if (!post_slug?.trim()) {
     return NextResponse.json({ error: "缺少文章标识" }, { status: 400 });
   }
+
+  // 解码 slug，与 posts 表存储的原始 slug 保持一致
+  const normalizedSlug = decodeSlug(post_slug).trim();
   if (!name?.trim() || !message?.trim()) {
     return NextResponse.json({ error: "昵称和内容不能为空" }, { status: 400 });
   }
@@ -83,7 +91,7 @@ export async function POST(req: NextRequest) {
       if (!parent) {
         return NextResponse.json({ error: "回复的评论不存在" }, { status: 400 });
       }
-      if (parent.post_slug !== post_slug) {
+      if (parent.post_slug !== normalizedSlug) {
         return NextResponse.json({ error: "不能跨文章回复" }, { status: 400 });
       }
       replyTo = { id: parent.id, name: parent.name };
@@ -91,7 +99,7 @@ export async function POST(req: NextRequest) {
 
     await db
       .prepare("INSERT INTO comments (post_slug, name, message, parent_id) VALUES (?, ?, ?, ?)")
-      .bind(post_slug.trim(), name.trim(), message.trim(), parent_id || null)
+      .bind(normalizedSlug, name.trim(), message.trim(), parent_id || null)
       .run();
 
     return NextResponse.json({ success: true, replyTo });
