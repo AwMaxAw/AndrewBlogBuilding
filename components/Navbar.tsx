@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Menu, X, Search } from "lucide-react";
+import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const PRIMARY_LINKS: { href: string; label: string }[] = [
@@ -29,8 +29,6 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [desktopMoreOpen, setDesktopMoreOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -44,27 +42,22 @@ export default function Navbar() {
     setDesktopMoreOpen(false);
   }, [pathname]);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      window.location.href = `/search?q=${encodeURIComponent(searchQuery.trim())}`;
-    }
-  };
-
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out",
-        scrolled ? "px-4 pt-3" : "px-6 md:px-10 pt-4"
+        "fixed top-0 left-0 right-0 z-50 flex justify-center transition-all",
+        scrolled ? "px-4 pt-3" : "px-4 pt-4"
       )}
+      style={{ transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)", transitionDuration: "450ms" }}
     >
       <nav
         className={cn(
-          "flex items-center justify-between h-12 rounded-full transition-all duration-500 ease-out",
+          "flex items-center justify-between h-12 rounded-full transition-all",
           scrolled
-            ? "max-w-3xl mx-auto px-4 md:px-5 bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 backdrop-blur-xl saturate-150 shadow-sm"
-            : "w-full px-2 bg-transparent border border-transparent backdrop-blur-none"
+            ? "max-w-2xl w-full mx-auto px-4 md:px-5 bg-white/60 dark:bg-black/50 border border-black/10 dark:border-white/10 backdrop-blur-xl saturate-150 shadow-[0_8px_32px_rgba(0,0,0,0.12)]"
+            : "max-w-4xl w-full mx-auto px-3 bg-transparent border border-transparent backdrop-blur-none"
         )}
+        style={{ transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)", transitionDuration: "450ms" }}
       >
         <Link
           href="/"
@@ -76,7 +69,7 @@ export default function Navbar() {
           Andrew
         </Link>
 
-        <div className="hidden md:flex items-center gap-5 transition-all duration-500 ease-out">
+        <div className="hidden md:flex items-center gap-5">
           {PRIMARY_LINKS.map((link) => {
                 const active = isActiveLink(link.href, pathname);
                 return (
@@ -130,58 +123,12 @@ export default function Navbar() {
             </div>
 
             <button
-              onClick={() => {
-                setDesktopMoreOpen(!desktopMoreOpen);
-                setSearchOpen(false);
-              }}
+              onClick={() => setDesktopMoreOpen(!desktopMoreOpen)}
               className="p-1.5 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50"
               aria-label="Toggle more menu"
             >
-              {desktopMoreOpen ? (
-                <X size={18} />
-              ) : (
-                <Menu size={18} />
-              )}
+              <Menu size={18} />
             </button>
-
-            <div className="relative flex items-center">
-              <form
-                onSubmit={handleSearch}
-                className={cn(
-                  "relative transition-all duration-300 ease-out",
-                  searchOpen ? "w-40" : "w-0 overflow-hidden"
-                )}
-              >
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search"
-                  className="w-full pl-8 pr-3 py-1.5 bg-white/90 dark:bg-gray-900/90 border border-border/40 dark:border-gray-700/40 rounded-full text-xs text-gray-900 dark:text-gray-100 placeholder:text-muted focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all"
-                  autoFocus={searchOpen}
-                />
-                <button
-                  type="submit"
-                  className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-accent transition-colors"
-                  aria-label="Search"
-                >
-                  <Search size={14} />
-                </button>
-              </form>
-
-              <button
-                onClick={() => {
-                  setSearchOpen(!searchOpen);
-                  if (!searchOpen) {
-                    setDesktopMoreOpen(false);
-                  }
-                }}
-                className="p-1.5 -mr-1.5 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50"
-                aria-label="Toggle search"
-              >
-                <Search size={18} />
-              </button>
-            </div>
           </div>
         </div>
 
@@ -222,7 +169,7 @@ export default function Navbar() {
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
-            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+            <Menu size={20} />
           </button>
         </div>
       </nav>
