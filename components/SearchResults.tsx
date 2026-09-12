@@ -20,6 +20,33 @@ interface SearchResult {
   snippet: string;
 }
 
+function highlightText(text: string, query: string) {
+  if (!query.trim()) return text;
+  const lowerQuery = query.toLowerCase().trim();
+  const lowerText = text.toLowerCase();
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let idx = lowerText.indexOf(lowerQuery, lastIndex);
+
+  while (idx !== -1) {
+    if (idx > lastIndex) {
+      parts.push(text.slice(lastIndex, idx));
+    }
+    parts.push(
+      <mark key={idx} className="bg-accent/30 text-accent rounded px-0.5">
+        {text.slice(idx, idx + query.length)}
+      </mark>
+    );
+    lastIndex = idx + query.length;
+    idx = lowerText.indexOf(lowerQuery, lastIndex);
+  }
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return <>{parts}</>;
+}
+
 function searchPostsLocal(query: string, posts: Post[]): SearchResult[] {
   const lowerQuery = query.toLowerCase().trim();
   if (!lowerQuery) return [];
@@ -104,7 +131,7 @@ export default function SearchResults({ posts }: SearchResultsProps) {
               <div className="relative z-10">
                 <div className="flex items-start justify-between gap-4 mb-3">
                   <h2 className="font-serif text-xl font-medium group-hover:text-accent transition-colors leading-snug">
-                    {result.title}
+                    {highlightText(result.title, query)}
                   </h2>
                   <time className="text-xs text-muted font-mono shrink-0">
                     {formatDate(result.date, true)}
@@ -112,7 +139,7 @@ export default function SearchResults({ posts }: SearchResultsProps) {
                 </div>
                 {result.snippet && (
                   <p className="text-sm text-muted mb-3 line-clamp-2">
-                    {result.snippet}
+                    {highlightText(result.snippet, query)}
                   </p>
                 )}
                 {result.description && !result.snippet && (
