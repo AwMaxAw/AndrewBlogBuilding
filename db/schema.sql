@@ -49,3 +49,13 @@ CREATE TABLE IF NOT EXISTS docs (
 );
 
 CREATE INDEX IF NOT EXISTS idx_docs_category ON docs(category_slug, sort_order);
+
+-- 备忘录表
+CREATE TABLE IF NOT EXISTS memos (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  date TEXT NOT NULL,
+  content TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_memos_date ON memos(date);

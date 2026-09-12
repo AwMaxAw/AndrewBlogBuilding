@@ -4,9 +4,10 @@ import { useState } from "react";
 import PostsManager from "./PostsManager";
 import DocsManager from "./DocsManager";
 import GuestbookManager from "./GuestbookManager";
-import { LogOut } from "lucide-react";
+import CalendarView from "./CalendarView";
+import { LogOut, CalendarDays } from "lucide-react";
 
-type Tab = "posts" | "docs" | "guestbook";
+type Tab = "posts" | "docs" | "calendar" | "guestbook";
 
 interface Props {
   onLogout: () => void;
@@ -21,9 +22,10 @@ export default function AdminDashboard({ onLogout }: Props) {
     onLogout();
   };
 
-  const tabs: { id: Tab; label: string }[] = [
+  const tabs: { id: Tab; label: string; icon?: React.ReactNode }[] = [
     { id: "posts", label: "文章 Posts" },
     { id: "docs", label: "文档 Docs" },
+    { id: "calendar", label: "日历 Calendar", icon: <CalendarDays size={14} /> },
     { id: "guestbook", label: "留言 Guestbook" },
   ];
 
@@ -46,12 +48,13 @@ export default function AdminDashboard({ onLogout }: Props) {
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               tab === t.id
                 ? "border-accent text-accent"
                 : "border-transparent text-muted hover:text-foreground"
             }`}
           >
+            {t.icon}
             {t.label}
           </button>
         ))}
@@ -61,6 +64,7 @@ export default function AdminDashboard({ onLogout }: Props) {
       <div>
         {tab === "posts" && <PostsManager />}
         {tab === "docs" && <DocsManager />}
+        {tab === "calendar" && <CalendarView />}
         {tab === "guestbook" && <GuestbookManager />}
       </div>
     </div>
