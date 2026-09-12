@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { ChevronLeft, ChevronRight, FileText, BookOpen } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileText, BookOpen, StickyNote } from "lucide-react";
 
-type ViewMode = "posts" | "docs";
+type ViewMode = "posts" | "docs" | "memos";
 
 interface PostItem {
   slug: string;
@@ -19,14 +19,21 @@ interface DocItem {
   category: string;
 }
 
+interface MemoItem {
+  id: number;
+  date: string;
+  content: string;
+}
+
 interface Props {
   posts: PostItem[];
   docs: DocItem[];
+  memos: MemoItem[];
 }
 
 const WEEKDAYS = ["一", "二", "三", "四", "五", "六", "日"];
 
-export default function PublicCalendar({ posts, docs }: Props) {
+export default function PublicCalendar({ posts, docs, memos }: Props) {
   const [view, setView] = useState<ViewMode>("posts");
   const [current, setCurrent] = useState(() => {
     const now = new Date();
@@ -52,6 +59,16 @@ export default function PublicCalendar({ posts, docs }: Props) {
     }
     return map;
   }, [docs]);
+
+  const memosByDate = useMemo(() => {
+    const map: Record<string, MemoItem[]> = {};
+    for (const m of memos) {
+      const key = m.date.slice(0, 10);
+      if (!map[key]) map[key] = [];
+      map[key].push(m);
+    }
+    return map;
+  }, [memos]);
 
   const days = useMemo(() => {
     const year = current.getFullYear();
@@ -111,7 +128,7 @@ export default function PublicCalendar({ posts, docs }: Props) {
         <h1 className="font-serif text-4xl md:text-5xl font-semibold mb-4">
           Calendar
         </h1>
-        <p className="text-muted text-lg">按日期浏览文章与文档</p>
+        <p className="text-muted text-lg">按日期浏览文章、文档与备忘</p>
       </header>
 
       <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
@@ -161,6 +178,17 @@ export default function PublicCalendar({ posts, docs }: Props) {
           >
             <BookOpen size={14} />
             Docs
+          </button>
+          <button
+            onClick={() => setView("memos")}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm transition-colors ${
+              view === "memos"
+                ? "bg-amber-500 text-white"
+                : "text-muted hover:text-foreground"
+            }`}
+          >
+            <StickyNote size={14} />
+            备忘
           </button>
         </div>
       </div>
@@ -246,6 +274,18 @@ export default function PublicCalendar({ posts, docs }: Props) {
                           {d.category}
                         </span>
                       </a>
+                    ))}
+
+                  {view === "memos" &&
+                    memosByDate[key]?.map((m) => (
+                      <div
+                        key={m.id}
+                        className="block border border-amber-500/30 bg-amber-500/5 rounded px-1.5 py-1 text-[11px] leading-tight"
+                      >
+                        <div className="line-clamp-2 text-foreground/90">
+                          {m.content}
+                        </div>
+                      </div>
                     ))}
                 </div>
               </div>
