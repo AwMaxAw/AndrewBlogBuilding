@@ -316,7 +316,7 @@ export default function CalendarView() {
             return (
               <div
                 key={i}
-                className={`relative min-h-[110px] border-b border-r border-border/30 p-1.5 flex flex-col ${
+                className={`relative h-32 md:h-36 border-b border-r border-border/30 p-1.5 flex flex-col ${
                   dimmed ? "bg-secondary/10" : ""
                 } ${i % 7 === 6 ? "border-r-0" : ""} ${
                   i >= 35 ? "border-b-0" : ""
@@ -354,7 +354,7 @@ export default function CalendarView() {
                         href={`/blog/${p.slug}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group block bg-accent/10 hover:bg-accent/20 rounded px-1.5 py-1 text-[11px] leading-tight transition-colors"
+                        className="group block border border-accent/30 bg-accent/5 hover:bg-accent/15 rounded px-1.5 py-1 text-[11px] leading-tight transition-colors"
                       >
                         <div className="flex items-start gap-1">
                           <span className="flex-1 truncate text-foreground/90 group-hover:text-accent">
@@ -393,7 +393,7 @@ export default function CalendarView() {
                         href={`/docs/${d.slug}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group block bg-emerald-500/10 hover:bg-emerald-500/20 rounded px-1.5 py-1 text-[11px] leading-tight transition-colors"
+                        className="group block border border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/15 rounded px-1.5 py-1 text-[11px] leading-tight transition-colors"
                       >
                         <div className="flex items-start gap-1">
                           <span className="flex-1 truncate text-foreground/90 group-hover:text-emerald-600">
@@ -419,7 +419,7 @@ export default function CalendarView() {
                     memosByDate[key]?.map((m) => (
                       <div
                         key={m.id}
-                        className="group bg-amber-500/10 hover:bg-amber-500/20 rounded px-1.5 py-1 text-[11px] leading-tight cursor-pointer transition-colors"
+                        className="group border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/15 rounded px-1.5 py-1 text-[11px] leading-tight cursor-pointer transition-colors"
                         onClick={() => openEditMemo(m)}
                       >
                         <div className="flex items-start gap-1">

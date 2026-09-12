@@ -10,6 +10,7 @@ const PRIMARY_LINKS: { href: string; label: string }[] = [
   { href: "/", label: "Home" },
   { href: "/blog", label: "Posts" },
   { href: "/docs", label: "Docs" },
+  { href: "/calendar", label: "Calendar" },
 ];
 
 const MORE_LINKS: { href: string; label: string }[] = [
@@ -112,14 +113,14 @@ export default function Navbar() {
                         key={link.href}
                         href={link.href}
                         className={cn(
-                          "group relative text-sm pb-1 transition-colors whitespace-nowrap",
+                          "group relative text-sm transition-colors whitespace-nowrap",
                           active ? "text-accent" : "text-muted hover:text-foreground"
                         )}
                       >
                         {link.label}
                         <span
                           className={cn(
-                            "absolute bottom-0 left-0 h-px transition-all duration-300 ease-out",
+                            "absolute -bottom-1 left-0 h-px transition-all duration-300 ease-out",
                             active ? "w-full bg-accent" : "w-0 bg-foreground dark:bg-white group-hover:w-full"
                           )}
                         />
