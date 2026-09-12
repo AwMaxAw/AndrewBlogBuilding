@@ -1,5 +1,3 @@
-import fs from "fs";
-import path from "path";
 import matter from "gray-matter";
 import { decodeSlug } from "./utils";
 
@@ -15,48 +13,50 @@ export interface Changelog extends ChangelogMeta {
   content: string;
 }
 
-const CHANGELOG_DIR = path.join(process.cwd(), "content", "changelog");
+// 使用 import.meta.glob 在构建时内联读取 changelog 文件，
+// 避免运行时依赖 fs/path，兼容 Edge Runtime 与 Node.js Runtime
+const changelogModules = import.meta.glob(
+  "../content/changelog/*.{md,mdx}",
+  { query: "?raw", import: "default", eager: true }
+) as Record<string, string>;
 
-function resolveChangelogFile(slug: string): string | null {
-  // 解码 URL 编码的 slug，确保中文等非 ASCII slug 能正确匹配文件
-  const decodedSlug = decodeSlug(slug);
-  for (const ext of [".mdx", ".md"]) {
-    const filePath = path.join(CHANGELOG_DIR, `${decodedSlug}${ext}`);
-    if (fs.existsSync(filePath)) return filePath;
-  }
-  return null;
+// 缓存解析后的 changelog 列表
+let parsedCache: Changelog[] | null = null;
+
+function parseAllChangelogs(): Changelog[] {
+  if (parsedCache) return parsedCache;
+
+  const items: Changelog[] = Object.entries(changelogModules).map(([filePath, raw]) => {
+    // 从路径中提取 slug（去掉目录和扩展名）
+    const fileName = filePath.split("/").pop() || "";
+    const slug = fileName.replace(/\.mdx?$/, "");
+    const { data, content } = matter(raw);
+
+    return {
+      slug,
+      title: data.title ?? slug,
+      date: data.date ?? new Date().toISOString(),
+      description: data.description ?? "",
+      tags: data.tags ?? [],
+      content,
+    };
+  });
+
+  items.sort((a, b) => (a.date > b.date ? -1 : 1));
+  parsedCache = items;
+  return items;
 }
 
 export function getChangelogSlugs(): string[] {
-  if (!fs.existsSync(CHANGELOG_DIR)) return [];
-  return fs
-    .readdirSync(CHANGELOG_DIR)
-    .filter((file) => file.endsWith(".mdx") || file.endsWith(".md"))
-    .map((file) => file.replace(/\.mdx?$/, ""));
+  return parseAllChangelogs().map((item) => item.slug);
 }
 
 export function getChangelogBySlug(slug: string): Changelog | null {
-  const filePath = resolveChangelogFile(slug);
-  if (!filePath) return null;
-
-  // 返回解码后的 slug，与数据库中的原始 slug 保持一致
+  // 解码 URL 编码的 slug，匹配文件名
   const decodedSlug = decodeSlug(slug);
-  const { data, content } = matter(fs.readFileSync(filePath, "utf8"));
-
-  return {
-    slug: decodedSlug,
-    title: data.title ?? decodedSlug,
-    date: data.date ?? new Date().toISOString(),
-    description: data.description ?? "",
-    tags: data.tags ?? [],
-    content,
-  };
+  return parseAllChangelogs().find((item) => item.slug === decodedSlug) ?? null;
 }
 
 export function getAllChangelogs(): ChangelogMeta[] {
-  return getChangelogSlugs()
-    .map((slug) => getChangelogBySlug(slug))
-    .filter((item): item is Changelog => item !== null)
-    .sort((a, b) => (a.date > b.date ? -1 : 1))
-    .map(({ content, ...meta }) => meta);
+  return parseAllChangelogs().map(({ content, ...meta }) => meta);
 }
