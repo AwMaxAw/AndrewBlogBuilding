@@ -5,7 +5,6 @@ import { getAllChangelogs } from "@/lib/changelogs";
 import ChangelogList from "@/components/ChangelogList";
 import { FileText, BookOpen, MessageSquare, ClipboardList, Type, Hash, BarChart3 } from "lucide-react";
 
-export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
