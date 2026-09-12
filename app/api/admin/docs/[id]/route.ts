@@ -11,7 +11,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 
   const db = process.env.blog_db as D1Database;
   const result = await db
-    .prepare("SELECT id, slug, category_slug, title, description, content, sort_order FROM docs WHERE id = ?")
+    .prepare("SELECT id, slug, category_slug, title, description, content, sort_order, created_at FROM docs WHERE id = ?")
     .bind(params.id)
     .first();
 

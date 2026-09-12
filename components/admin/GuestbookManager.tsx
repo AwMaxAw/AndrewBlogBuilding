@@ -1,26 +1,70 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, Edit2, Save, X } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
 
 interface Entry {
   id: number;
   name: string;
   message: string;
+  parent_id: number | null;
   created_at: string;
 }
 
+interface TreeNode extends Entry {
+  replies: TreeNode[];
+}
+
 export default function GuestbookManager() {
-  const [entries, setEntries] = useState<Entry[]>([]);
+  const [entries, setEntries] = useState<TreeNode[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editMessage, setEditMessage] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const buildTree = (flat: Entry[]): TreeNode[] => {
+    const map = new Map<number, TreeNode>();
+    const roots: TreeNode[] = [];
+
+    for (const entry of flat) {
+      map.set(entry.id, { ...entry, replies: [] });
+    }
+
+    for (const entry of flat) {
+      const node = map.get(entry.id)!;
+      if (entry.parent_id === null) {
+        roots.push(node);
+      } else {
+        const parent = map.get(entry.parent_id);
+        if (parent) {
+          parent.replies.push(node);
+        } else {
+          roots.push(node);
+        }
+      }
+    }
+
+    roots.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    const sortReplies = (nodes: TreeNode[]) => {
+      for (const node of nodes) {
+        node.replies.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+        sortReplies(node.replies);
+      }
+    };
+    sortReplies(roots);
+
+    return roots;
+  };
 
   const loadEntries = async () => {
     setLoading(true);
     try {
       const res = await fetch("/api/admin/guestbook");
       if (res.ok) {
-        setEntries(await res.json());
+        const data = (await res.json()) as Entry[];
+        setEntries(buildTree(data));
       }
     } catch (e) {
       console.error(e);
@@ -34,7 +78,7 @@ export default function GuestbookManager() {
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (!confirm("确定删除此留言吗？")) return;
+    if (!confirm("确定删除此留言吗？其所有回复也会被删除！")) return;
     try {
       const res = await fetch(`/api/admin/guestbook?id=${id}`, { method: "DELETE" });
       if (res.ok) loadEntries();
@@ -44,40 +88,165 @@ export default function GuestbookManager() {
     }
   };
 
+  const startEdit = (node: TreeNode) => {
+    setEditingId(node.id);
+    setEditName(node.name);
+    setEditMessage(node.message);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditName("");
+    setEditMessage("");
+  };
+
+  const handleSave = async (id: number) => {
+    if (!editMessage.trim()) {
+      alert("内容不能为空");
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await fetch("/api/admin/guestbook", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, name: editName.trim(), message: editMessage.trim() }),
+      });
+      if (res.ok) {
+        cancelEdit();
+        loadEntries();
+      } else {
+        const err = (await res.json()) as { error?: string };
+        alert(err.error || "保存失败");
+      }
+    } catch {
+      alert("网络错误");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const findReplyTargetName = (nodes: TreeNode[], id: number): string => {
+    for (const node of nodes) {
+      if (node.id === id) return node.name;
+      const found = findReplyTargetName(node.replies, id);
+      if (found) return found;
+    }
+    return "";
+  };
+
+  const renderNode = (node: TreeNode, depth: number) => {
+    const isEditing = editingId === node.id;
+    const targetName = node.parent_id !== null ? findReplyTargetName(entries, node.parent_id) : "";
+
+    return (
+      <div key={node.id} className={depth > 0 ? "ml-5 border-l-2 border-border/60 pl-4" : ""}>
+        <div className="glass-card p-4 z-10 my-3">
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-3">
+                {node.parent_id !== null && (
+                  <span className="text-xs text-accent bg-accent/10 px-2 py-0.5 rounded">
+                    回复 @{targetName || "?"}
+                  </span>
+                )}
+                {isEditing ? (
+                  <input
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    maxLength={50}
+                    className="px-2 py-1 bg-white/50 dark:bg-black/30 border border-border/50 rounded text-sm font-medium w-40"
+                  />
+                ) : (
+                  <span className="font-medium text-sm">{node.name}</span>
+                )}
+                <time className="text-xs text-muted font-mono">
+                  {formatDateTime(node.created_at)}
+                </time>
+              </div>
+              <div className="flex items-center gap-1">
+                {isEditing ? (
+                  <>
+                    <button
+                      onClick={() => handleSave(node.id)}
+                      disabled={saving}
+                      className="p-1.5 text-muted hover:text-accent transition-colors"
+                      title="保存"
+                    >
+                      <Save size={16} />
+                    </button>
+                    <button
+                      onClick={cancelEdit}
+                      className="p-1.5 text-muted hover:text-foreground transition-colors"
+                      title="取消"
+                    >
+                      <X size={16} />
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => startEdit(node)}
+                      className="p-1.5 text-muted hover:text-accent transition-colors"
+                      title="编辑"
+                    >
+                      <Edit2 size={16} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(node.id)}
+                      className="p-1.5 text-muted hover:text-red-500 transition-colors"
+                      title="删除"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+            {isEditing ? (
+              <textarea
+                value={editMessage}
+                onChange={(e) => setEditMessage(e.target.value)}
+                maxLength={500}
+                rows={3}
+                className="w-full px-3 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all resize-none"
+              />
+            ) : (
+              <p className="text-sm text-foreground/80 whitespace-pre-wrap break-words">
+                {node.message}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {node.replies.length > 0 && (
+          <div>
+            {node.replies.map((child) => renderNode(child, depth + 1))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const countAll = (nodes: TreeNode[]): number => {
+    let count = 0;
+    for (const node of nodes) {
+      count += 1 + countAll(node.replies);
+    }
+    return count;
+  };
+
   return (
     <div>
-      <p className="text-muted text-sm mb-4">{entries.length} 条留言</p>
+      <p className="text-muted text-sm mb-4">{countAll(entries)} 条留言（含回复）</p>
 
       {loading ? (
         <p className="text-muted text-center py-8">加载中...</p>
       ) : entries.length === 0 ? (
         <p className="text-muted text-center py-8">暂无留言</p>
       ) : (
-        <div className="space-y-3">
-          {entries.map((entry) => (
-            <div key={entry.id} className="glass-card p-4 z-10">
-              <div className="relative z-10">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-3">
-                    <span className="font-medium text-sm">{entry.name}</span>
-                    <time className="text-xs text-muted font-mono">
-                      {formatDateTime(entry.created_at)}
-                    </time>
-                  </div>
-                  <button
-                    onClick={() => handleDelete(entry.id)}
-                    className="p-1.5 text-muted hover:text-red-500 transition-colors"
-                    title="删除留言"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-                <p className="text-sm text-foreground/80 whitespace-pre-wrap break-words">
-                  {entry.message}
-                </p>
-              </div>
-            </div>
-          ))}
+        <div>
+          {entries.map((entry) => renderNode(entry, 0))}
         </div>
       )}
     </div>

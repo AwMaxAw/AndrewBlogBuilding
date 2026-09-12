@@ -28,6 +28,7 @@ export interface DocContent {
   content: string;
   headings: DocHeading[];
   categoryId: string;
+  createdAt: string;
 }
 
 interface CategoryRow {
@@ -43,6 +44,7 @@ interface DocRow {
   description: string;
   content: string;
   sort_order: number;
+  created_at: string;
 }
 
 function getDb(): D1Database | null {
@@ -64,7 +66,7 @@ async function loadData() {
 
   const [catResult, docResult] = await Promise.all([
     db.prepare("SELECT slug, name, sort_order FROM doc_categories ORDER BY sort_order ASC").all<CategoryRow>(),
-    db.prepare("SELECT slug, category_slug, title, description, content, sort_order FROM docs ORDER BY category_slug, sort_order ASC").all<DocRow>(),
+    db.prepare("SELECT slug, category_slug, title, description, content, sort_order, created_at FROM docs ORDER BY category_slug, sort_order ASC").all<DocRow>(),
   ]);
 
   // 构建分类
@@ -87,6 +89,7 @@ async function loadData() {
         content: html,
         headings: extractHeadingsFromHtml(html),
         categoryId: row.category_slug,
+        createdAt: row.created_at || "",
       });
 
       // 把页面加入对应分类的 section

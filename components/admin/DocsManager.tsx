@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Edit2, Trash2, Save, X, FolderPlus, Eye, ExternalLink } from "lucide-react";
+import { Plus, Edit2, Trash2, Save, X, FolderPlus, Eye, ExternalLink, ChevronUp, ChevronDown } from "lucide-react";
 import { renderMarkdown } from "@/lib/markdown";
+import { formatDateTime } from "@/lib/utils";
 
 interface Category {
   id: number;
@@ -19,6 +20,7 @@ interface Doc {
   description: string;
   content: string;
   sort_order: number;
+  created_at: string;
 }
 
 interface DocForm {
@@ -33,6 +35,7 @@ interface DocForm {
 interface CatForm {
   slug: string;
   name: string;
+  sort_order: number;
 }
 
 const emptyDocForm: DocForm = {
@@ -44,7 +47,7 @@ const emptyDocForm: DocForm = {
   sort_order: 0,
 };
 
-const emptyCatForm: CatForm = { slug: "", name: "" };
+const emptyCatForm: CatForm = { slug: "", name: "", sort_order: 0 };
 
 export default function DocsManager() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -98,7 +101,7 @@ export default function DocsManager() {
   };
 
   const startEditCat = (cat: Category) => {
-    setCatForm({ slug: cat.slug, name: cat.name });
+    setCatForm({ slug: cat.slug, name: cat.name, sort_order: cat.sort_order });
     setOriginalCatSlug(cat.slug);
     setEditingCat(true);
   };
@@ -149,6 +152,38 @@ export default function DocsManager() {
       } else alert("删除失败");
     } catch {
       alert("网络错误");
+    }
+  };
+
+  // 调整分类排序：与相邻分类交换 sort_order
+  const moveCategory = async (cat: Category, direction: "up" | "down") => {
+    const sorted = [...categories].sort((a, b) => a.sort_order - b.sort_order);
+    const idx = sorted.findIndex((c) => c.slug === cat.slug);
+    const targetIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= sorted.length) return;
+
+    const target = sorted[targetIdx];
+    const tmpSort = cat.sort_order;
+    try {
+      // 先把当前分类设为一个临时值，避免唯一冲突
+      await fetch(`/api/admin/categories/${cat.slug}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sort_order: -99999 }),
+      });
+      await fetch(`/api/admin/categories/${target.slug}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sort_order: tmpSort }),
+      });
+      await fetch(`/api/admin/categories/${cat.slug}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sort_order: target.sort_order }),
+      });
+      loadData();
+    } catch {
+      alert("排序更新失败");
     }
   };
 
@@ -247,7 +282,7 @@ export default function DocsManager() {
             </button>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div>
             <label className="block text-sm text-muted mb-1">Slug</label>
             <input
@@ -264,6 +299,15 @@ export default function DocsManager() {
               onChange={(e) => setCatForm({ ...catForm, name: e.target.value })}
               className="w-full px-3 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60"
               placeholder="Site Building"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-muted mb-1">排序（数字越小越靠前）</label>
+            <input
+              type="number"
+              value={catForm.sort_order}
+              onChange={(e) => setCatForm({ ...catForm, sort_order: parseInt(e.target.value) || 0 })}
+              className="w-full px-3 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60"
             />
           </div>
         </div>
@@ -386,19 +430,35 @@ export default function DocsManager() {
       ) : categories.length === 0 ? (
         <p className="text-muted text-center py-8">暂无分类</p>
       ) : (
-        <div className="flex gap-2 mb-6 flex-wrap">
+        <div className="flex gap-2 mb-6 flex-wrap items-center">
           {categories.map((cat) => (
-            <div key={cat.slug} className="flex items-center gap-1">
+            <div key={cat.slug} className="flex items-center gap-1 bg-secondary/30 rounded-lg p-1">
               <button
                 onClick={() => setActiveCategory(cat.slug)}
                 className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
                   activeCategory === cat.slug
                     ? "bg-accent text-white"
-                    : "bg-secondary/50 text-muted hover:bg-secondary/80"
+                    : "text-muted hover:bg-secondary/80"
                 }`}
               >
                 {cat.name}
               </button>
+              <div className="flex flex-col">
+                <button
+                  onClick={() => moveCategory(cat, "up")}
+                  className="p-0.5 text-muted hover:text-accent"
+                  title="上移"
+                >
+                  <ChevronUp size={12} />
+                </button>
+                <button
+                  onClick={() => moveCategory(cat, "down")}
+                  className="p-0.5 text-muted hover:text-accent"
+                  title="下移"
+                >
+                  <ChevronDown size={12} />
+                </button>
+              </div>
               <button
                 onClick={() => startEditCat(cat)}
                 className="p-1 text-muted hover:text-accent"
@@ -449,6 +509,9 @@ export default function DocsManager() {
                     </div>
                     {doc.description && (
                       <p className="text-xs text-muted mt-1 truncate">{doc.description}</p>
+                    )}
+                    {doc.created_at && (
+                      <p className="text-xs text-muted/60 font-mono mt-1">{formatDateTime(doc.created_at)}</p>
                     )}
                   </div>
                   <div className="flex gap-2 shrink-0">

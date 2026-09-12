@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import DocsSidebar from "@/components/DocsSidebar";
 import DocsTOC from "@/components/DocsTOC";
 import DocsMobileMenu from "@/components/DocsMobileMenu";
+import { formatDateTime } from "@/lib/utils";
 import {
   getDocBySlug,
   getFirstDocSlug,
@@ -84,9 +85,14 @@ export default async function DocPage({ params }: DocPageProps) {
           <article className="prose-custom max-w-2xl mx-auto">
             <DocsMobileMenu categories={categories} />
             <div className="mt-6 lg:mt-0">
-              <h1 className="font-serif text-4xl font-semibold mb-8">
+              <h1 className="font-serif text-4xl font-semibold mb-2">
                 {doc.title}
               </h1>
+              {doc.createdAt && (
+                <p className="text-xs text-muted font-mono mb-8">
+                  {formatDateTime(doc.createdAt)}
+                </p>
+              )}
               <div
                 dangerouslySetInnerHTML={{ __html: doc.content }}
                 className="prose-content"

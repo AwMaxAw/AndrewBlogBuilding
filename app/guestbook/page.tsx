@@ -12,12 +12,12 @@ interface GuestbookEntry {
   created_at: string;
 }
 
-interface GroupedEntry extends GuestbookEntry {
-  replies: GuestbookEntry[];
+interface TreeNode extends GuestbookEntry {
+  replies: TreeNode[];
 }
 
 export default function GuestbookPage() {
-  const [entries, setEntries] = useState<GroupedEntry[]>([]);
+  const [entries, setEntries] = useState<TreeNode[]>([]);
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -27,39 +27,50 @@ export default function GuestbookPage() {
   const [replyMessage, setReplyMessage] = useState("");
   const [replySubmitting, setReplySubmitting] = useState(false);
 
+  const buildTree = (flat: GuestbookEntry[]): TreeNode[] => {
+    const map = new Map<number, TreeNode>();
+    const roots: TreeNode[] = [];
+
+    for (const entry of flat) {
+      map.set(entry.id, { ...entry, replies: [] });
+    }
+
+    for (const entry of flat) {
+      const node = map.get(entry.id)!;
+      if (entry.parent_id === null) {
+        roots.push(node);
+      } else {
+        const parent = map.get(entry.parent_id);
+        if (parent) {
+          parent.replies.push(node);
+        } else {
+          // 父节点不存在（可能已删除），作为根节点显示
+          roots.push(node);
+        }
+      }
+    }
+
+    // 根节点按时间倒序（最新在前）
+    roots.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+    // 所有层级的回复按时间正序
+    const sortRepliesAsc = (nodes: TreeNode[]) => {
+      for (const node of nodes) {
+        node.replies.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+        sortRepliesAsc(node.replies);
+      }
+    };
+    sortRepliesAsc(roots);
+
+    return roots;
+  };
+
   const loadEntries = async () => {
     setLoading(true);
     try {
       const res = await fetch("/api/guestbook");
       const data = (await res.json()) as GuestbookEntry[];
-
-      // 分组：顶层留言 + 回复
-      const map = new Map<number, GroupedEntry>();
-      const replies: GuestbookEntry[] = [];
-
-      for (const entry of data) {
-        if (entry.parent_id === null) {
-          map.set(entry.id, { ...entry, replies: [] });
-        } else {
-          replies.push(entry);
-        }
-      }
-
-      for (const reply of replies) {
-        const parent = map.get(reply.parent_id!);
-        if (parent) {
-          parent.replies.push(reply);
-        }
-      }
-
-      // 回复按时间正序
-      for (const entry of map.values()) {
-        entry.replies.sort(
-          (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-        );
-      }
-
-      setEntries(Array.from(map.values()));
+      setEntries(buildTree(data));
     } catch (e) {
       console.error(e);
     } finally {
@@ -128,6 +139,102 @@ export default function GuestbookPage() {
     }
   };
 
+  const findReplyTargetName = (nodes: TreeNode[], id: number): string => {
+    for (const node of nodes) {
+      if (node.id === id) return node.name;
+      const found = findReplyTargetName(node.replies, id);
+      if (found) return found;
+    }
+    return "";
+  };
+
+  // 递归渲染节点
+  const renderNode = (node: TreeNode, depth: number) => {
+    const isReplying = replyTo === node.id;
+    const targetName = findReplyTargetName(entries, node.parent_id || 0);
+
+    return (
+      <div key={node.id} className={depth > 0 ? "ml-4 border-l-2 border-border/60 pl-4" : ""}>
+        <div className="glass-card p-5 z-10 my-3">
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-medium text-sm">
+                {node.name}
+                {node.parent_id !== null && targetName && (
+                  <span className="text-accent ml-1">回复 @{targetName}</span>
+                )}
+              </span>
+              <time className="text-xs text-muted font-mono">
+                {formatDateTime(node.created_at)}
+              </time>
+            </div>
+            <p className="text-sm text-foreground/80 whitespace-pre-wrap break-words">
+              {node.message}
+            </p>
+            <button
+              onClick={() => {
+                setReplyTo(isReplying ? null : node.id);
+                setReplyName("");
+                setReplyMessage("");
+              }}
+              className="mt-3 inline-flex items-center gap-1 text-xs text-muted hover:text-accent transition-colors"
+            >
+              <Reply size={12} />
+              Reply
+            </button>
+
+            {isReplying && (
+              <form
+                onSubmit={(e) => handleReply(node.id, e)}
+                className="mt-4 p-4 bg-background/40 rounded-lg space-y-3"
+              >
+                <input
+                  type="text"
+                  value={replyName}
+                  onChange={(e) => setReplyName(e.target.value)}
+                  placeholder="Your name"
+                  maxLength={50}
+                  autoFocus
+                  className="w-full px-3 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all"
+                />
+                <textarea
+                  value={replyMessage}
+                  onChange={(e) => setReplyMessage(e.target.value)}
+                  placeholder={`Reply to ${node.name}...`}
+                  maxLength={500}
+                  rows={2}
+                  className="w-full px-3 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all resize-none"
+                />
+                <div className="flex items-center gap-3">
+                  <button
+                    type="submit"
+                    disabled={replySubmitting || !replyName.trim() || !replyMessage.trim()}
+                    className="px-4 py-1.5 bg-accent text-white rounded-lg text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {replySubmitting ? "Sending..." : "Reply"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setReplyTo(null)}
+                    className="text-xs text-muted hover:text-foreground transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+
+        {node.replies.length > 0 && (
+          <div className="space-y-0">
+            {node.replies.map((child) => renderNode(child, depth + 1))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="max-w-3xl mx-auto px-6 md:px-8 py-16">
       <header className="mb-12">
@@ -172,101 +279,13 @@ export default function GuestbookPage() {
       </form>
 
       {/* 留言列表 */}
-      <div className="space-y-4">
+      <div className="space-y-0">
         {loading ? (
           <p className="text-muted text-center py-8">Loading...</p>
         ) : entries.length === 0 ? (
           <p className="text-muted text-center py-8">No messages yet. Be the first!</p>
         ) : (
-          entries.map((entry) => (
-            <div key={entry.id} className="glass-card p-5 z-10">
-              <div className="relative z-10">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium text-sm">{entry.name}</span>
-                  <time className="text-xs text-muted font-mono">
-                    {formatDateTime(entry.created_at)}
-                  </time>
-                </div>
-                <p className="text-sm text-foreground/80 whitespace-pre-wrap break-words">
-                  {entry.message}
-                </p>
-                <button
-                  onClick={() => {
-                    setReplyTo(replyTo === entry.id ? null : entry.id);
-                    setReplyName("");
-                    setReplyMessage("");
-                  }}
-                  className="mt-3 inline-flex items-center gap-1 text-xs text-muted hover:text-accent transition-colors"
-                >
-                  <Reply size={12} />
-                  Reply
-                </button>
-
-                {/* 回复表单 */}
-                {replyTo === entry.id && (
-                  <form
-                    onSubmit={(e) => handleReply(entry.id, e)}
-                    className="mt-4 p-4 bg-background/40 rounded-lg space-y-3"
-                  >
-                    <input
-                      type="text"
-                      value={replyName}
-                      onChange={(e) => setReplyName(e.target.value)}
-                      placeholder="Your name"
-                      maxLength={50}
-                      autoFocus
-                      className="w-full px-3 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all"
-                    />
-                    <textarea
-                      value={replyMessage}
-                      onChange={(e) => setReplyMessage(e.target.value)}
-                      placeholder={`Reply to ${entry.name}...`}
-                      maxLength={500}
-                      rows={2}
-                      className="w-full px-3 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all resize-none"
-                    />
-                    <div className="flex items-center gap-3">
-                      <button
-                        type="submit"
-                        disabled={replySubmitting || !replyName.trim() || !replyMessage.trim()}
-                        className="px-4 py-1.5 bg-accent text-white rounded-lg text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {replySubmitting ? "Sending..." : "Reply"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setReplyTo(null)}
-                        className="text-xs text-muted hover:text-foreground transition-colors"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </form>
-                )}
-
-                {/* 回复列表 */}
-                {entry.replies.length > 0 && (
-                  <div className="mt-4 ml-4 space-y-3 border-l-2 border-border/60 pl-4">
-                    {entry.replies.map((reply) => (
-                      <div key={reply.id} className="text-sm">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="font-medium text-xs text-accent">
-                            {reply.name}
-                          </span>
-                          <time className="text-xs text-muted font-mono">
-                            {formatDateTime(reply.created_at)}
-                          </time>
-                        </div>
-                        <p className="text-foreground/80 whitespace-pre-wrap break-words">
-                          {reply.message}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          ))
+          entries.map((entry) => renderNode(entry, 0))
         )}
       </div>
     </div>
