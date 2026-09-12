@@ -25,8 +25,9 @@ export default function PostTimeline({ groups }: PostTimelineProps) {
         });
       },
       {
-        rootMargin: "-20% 0% -60% 0%",
-        threshold: 0.1,
+        // 监测带靠近视口顶部（10%~30% 高度），与 section 的 scroll-mt 对齐
+        rootMargin: "-10% 0% -70% 0%",
+        threshold: 0,
       }
     );
 
@@ -52,6 +53,7 @@ export default function PostTimeline({ groups }: PostTimelineProps) {
               <li key={group.id}>
                 <a
                   href={`#${group.id}`}
+                  onClick={() => setActiveId(group.id)}
                   className={`flex items-center justify-between text-xs py-1.5 px-2 rounded-lg transition-colors ${
                     activeId === group.id
                       ? "text-accent bg-accent/10"

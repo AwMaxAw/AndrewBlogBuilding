@@ -43,7 +43,7 @@ export default async function BlogPage() {
       <div className="flex flex-col lg:flex-row gap-12">
         <div className="flex-1 min-w-0">
           {groups.map((group) => (
-            <section key={group.id} id={group.id} className="mb-10 scroll-mt-24">
+            <section key={group.id} id={group.id} className="mb-10 scroll-mt-32">
               <h2 className="font-serif text-lg font-medium text-muted mb-4 flex items-center gap-4">
                 {group.label}
                 <span className="flex-1 h-px bg-border/60" />

@@ -7,6 +7,7 @@ export interface DocPage {
   slug: string;
   title: string;
   href: string;
+  date: string;
 }
 
 export interface DocSection {
@@ -99,6 +100,7 @@ async function loadData() {
           slug: row.slug,
           title: row.title,
           href: `/docs/${row.slug}`,
+          date: row.created_at ? row.created_at.slice(0, 10) : "",
         });
       }
     } catch (e) {

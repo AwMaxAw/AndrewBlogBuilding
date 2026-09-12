@@ -38,13 +38,16 @@ export default function DocsSidebar({ categories }: Props) {
                     <Link
                       href={page.href}
                       className={cn(
-                        "block text-sm py-1.5 px-3 rounded-md transition-colors",
+                        "flex items-center justify-between gap-2 text-sm py-1.5 px-3 rounded-md transition-colors",
                         isActive
                           ? "text-accent bg-accent/10 font-medium"
                           : "text-muted hover:text-foreground hover:bg-secondary/50"
                       )}
                     >
-                      {page.title}
+                      <span className="truncate">{page.title}</span>
+                      {page.date && (
+                        <span className="text-xs text-muted/50 font-mono shrink-0">{page.date}</span>
+                      )}
                     </Link>
                   </li>
                 );
