@@ -13,15 +13,17 @@ export const metadata: Metadata = {
 };
 
 export default async function CalendarPage() {
-  const [posts, categories, memos] = await Promise.all([
+  const [posts, categories, memos] = await Promise.allSettled([
     getAllPosts(),
     getDocsCategories(),
     getAllMemos(),
-  ]);
+  ]).then((results) =>
+    results.map((r) => (r.status === "fulfilled" ? r.value : []))
+  );
 
-  const docs = categories.flatMap((cat) =>
-    cat.sections.flatMap((s) =>
-      s.pages.map((p) => ({
+  const docs = (categories as any[]).flatMap((cat) =>
+    cat.sections.flatMap((s: any) =>
+      s.pages.map((p: any) => ({
         slug: p.slug,
         title: p.title,
         date: p.date,
@@ -32,14 +34,14 @@ export default async function CalendarPage() {
 
   return (
     <PublicCalendar
-      posts={posts.map((p) => ({
+      posts={(posts as any[]).map((p) => ({
         slug: p.slug,
         title: p.title,
         date: p.date,
         tags: p.tags,
       }))}
       docs={docs}
-      memos={memos.map((m) => ({
+      memos={(memos as any[]).map((m) => ({
         id: m.id,
         date: m.date,
         content: m.content,
