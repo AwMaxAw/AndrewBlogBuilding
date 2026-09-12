@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import ChangelogList from "@/components/ChangelogList";
 import { getAllChangelogs } from "@/lib/changelogs";
 
-export const runtime = "edge";
-
 export const metadata: Metadata = {
   title: "Changelog",
   description: "Website update changelog",

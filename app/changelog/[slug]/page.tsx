@@ -3,16 +3,18 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
-import { getChangelogBySlug } from "@/lib/changelogs";
+import { getChangelogBySlug, getChangelogSlugs } from "@/lib/changelogs";
 import { formatDate } from "@/lib/utils";
 import { mdxComponents } from "@/components/MDXComponents";
 import { Calendar, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-export const runtime = "edge";
-
 interface ChangelogPageProps {
   params: { slug: string };
+}
+
+export function generateStaticParams() {
+  return getChangelogSlugs().map((slug) => ({ slug }));
 }
 
 export function generateMetadata({ params }: ChangelogPageProps): Metadata {
