@@ -182,10 +182,10 @@ export default function Navbar() {
             </button>
 
             {moreOpen && (
-              <div className="absolute right-0 top-full mt-2 w-60 glass-card p-2 z-50">
-                <div className="relative z-10 max-h-[70vh] overflow-y-auto">
+              <div className="absolute right-0 top-full mt-2 w-auto glass-card p-2 z-50">
+                <div className="relative z-10 max-h-[70vh] overflow-y-auto flex items-stretch gap-2">
                   {/* 内部页面 */}
-                  <div className="mb-2">
+                  <div className="min-w-[7.5rem]">
                     <p className="px-3 py-1.5 text-xs font-semibold text-muted uppercase tracking-wide">
                       Pages
                     </p>
@@ -207,7 +207,7 @@ export default function Navbar() {
                   </div>
 
                   {/* Connect */}
-                  <div className="mb-2 pt-2 border-t border-border/40">
+                  <div className="min-w-[7.5rem] pl-2 border-l border-border/40">
                     <p className="px-3 py-1.5 text-xs font-semibold text-muted uppercase tracking-wide">
                       Connect
                     </p>
@@ -226,7 +226,7 @@ export default function Navbar() {
                   </div>
 
                   {/* Friend Links */}
-                  <div className="pt-2 border-t border-border/40">
+                  <div className="min-w-[7.5rem] pl-2 border-l border-border/40">
                     <p className="px-3 py-1.5 text-xs font-semibold text-muted uppercase tracking-wide">
                       Friend Links
                     </p>
