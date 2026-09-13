@@ -20,8 +20,11 @@ const footerSections: FooterSection[] = [
   {
     title: "Resources",
     links: [
-      { label: "Blog", href: "/blog" },
-      { label: "Changelog", href: "/changelog" },
+      { label: "Home", href: "/" },
+      { label: "Posts", href: "/blog" },
+      { label: "Docs", href: "/docs" },
+      { label: "Calendar", href: "/calendar" },
+      { label: "Archive", href: "/archive" },
       { label: "Guestbook", href: "/guestbook" },
       { label: "About", href: "/about" },
       { label: "More", href: "/more" },
@@ -33,6 +36,14 @@ const footerSections: FooterSection[] = [
       { label: "GitHub", href: "https://github.com/AwMaxAw" },
       { label: "Twitter", href: "https://twitter.com" },
       { label: "Email", href: "mailto:max.li.ggm@gmail.com" },
+    ],
+  },
+  {
+    title: "Friend Links",
+    links: [
+      { label: "Next.js", href: "https://nextjs.org" },
+      { label: "Tailwind CSS", href: "https://tailwindcss.com" },
+      { label: "hconzlvra.top", href: "https://hconzlvra.top" },
     ],
   },
   {
@@ -54,7 +65,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-border bg-secondary/20 mt-24">
       <div className="max-w-6xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">

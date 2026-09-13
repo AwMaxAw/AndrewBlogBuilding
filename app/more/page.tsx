@@ -13,7 +13,7 @@ interface FriendLink {
   description: string;
 }
 
-const FRIEND_LINKS: FriendLink[] = [
+const CONNECT_LINKS: FriendLink[] = [
   {
     name: "GitHub",
     url: "https://github.com/AwMaxAw",
@@ -24,6 +24,9 @@ const FRIEND_LINKS: FriendLink[] = [
     url: "https://twitter.com",
     description: "Follow me for updates and thoughts",
   },
+];
+
+const FRIEND_LINKS: FriendLink[] = [
   {
     name: "Next.js",
     url: "https://nextjs.org",
@@ -41,6 +44,31 @@ const FRIEND_LINKS: FriendLink[] = [
   },
 ];
 
+function LinkCard({ link }: { link: FriendLink }) {
+  return (
+    <Link
+      href={link.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="glass-card z-10 group"
+    >
+      <div className="relative z-10 p-6 flex items-center justify-between">
+        <div>
+          <h3 className="font-serif text-lg font-medium mb-1 group-hover:text-accent transition-colors flex items-center gap-1">
+            {link.name}
+            <ArrowUpRight size={14} className="opacity-50 group-hover:opacity-100 transition-opacity" />
+          </h3>
+          <p className="text-sm text-muted">{link.description}</p>
+        </div>
+        <ExternalLink
+          size={18}
+          className="text-muted group-hover:text-accent transition-colors shrink-0 ml-4"
+        />
+      </div>
+    </Link>
+  );
+}
+
 export default function MorePage() {
   return (
     <div className="max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto px-6 md:px-8 py-16">
@@ -49,35 +77,24 @@ export default function MorePage() {
           More
         </h1>
         <p className="text-lg text-muted leading-relaxed">
-          Friend links and useful resources.
+          Connect and friend links.
         </p>
       </header>
+
+      <section className="mb-16">
+        <h2 className="font-serif text-2xl font-semibold mb-8">Connect</h2>
+        <div className="grid gap-4">
+          {CONNECT_LINKS.map((link) => (
+            <LinkCard key={link.name} link={link} />
+          ))}
+        </div>
+      </section>
 
       <section>
         <h2 className="font-serif text-2xl font-semibold mb-8">Friend Links</h2>
         <div className="grid gap-4">
           {FRIEND_LINKS.map((link) => (
-            <Link
-              key={link.name}
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="glass-card z-10 group"
-            >
-              <div className="relative z-10 p-6 flex items-center justify-between">
-                <div>
-                  <h3 className="font-serif text-lg font-medium mb-1 group-hover:text-accent transition-colors flex items-center gap-1">
-                    {link.name}
-                    <ArrowUpRight size={14} className="opacity-50 group-hover:opacity-100 transition-opacity" />
-                  </h3>
-                  <p className="text-sm text-muted">{link.description}</p>
-                </div>
-                <ExternalLink
-                  size={18}
-                  className="text-muted group-hover:text-accent transition-colors shrink-0 ml-4"
-                />
-              </div>
-            </Link>
+            <LinkCard key={link.name} link={link} />
           ))}
         </div>
       </section>
