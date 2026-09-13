@@ -76,10 +76,10 @@ export default function Navbar() {
     >
       <nav
         className={cn(
-          "flex items-center justify-between h-12 rounded-full transition-all",
+          "flex items-center justify-between h-10 rounded-full transition-all",
           scrolled
-            ? "max-w-2xl w-full mx-auto px-4 md:px-5 bg-white/60 dark:bg-black/50 border border-black/10 dark:border-white/10 backdrop-blur-xl saturate-150 shadow-[0_8px_32px_rgba(0,0,0,0.12)]"
-            : "max-w-4xl w-full mx-auto px-3 bg-transparent border border-transparent backdrop-blur-none"
+            ? "max-w-2xl w-full mx-auto px-3 md:px-4 bg-white/60 dark:bg-black/50 border border-black/10 dark:border-white/10 backdrop-blur-xl saturate-150 shadow-[0_8px_32px_rgba(0,0,0,0.12)]"
+            : "max-w-4xl w-full mx-auto px-2 bg-transparent border border-transparent backdrop-blur-none"
         )}
         style={{ transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)", transitionDuration: "450ms" }}
       >
@@ -150,10 +150,10 @@ export default function Navbar() {
                 setSearchOpen(!searchOpen);
                 if (!searchOpen) setMoreOpen(false);
               }}
-              className="p-1.5 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50 shrink-0"
+              className="p-1 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50 shrink-0"
               aria-label="Toggle search"
             >
-              <Search size={18} />
+              <Search size={16} />
             </button>
           </div>
 
@@ -164,10 +164,10 @@ export default function Navbar() {
                 setMoreOpen(!moreOpen);
                 if (!moreOpen) setSearchOpen(false);
               }}
-              className="p-1.5 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50 shrink-0"
+              className="p-1 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50 shrink-0"
               aria-label="Toggle more menu"
             >
-              <Menu size={18} />
+              <Menu size={16} />
             </button>
 
             {moreOpen && (
@@ -226,11 +226,11 @@ export default function Navbar() {
           </div>
 
           <button
-            className="p-2 -mr-2 text-foreground"
+            className="p-1 text-foreground shrink-0"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
-            <Menu size={20} />
+            <Menu size={16} />
           </button>
         </div>
       </nav>
