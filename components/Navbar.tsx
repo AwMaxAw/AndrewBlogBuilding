@@ -188,12 +188,12 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* 移动端 */}
+        {/* 移动端：链接横向滚动 + 折叠按钮 + 搜索按钮 */}
         <div className="md:hidden flex items-center">
           <div
             className={cn(
-              "flex items-center gap-1 overflow-x-auto overflow-y-hidden scrollbar-hide transition-all duration-300 ease-out flex-nowrap",
-              mobileOpen ? "w-auto max-w-[65vw] opacity-100 mr-2" : "w-0 opacity-0 mr-0"
+              "flex items-center gap-1 overflow-x-auto overflow-y-hidden scrollbar-hide transition-all duration-300 ease-out flex-nowrap min-w-0",
+              mobileOpen ? "w-auto max-w-[50vw] opacity-100 mr-1" : "w-0 opacity-0 mr-0"
             )}
           >
             {PRIMARY_LINKS.filter((link) => link.href !== "/").concat(INTERNAL_LINKS).map((link) => {
@@ -203,7 +203,7 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    "group relative text-sm px-3 py-1.5 rounded-full transition-colors whitespace-nowrap",
+                    "group relative text-sm px-3 py-1.5 rounded-full transition-colors whitespace-nowrap shrink-0",
                     active ? "text-accent" : "text-muted hover:text-foreground"
                   )}
                 >
@@ -220,14 +220,54 @@ export default function Navbar() {
           </div>
 
           <button
-            className="p-2 -mr-2 text-foreground"
+            className="p-2 text-foreground shrink-0"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
             <Menu size={20} />
           </button>
+
+          <button
+            onClick={() => {
+              setSearchOpen(!searchOpen);
+              if (!searchOpen) setMobileOpen(false);
+            }}
+            className="p-2 text-muted hover:text-foreground transition-colors shrink-0"
+            aria-label="Toggle search"
+          >
+            <Search size={18} />
+          </button>
         </div>
       </nav>
+
+      {/* 移动端搜索框 */}
+      <div
+        className={cn(
+          "md:hidden fixed top-14 left-4 right-4 z-50 transition-all duration-300",
+          searchOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        )}
+      >
+        <form
+          onSubmit={handleSearch}
+          className="relative"
+        >
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search"
+            className="w-full pl-10 pr-4 py-2 bg-white/90 dark:bg-gray-900/90 border border-border/40 dark:border-gray-700/40 rounded-full text-sm text-gray-900 dark:text-gray-100 placeholder:text-muted focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all"
+            autoFocus={searchOpen}
+          />
+          <button
+            type="submit"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted hover:text-accent transition-colors"
+            aria-label="Search"
+          >
+            <Search size={16} />
+          </button>
+        </form>
+      </div>
     </header>
   );
 }
