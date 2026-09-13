@@ -80,38 +80,38 @@ export default function Navbar() {
           Andrew
         </Link>
 
-        {/* 桌面端 PRIMARY_LINKS */}
-        <div className="hidden md:flex items-center gap-5">
-          {PRIMARY_LINKS.map((link) => {
-            const active = isActiveLink(link.href, pathname);
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "group relative text-sm transition-colors",
-                  active ? "text-accent" : "text-muted hover:text-foreground"
-                )}
-              >
-                {link.label}
-                <span
+        {/* 桌面端右侧：PRIMARY + INTERNAL(展开向左弹) + More + 搜索，全部靠右 */}
+        <div className="hidden md:flex items-center shrink-0">
+          {/* PRIMARY_LINKS */}
+          <div className="flex items-center gap-4">
+            {PRIMARY_LINKS.map((link) => {
+              const active = isActiveLink(link.href, pathname);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
                   className={cn(
-                    "absolute -bottom-1 left-0 h-px transition-all duration-300 ease-out",
-                    active ? "w-full bg-accent" : "w-0 bg-foreground dark:bg-white group-hover:w-full"
+                    "group relative text-sm transition-colors",
+                    active ? "text-accent" : "text-muted hover:text-foreground"
                   )}
-                />
-              </Link>
-            );
-          })}
-        </div>
+                >
+                  {link.label}
+                  <span
+                    className={cn(
+                      "absolute -bottom-1 left-0 h-px transition-all duration-300 ease-out",
+                      active ? "w-full bg-accent" : "w-0 bg-foreground dark:bg-white group-hover:w-full"
+                    )}
+                  />
+                </Link>
+              );
+            })}
+          </div>
 
-        {/* 桌面端右侧：INTERNAL(展开向左弹) + More + 搜索 */}
-        <div className="hidden md:flex items-center relative">
           {/* INTERNAL_LINKS：展开时从 More 左边向左弹出 */}
           <div
             className={cn(
               "flex items-center gap-4 overflow-hidden transition-all duration-300 ease-out",
-              moreOpen ? "w-auto opacity-100 mr-0" : "w-0 opacity-0 mr-0"
+              moreOpen ? "w-auto opacity-100" : "w-0 opacity-0"
             )}
           >
             {INTERNAL_LINKS.map((link) => {
