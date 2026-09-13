@@ -91,7 +91,7 @@ export default function Navbar() {
           Andrew
         </Link>
 
-        {/* 桌面端链接区：PRIMARY + INTERNAL(展开弹出) + More 按钮，紧贴排列 */}
+        {/* 桌面端链接区：PRIMARY + INTERNAL(展开时弹出)，紧贴排列 */}
         <div className="hidden md:flex items-center gap-0">
           {PRIMARY_LINKS.map((link) => {
             const active = isActiveLink(link.href, pathname);
@@ -115,7 +115,7 @@ export default function Navbar() {
             );
           })}
 
-          {/* INTERNAL_LINKS：展开时从 PRIMARY 和 More 之间向左弹出 */}
+          {/* INTERNAL_LINKS：展开时从 More 按钮左边向左弹出 */}
           <div
             className={cn(
               "flex items-center transition-all duration-300 ease-out overflow-hidden",
@@ -144,8 +144,10 @@ export default function Navbar() {
               );
             })}
           </div>
+        </div>
 
-          {/* More 按钮：紧贴 PRIMARY，展开时 INTERNAL 从它左边弹出 */}
+        {/* 桌面端右侧按钮区：More 在左，搜索在右，固定不被挤 */}
+        <div className="hidden md:flex items-center gap-1 shrink-0">
           <button
             onClick={() => {
               setMoreOpen(!moreOpen);
@@ -156,10 +158,7 @@ export default function Navbar() {
           >
             <Menu size={18} />
           </button>
-        </div>
 
-        {/* 桌面端搜索按钮，固定不被挤 */}
-        <div className="hidden md:flex items-center gap-1 shrink-0">
           <div className="relative flex items-center">
             <form
               onSubmit={handleSearch}
