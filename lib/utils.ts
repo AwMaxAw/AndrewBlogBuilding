@@ -8,8 +8,24 @@ export function cn(...inputs: ClassValue[]) {
 // 否则 toLocaleString 会按 UTC 渲染，导致时间差 8 小时
 const TZ = "Asia/Shanghai";
 
+/**
+ * 解析日期字符串为 Date 对象。
+ * SQLite 的 datetime('now') 返回 "YYYY-MM-DD HH:MM:SS" 格式（无时区标记，实际是 UTC）。
+ * 浏览器中 new Date("YYYY-MM-DD HH:MM:SS") 会被当作本地时间解析，导致偏差。
+ * 这里统一把无时区标记的空格分隔时间串当作 UTC 解析。
+ */
+function parseDate(date: string): Date {
+  if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(date)) {
+    return new Date(date.replace(" ", "T") + "Z");
+  }
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(date)) {
+    return new Date(date + "Z");
+  }
+  return new Date(date);
+}
+
 export function formatDate(date: string, short = false): string {
-  return new Date(date).toLocaleDateString("zh-CN", {
+  return parseDate(date).toLocaleDateString("zh-CN", {
     timeZone: TZ,
     year: "numeric",
     month: short ? "short" : "long",
@@ -18,7 +34,7 @@ export function formatDate(date: string, short = false): string {
 }
 
 export function formatDateTime(date: string): string {
-  return new Date(date).toLocaleString("zh-CN", {
+  return parseDate(date).toLocaleString("zh-CN", {
     timeZone: TZ,
     year: "numeric",
     month: "2-digit",
@@ -31,7 +47,7 @@ export function formatDateTime(date: string): string {
 }
 
 export function formatTime(date: string): string {
-  return new Date(date).toLocaleTimeString("zh-CN", {
+  return parseDate(date).toLocaleTimeString("zh-CN", {
     timeZone: TZ,
     hour: "2-digit",
     minute: "2-digit",
