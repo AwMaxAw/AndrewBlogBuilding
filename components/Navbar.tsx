@@ -53,6 +53,35 @@ export default function Navbar() {
     }
   };
 
+  // 带下划线动画的按钮组件
+  function IconButton({
+    onClick,
+    active,
+    label,
+    children,
+  }: {
+    onClick: () => void;
+    active?: boolean;
+    label: string;
+    children: React.ReactNode;
+  }) {
+    return (
+      <button
+        onClick={onClick}
+        className="group relative p-1 text-muted hover:text-foreground transition-colors shrink-0"
+        aria-label={label}
+      >
+        {children}
+        <span
+          className={cn(
+            "absolute -bottom-1 left-0 h-px transition-all duration-300 ease-out",
+            active ? "w-full bg-accent" : "w-0 bg-foreground dark:bg-white group-hover:w-full"
+          )}
+        />
+      </button>
+    );
+  }
+
   return (
     <header
       className={cn(
@@ -80,8 +109,8 @@ export default function Navbar() {
           Andrew
         </Link>
 
-        {/* 桌面端链接区：PRIMARY + INTERNAL(展开向左弹出) + More 按钮 */}
-        <div className="hidden md:flex items-center gap-1">
+        {/* 桌面端链接区：PRIMARY + INTERNAL(展开向左弹出)，全部紧贴 */}
+        <div className="hidden md:flex items-center gap-0">
           {PRIMARY_LINKS.map((link) => {
             const active = isActiveLink(link.href, pathname);
             return (
@@ -133,22 +162,23 @@ export default function Navbar() {
               );
             })}
           </div>
+        </div>
 
+        {/* 桌面端右侧：More + 搜索，紧贴 */}
+        <div className="hidden md:flex items-center gap-0 shrink-0">
           {/* More 按钮 */}
-          <button
+          <IconButton
             onClick={() => {
               setMoreOpen(!moreOpen);
               if (!moreOpen) setSearchOpen(false);
             }}
-            className="p-1 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50 shrink-0"
-            aria-label="Toggle more menu"
+            active={moreOpen}
+            label="Toggle more menu"
           >
             <Menu size={16} />
-          </button>
-        </div>
+          </IconButton>
 
-        {/* 桌面端搜索按钮，固定不被挤 */}
-        <div className="hidden md:flex items-center gap-1 shrink-0">
+          {/* 搜索 */}
           <div className="relative flex items-center">
             <form
               onSubmit={handleSearch}
@@ -174,16 +204,16 @@ export default function Navbar() {
               </button>
             </form>
 
-            <button
+            <IconButton
               onClick={() => {
                 setSearchOpen(!searchOpen);
                 if (!searchOpen) setMoreOpen(false);
               }}
-              className="p-1 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50 shrink-0"
-              aria-label="Toggle search"
+              active={searchOpen}
+              label="Toggle search"
             >
               <Search size={16} />
-            </button>
+            </IconButton>
           </div>
         </div>
 
