@@ -143,7 +143,7 @@ export default function PrivacyPage() {
         </div>
 
         <div>
-          <h2 className="font-serif text-2xl font-semibold mb-4 text-foreground">9. Children's Privacy</h2>
+          <h2 className="font-serif text-2xl font-semibold mb-4 text-foreground">9. Children&apos;s Privacy</h2>
           <p>
             This website is not directed at children under the age of 13, and we do not knowingly collect
             personal information from children under 13. If we become aware that we have collected personal
@@ -217,7 +217,7 @@ export default function PrivacyPage() {
           <p>
             You agree to indemnify, defend, and hold harmless the site owner and its affiliates from and
             against any claims, liabilities, damages, losses, and expenses (including reasonable
-            attorneys' fees) arising out of or in any way connected with: (a) your access to or use of
+            attorneys&apos; fees) arising out of or in any way connected with: (a) your access to or use of
             this website; (b) your violation of these terms; or (c) your violation of any law or the
             rights of any third party. We reserve the right to assume the exclusive defense and control
             of any matter subject to indemnification by you.
