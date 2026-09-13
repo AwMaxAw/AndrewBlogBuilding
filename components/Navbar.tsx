@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
-import { Menu, Search, Github, Twitter } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Menu, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const PRIMARY_LINKS: { href: string; label: string }[] = [
@@ -43,7 +43,6 @@ export default function Navbar() {
   const [moreOpen, setMoreOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const moreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -56,18 +55,6 @@ export default function Navbar() {
     setMobileOpen(false);
     setMoreOpen(false);
   }, [pathname]);
-
-  // 点击外部关闭 More 下拉
-  useEffect(() => {
-    if (!moreOpen) return;
-    const onClick = (e: MouseEvent) => {
-      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
-        setMoreOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
-  }, [moreOpen]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,7 +91,8 @@ export default function Navbar() {
           Andrew
         </Link>
 
-        <div className="hidden md:flex items-center gap-5">
+        {/* 桌面端链接区：PRIMARY 紧贴，INTERNAL 展开时向左弹出 */}
+        <div className="hidden md:flex items-center gap-1">
           {PRIMARY_LINKS.map((link) => {
             const active = isActiveLink(link.href, pathname);
             return (
@@ -112,7 +100,7 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "group relative text-sm transition-colors",
+                  "group relative text-sm px-2 transition-colors whitespace-nowrap",
                   active ? "text-accent" : "text-muted hover:text-foreground"
                 )}
               >
@@ -126,10 +114,52 @@ export default function Navbar() {
               </Link>
             );
           })}
+
+          {/* INTERNAL_LINKS：展开时向左弹出 */}
+          <div
+            className={cn(
+              "flex items-center gap-1 transition-all duration-300 ease-out overflow-hidden",
+              moreOpen ? "opacity-100 ml-1" : "opacity-0 w-0 ml-0"
+            )}
+          >
+            {INTERNAL_LINKS.map((link) => {
+              const active = isActiveLink(link.href, pathname);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "group relative text-sm px-2 transition-colors whitespace-nowrap",
+                    active ? "text-accent" : "text-muted hover:text-foreground"
+                  )}
+                >
+                  {link.label}
+                  <span
+                    className={cn(
+                      "absolute -bottom-1 left-0 h-px transition-all duration-300 ease-out",
+                      active ? "w-full bg-accent" : "w-0 bg-foreground dark:bg-white group-hover:w-full"
+                    )}
+                  />
+                </Link>
+              );
+            })}
+          </div>
         </div>
 
-        {/* 右侧操作区：搜索 + More 按钮，固定不被挤（仅桌面端） */}
+        {/* 桌面端右侧按钮区：More 在左，搜索在右，固定不被挤 */}
         <div className="hidden md:flex items-center gap-1 shrink-0">
+          {/* More 按钮 */}
+          <button
+            onClick={() => {
+              setMoreOpen(!moreOpen);
+              if (!moreOpen) setSearchOpen(false);
+            }}
+            className="p-1.5 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50 shrink-0"
+            aria-label="Toggle more menu"
+          >
+            <Menu size={18} />
+          </button>
+
           {/* 搜索 */}
           <div className="relative flex items-center">
             <form
@@ -166,48 +196,6 @@ export default function Navbar() {
             >
               <Search size={18} />
             </button>
-          </div>
-
-          {/* More 下拉 */}
-          <div className="relative" ref={moreRef}>
-            <button
-              onClick={() => {
-                setMoreOpen(!moreOpen);
-                if (!moreOpen) setSearchOpen(false);
-              }}
-              className="p-1.5 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50 shrink-0"
-              aria-label="Toggle more menu"
-            >
-              <Menu size={18} />
-            </button>
-
-            {moreOpen && (
-              <div className="absolute right-0 top-full mt-2 w-auto glass-card p-1 z-50">
-                <div className="relative z-10 flex items-center gap-0.5">
-                  {INTERNAL_LINKS.map((link) => {
-                    const active = isActiveLink(link.href, pathname);
-                    return (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        className={cn(
-                          "group relative text-sm px-3 py-1.5 rounded-full transition-colors whitespace-nowrap",
-                          active ? "text-accent" : "text-muted hover:text-foreground"
-                        )}
-                      >
-                        {link.label}
-                        <span
-                          className={cn(
-                            "absolute bottom-0 left-3 right-3 h-px origin-left transition-transform duration-300 ease-out",
-                            active ? "scale-x-100 bg-accent" : "scale-x-0 bg-foreground dark:bg-white group-hover:scale-x-100"
-                          )}
-                        />
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
