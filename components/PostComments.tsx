@@ -300,7 +300,7 @@ export default function PostComments({ slug }: { slug: string }) {
 
               {/* 回复嵌套在同一个 glass-card 内 */}
               {node.replies.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-border/40 space-y-1">
+                <div className="mt-4 pt-4 border-t border-border/40 space-y-3">
                   {node.replies.map((child) => renderNode(child, depth + 1))}
                 </div>
               )}
@@ -315,7 +315,7 @@ export default function PostComments({ slug }: { slug: string }) {
       <div key={node.id} className="ml-4 border-l-2 border-border/60 pl-4">
         {replyBody}
         {node.replies.length > 0 && (
-          <div>
+          <div className="mt-2 space-y-3">
             {node.replies.map((child) => renderNode(child, depth + 1))}
           </div>
         )}
