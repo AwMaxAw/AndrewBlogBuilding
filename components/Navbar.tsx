@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
-import { Menu, Search, Github, Twitter } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const PRIMARY_LINKS: { href: string; label: string }[] = [
@@ -18,17 +18,6 @@ const INTERNAL_LINKS: { href: string; label: string }[] = [
   { href: "/guestbook", label: "Guestbook" },
   { href: "/about", label: "About" },
   { href: "/more", label: "More" },
-];
-
-const CONNECT_LINKS: { href: string; label: string }[] = [
-  { href: "https://github.com/AwMaxAw", label: "GitHub" },
-  { href: "https://twitter.com", label: "Twitter" },
-];
-
-const FRIEND_LINKS: { href: string; label: string }[] = [
-  { href: "https://nextjs.org", label: "Next.js" },
-  { href: "https://tailwindcss.com", label: "Tailwind CSS" },
-  { href: "https://hconzlvra.top", label: "hconzlvra.top" },
 ];
 
 function isActiveLink(href: string, pathname: string) {
@@ -182,66 +171,23 @@ export default function Navbar() {
             </button>
 
             {moreOpen && (
-              <div className="absolute right-0 top-full mt-2 w-60 glass-card p-2 z-50">
-                <div className="relative z-10 max-h-[70vh] overflow-y-auto">
-                  {/* 内部页面 */}
-                  <div className="mb-2">
-                    <p className="px-3 py-1.5 text-xs font-semibold text-muted uppercase tracking-wide">
-                      Pages
-                    </p>
-                    {INTERNAL_LINKS.map((link) => {
-                      const active = isActiveLink(link.href, pathname);
-                      return (
-                        <Link
-                          key={link.href}
-                          href={link.href}
-                          className={cn(
-                            "block px-3 py-1.5 rounded-lg text-sm transition-colors",
-                            active ? "text-accent bg-accent/10" : "text-muted hover:text-foreground hover:bg-background/50"
-                          )}
-                        >
-                          {link.label}
-                        </Link>
-                      );
-                    })}
-                  </div>
-
-                  {/* Connect */}
-                  <div className="mb-2 pt-2 border-t border-border/40">
-                    <p className="px-3 py-1.5 text-xs font-semibold text-muted uppercase tracking-wide">
-                      Connect
-                    </p>
-                    {CONNECT_LINKS.map((link) => (
-                      <a
+              <div className="absolute right-0 top-full mt-2 w-40 glass-card p-2 z-50">
+                <div className="relative z-10">
+                  {INTERNAL_LINKS.map((link) => {
+                    const active = isActiveLink(link.href, pathname);
+                    return (
+                      <Link
                         key={link.href}
                         href={link.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm text-muted hover:text-foreground hover:bg-background/50 transition-colors"
-                      >
-                        {link.label === "GitHub" ? <Github size={14} /> : <Twitter size={14} />}
-                        {link.label}
-                      </a>
-                    ))}
-                  </div>
-
-                  {/* Friend Links */}
-                  <div className="pt-2 border-t border-border/40">
-                    <p className="px-3 py-1.5 text-xs font-semibold text-muted uppercase tracking-wide">
-                      Friend Links
-                    </p>
-                    {FRIEND_LINKS.map((link) => (
-                      <a
-                        key={link.href}
-                        href={link.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block px-3 py-1.5 rounded-lg text-sm text-muted hover:text-foreground hover:bg-background/50 transition-colors"
+                        className={cn(
+                          "block px-3 py-1.5 rounded-lg text-sm transition-colors",
+                          active ? "text-accent bg-accent/10" : "text-muted hover:text-foreground hover:bg-background/50"
+                        )}
                       >
                         {link.label}
-                      </a>
-                    ))}
-                  </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             )}
