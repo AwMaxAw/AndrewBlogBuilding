@@ -257,7 +257,7 @@ export default function Navbar() {
             )}
             style={{ width: mobileOpen ? "auto" : 0, flex: mobileOpen ? "1 1 auto" : "0 0 0" }}
           >
-            {PRIMARY_LINKS.filter((link) => link.href !== "/").concat(INTERNAL_LINKS).map((link) => {
+            {INTERNAL_LINKS.map((link) => {
               const active = isActiveLink(link.href, pathname);
               return (
                 <Link
