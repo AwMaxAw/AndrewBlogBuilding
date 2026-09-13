@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Menu, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -32,7 +32,6 @@ export default function Navbar() {
   const [moreOpen, setMoreOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const moreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -45,18 +44,6 @@ export default function Navbar() {
     setMobileOpen(false);
     setMoreOpen(false);
   }, [pathname]);
-
-  // 点击外部关闭 More 下拉
-  useEffect(() => {
-    if (!moreOpen) return;
-    const onClick = (e: MouseEvent) => {
-      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
-        setMoreOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
-  }, [moreOpen]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,7 +80,8 @@ export default function Navbar() {
           Andrew
         </Link>
 
-        <div className="hidden md:flex items-center gap-5">
+        {/* 桌面端链接区：PRIMARY + INTERNAL(展开向左弹出) + More 按钮 */}
+        <div className="hidden md:flex items-center gap-1">
           {PRIMARY_LINKS.map((link) => {
             const active = isActiveLink(link.href, pathname);
             return (
@@ -101,7 +89,7 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "group relative text-sm transition-colors",
+                  "group relative text-sm px-2 transition-colors whitespace-nowrap",
                   active ? "text-accent" : "text-muted hover:text-foreground"
                 )}
               >
@@ -115,11 +103,52 @@ export default function Navbar() {
               </Link>
             );
           })}
+
+          {/* INTERNAL_LINKS：展开时从 More 按钮左边向左弹出 */}
+          <div
+            className={cn(
+              "flex items-center transition-all duration-300 ease-out overflow-hidden",
+              moreOpen ? "opacity-100" : "opacity-0 w-0"
+            )}
+          >
+            {INTERNAL_LINKS.map((link) => {
+              const active = isActiveLink(link.href, pathname);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "group relative text-sm px-2 transition-colors whitespace-nowrap",
+                    active ? "text-accent" : "text-muted hover:text-foreground"
+                  )}
+                >
+                  {link.label}
+                  <span
+                    className={cn(
+                      "absolute -bottom-1 left-0 h-px transition-all duration-300 ease-out",
+                      active ? "w-full bg-accent" : "w-0 bg-foreground dark:bg-white group-hover:w-full"
+                    )}
+                  />
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* More 按钮 */}
+          <button
+            onClick={() => {
+              setMoreOpen(!moreOpen);
+              if (!moreOpen) setSearchOpen(false);
+            }}
+            className="p-1 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50 shrink-0"
+            aria-label="Toggle more menu"
+          >
+            <Menu size={16} />
+          </button>
         </div>
 
-        {/* 右侧操作区：搜索 + More 按钮，固定不被挤（仅桌面端） */}
+        {/* 桌面端搜索按钮，固定不被挤 */}
         <div className="hidden md:flex items-center gap-1 shrink-0">
-          {/* 搜索 */}
           <div className="relative flex items-center">
             <form
               onSubmit={handleSearch}
@@ -155,42 +184,6 @@ export default function Navbar() {
             >
               <Search size={16} />
             </button>
-          </div>
-
-          {/* More 下拉 */}
-          <div className="relative" ref={moreRef}>
-            <button
-              onClick={() => {
-                setMoreOpen(!moreOpen);
-                if (!moreOpen) setSearchOpen(false);
-              }}
-              className="p-1 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50 shrink-0"
-              aria-label="Toggle more menu"
-            >
-              <Menu size={16} />
-            </button>
-
-            {moreOpen && (
-              <div className="absolute right-0 top-full mt-2 w-40 glass-card p-2 z-50">
-                <div className="relative z-10">
-                  {INTERNAL_LINKS.map((link) => {
-                    const active = isActiveLink(link.href, pathname);
-                    return (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        className={cn(
-                          "block px-3 py-1.5 rounded-lg text-sm transition-colors",
-                          active ? "text-accent bg-accent/10" : "text-muted hover:text-foreground hover:bg-background/50"
-                        )}
-                      >
-                        {link.label}
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
