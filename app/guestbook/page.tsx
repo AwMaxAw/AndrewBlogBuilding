@@ -152,18 +152,94 @@ export default function GuestbookPage() {
   const renderNode = (node: TreeNode, depth: number) => {
     const isReplying = replyTo === node.id;
     const targetName = findReplyTargetName(entries, node.parent_id || 0);
+    const isRoot = depth === 0;
 
     return (
-      <div key={node.id} className={depth > 0 ? "ml-4 border-l-2 border-border/60 pl-4" : ""}>
-        <div className="glass-card p-5 z-10 my-3">
-          <div className="relative z-10">
-            <div className="flex items-center justify-between mb-2">
-              <span className="font-medium text-sm">
-                {node.name}
-                {node.parent_id !== null && targetName && (
-                  <span className="text-accent ml-1">回复 @{targetName}</span>
-                )}
-              </span>
+      <div
+        key={node.id}
+        className={
+          isRoot
+            ? "my-4"
+            : "ml-4 border-l-2 border-border/60 pl-4"
+        }
+      >
+        {isRoot ? (
+          // 根留言：glass-card 包裹
+          <div className="glass-card p-5 z-10">
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-medium text-sm">{node.name}</span>
+                <time className="text-xs text-muted font-mono">
+                  {formatDateTime(node.created_at)}
+                </time>
+              </div>
+              <p className="text-sm text-foreground/80 whitespace-pre-wrap break-words">
+                {node.message}
+              </p>
+              <button
+                onClick={() => {
+                  setReplyTo(isReplying ? null : node.id);
+                  setReplyName("");
+                  setReplyMessage("");
+                }}
+                className="mt-3 inline-flex items-center gap-1 text-xs text-muted hover:text-accent transition-colors"
+              >
+                <Reply size={12} />
+                Reply
+              </button>
+
+              {isReplying && (
+                <form
+                  onSubmit={(e) => handleReply(node.id, e)}
+                  className="mt-4 p-4 bg-background/40 rounded-lg space-y-3"
+                >
+                  <input
+                    type="text"
+                    value={replyName}
+                    onChange={(e) => setReplyName(e.target.value)}
+                    placeholder="Your name"
+                    maxLength={50}
+                    autoFocus
+                    className="w-full px-3 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all"
+                  />
+                  <textarea
+                    value={replyMessage}
+                    onChange={(e) => setReplyMessage(e.target.value)}
+                    placeholder={`Reply to ${node.name}...`}
+                    maxLength={500}
+                    rows={2}
+                    className="w-full px-3 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all resize-none"
+                  />
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="submit"
+                      disabled={replySubmitting || !replyName.trim() || !replyMessage.trim()}
+                      className="px-4 py-1.5 bg-accent text-white rounded-lg text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {replySubmitting ? "Sending..." : "Reply"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setReplyTo(null)}
+                      className="text-xs text-muted hover:text-foreground transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        ) : (
+          // 回复：简洁样式，→ @被回复者
+          <div className="py-2">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="font-medium text-sm text-accent">{node.name}</span>
+              {targetName && (
+                <span className="text-xs text-muted">
+                  → @{targetName}
+                </span>
+              )}
               <time className="text-xs text-muted font-mono">
                 {formatDateTime(node.created_at)}
               </time>
@@ -177,7 +253,7 @@ export default function GuestbookPage() {
                 setReplyName("");
                 setReplyMessage("");
               }}
-              className="mt-3 inline-flex items-center gap-1 text-xs text-muted hover:text-accent transition-colors"
+              className="mt-1 inline-flex items-center gap-1 text-xs text-muted hover:text-accent transition-colors"
             >
               <Reply size={12} />
               Reply
@@ -186,7 +262,7 @@ export default function GuestbookPage() {
             {isReplying && (
               <form
                 onSubmit={(e) => handleReply(node.id, e)}
-                className="mt-4 p-4 bg-background/40 rounded-lg space-y-3"
+                className="mt-3 p-3 bg-background/40 rounded-lg space-y-2"
               >
                 <input
                   type="text"
@@ -224,10 +300,10 @@ export default function GuestbookPage() {
               </form>
             )}
           </div>
-        </div>
+        )}
 
         {node.replies.length > 0 && (
-          <div className="space-y-0">
+          <div>
             {node.replies.map((child) => renderNode(child, depth + 1))}
           </div>
         )}

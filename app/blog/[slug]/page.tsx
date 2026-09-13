@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { getPostBySlug, getNextPost, getPreviousPost } from "@/lib/posts";
 import { formatDate, formatDateTime, formatTime } from "@/lib/utils";
 import { renderMarkdownWithHeadings } from "@/lib/markdown";
-import TOC from "@/components/TOC";
 import PageNav from "@/components/PageNav";
 import { Clock, Calendar, ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -108,8 +107,6 @@ export default async function PostPage({ params }: PostPageProps) {
 
           <PostComments slug={params.slug} />
         </div>
-
-        <TOC items={headings} />
       </div>
     </article>
   );

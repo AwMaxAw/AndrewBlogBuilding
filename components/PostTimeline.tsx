@@ -82,22 +82,26 @@ export default function PostTimeline({ groups, slugs }: PostTimelineProps) {
 
         {/* 随机跳帖 */}
         {slugs.length > 1 && (
-          <button
-            onClick={handleRandom}
-            className="glass-card w-full p-4 z-10 text-left hover:border-accent/40 transition-colors group"
-          >
-            <div className="relative z-10 flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-foreground group-hover:text-accent transition-colors">
-                  Random Post
-                </p>
-                <p className="text-xs text-muted mt-0.5">
-                  跳转到一篇随机文章
-                </p>
+          <div className="glass-card p-4 z-10">
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-3">
+                <Shuffle size={16} className="text-accent" />
+                <p className="text-sm font-medium text-foreground">Random Post</p>
               </div>
-              <Shuffle size={18} className="text-accent shrink-0" />
+              <p className="text-xs text-muted mb-3">
+                跳转到一篇随机文章
+              </p>
+              <button
+                onClick={handleRandom}
+                className="glass-btn w-full text-xs text-accent z-10"
+              >
+                <span className="relative z-10 inline-flex items-center justify-center gap-1">
+                  <Shuffle size={12} />
+                  Shuffle
+                </span>
+              </button>
             </div>
-          </button>
+          </div>
         )}
       </div>
     </aside>
