@@ -53,35 +53,6 @@ export default function Navbar() {
     }
   };
 
-  // 带下划线动画的按钮组件
-  function IconButton({
-    onClick,
-    active,
-    label,
-    children,
-  }: {
-    onClick: () => void;
-    active?: boolean;
-    label: string;
-    children: React.ReactNode;
-  }) {
-    return (
-      <button
-        onClick={onClick}
-        className="group relative p-1 text-muted hover:text-foreground transition-colors shrink-0"
-        aria-label={label}
-      >
-        {children}
-        <span
-          className={cn(
-            "absolute -bottom-1 left-0 h-px transition-all duration-300 ease-out",
-            active ? "w-full bg-accent" : "w-0 bg-foreground dark:bg-white group-hover:w-full"
-          )}
-        />
-      </button>
-    );
-  }
-
   return (
     <header
       className={cn(
@@ -92,10 +63,10 @@ export default function Navbar() {
     >
       <nav
         className={cn(
-          "flex items-center justify-between h-10 rounded-full transition-all",
+          "flex items-center justify-between h-12 rounded-full transition-all",
           scrolled
-            ? "max-w-2xl w-full mx-auto px-3 md:px-4 bg-white/60 dark:bg-black/50 border border-black/10 dark:border-white/10 backdrop-blur-xl saturate-150 shadow-[0_8px_32px_rgba(0,0,0,0.12)]"
-            : "max-w-4xl w-full mx-auto px-2 bg-transparent border border-transparent backdrop-blur-none"
+            ? "max-w-2xl w-full mx-auto px-4 md:px-5 bg-white/60 dark:bg-black/50 border border-black/10 dark:border-white/10 backdrop-blur-xl saturate-150 shadow-[0_8px_32px_rgba(0,0,0,0.12)]"
+            : "max-w-4xl w-full mx-auto px-3 bg-transparent border border-transparent backdrop-blur-none"
         )}
         style={{ transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)", transitionDuration: "450ms" }}
       >
@@ -109,8 +80,8 @@ export default function Navbar() {
           Andrew
         </Link>
 
-        {/* 桌面端链接区：PRIMARY + INTERNAL(展开向左弹出)，全部紧贴 */}
-        <div className="hidden md:flex items-center gap-0">
+        {/* 桌面端 PRIMARY_LINKS */}
+        <div className="hidden md:flex items-center gap-5">
           {PRIMARY_LINKS.map((link) => {
             const active = isActiveLink(link.href, pathname);
             return (
@@ -118,7 +89,7 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "group relative text-sm px-2 transition-colors whitespace-nowrap",
+                  "group relative text-sm transition-colors",
                   active ? "text-accent" : "text-muted hover:text-foreground"
                 )}
               >
@@ -132,12 +103,15 @@ export default function Navbar() {
               </Link>
             );
           })}
+        </div>
 
-          {/* INTERNAL_LINKS：展开时从 More 按钮左边向左弹出 */}
+        {/* 桌面端右侧：INTERNAL(展开向左弹) + More + 搜索 */}
+        <div className="hidden md:flex items-center relative">
+          {/* INTERNAL_LINKS：展开时从 More 左边向左弹出 */}
           <div
             className={cn(
-              "flex items-center transition-all duration-300 ease-out overflow-hidden",
-              moreOpen ? "opacity-100" : "opacity-0 w-0"
+              "flex items-center gap-4 overflow-hidden transition-all duration-300 ease-out",
+              moreOpen ? "w-auto opacity-100 mr-0" : "w-0 opacity-0 mr-0"
             )}
           >
             {INTERNAL_LINKS.map((link) => {
@@ -147,7 +121,7 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    "group relative text-sm px-2 transition-colors whitespace-nowrap",
+                    "group relative text-sm transition-colors whitespace-nowrap",
                     active ? "text-accent" : "text-muted hover:text-foreground"
                   )}
                 >
@@ -162,21 +136,18 @@ export default function Navbar() {
               );
             })}
           </div>
-        </div>
 
-        {/* 桌面端右侧：More + 搜索，紧贴 */}
-        <div className="hidden md:flex items-center gap-0 shrink-0">
           {/* More 按钮 */}
-          <IconButton
+          <button
             onClick={() => {
               setMoreOpen(!moreOpen);
               if (!moreOpen) setSearchOpen(false);
             }}
-            active={moreOpen}
-            label="Toggle more menu"
+            className="p-1.5 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50"
+            aria-label="Toggle more menu"
           >
-            <Menu size={16} />
-          </IconButton>
+            <Menu size={18} />
+          </button>
 
           {/* 搜索 */}
           <div className="relative flex items-center">
@@ -204,16 +175,16 @@ export default function Navbar() {
               </button>
             </form>
 
-            <IconButton
+            <button
               onClick={() => {
                 setSearchOpen(!searchOpen);
                 if (!searchOpen) setMoreOpen(false);
               }}
-              active={searchOpen}
-              label="Toggle search"
+              className="p-1.5 -mr-1.5 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50"
+              aria-label="Toggle search"
             >
-              <Search size={16} />
-            </IconButton>
+              <Search size={18} />
+            </button>
           </div>
         </div>
 
@@ -249,11 +220,11 @@ export default function Navbar() {
           </div>
 
           <button
-            className="p-1 text-foreground shrink-0"
+            className="p-2 -mr-2 text-foreground"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
-            <Menu size={16} />
+            <Menu size={20} />
           </button>
         </div>
       </nav>
