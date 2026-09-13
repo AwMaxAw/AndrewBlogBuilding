@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getPostBySlug, getNextPost, getPreviousPost } from "@/lib/posts";
-import { formatDate, formatDateTime } from "@/lib/utils";
+import { formatDate, formatDateTime, formatTime } from "@/lib/utils";
 import { renderMarkdownWithHeadings } from "@/lib/markdown";
 import TOC from "@/components/TOC";
 import PageNav from "@/components/PageNav";
@@ -76,7 +76,7 @@ export default async function PostPage({ params }: PostPageProps) {
                 {formatDate(post.date)}
                 {post.createdAt && (
                   <span className="text-muted font-mono text-xs">
-                    {new Date(post.createdAt).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false })}
+                    {formatTime(post.createdAt)}
                   </span>
                 )}
               </span>

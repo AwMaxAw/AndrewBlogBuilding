@@ -4,8 +4,13 @@ export function cn(...inputs: ClassValue[]) {
   return clsx(inputs);
 }
 
+// Cloudflare Edge Runtime 默认时区为 UTC，必须显式指定 Asia/Shanghai
+// 否则 toLocaleString 会按 UTC 渲染，导致时间差 8 小时
+const TZ = "Asia/Shanghai";
+
 export function formatDate(date: string, short = false): string {
   return new Date(date).toLocaleDateString("zh-CN", {
+    timeZone: TZ,
     year: "numeric",
     month: short ? "short" : "long",
     day: "numeric",
@@ -14,9 +19,20 @@ export function formatDate(date: string, short = false): string {
 
 export function formatDateTime(date: string): string {
   return new Date(date).toLocaleString("zh-CN", {
+    timeZone: TZ,
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+}
+
+export function formatTime(date: string): string {
+  return new Date(date).toLocaleTimeString("zh-CN", {
+    timeZone: TZ,
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",

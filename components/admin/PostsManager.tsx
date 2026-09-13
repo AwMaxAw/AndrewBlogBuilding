@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, Save, X, Eye, ExternalLink } from "lucide-react";
-import { formatDate, formatDateTime } from "@/lib/utils";
+import { formatDate, formatDateTime, formatTime } from "@/lib/utils";
 import { renderMarkdown } from "@/lib/markdown";
 import MarkdownToolbar from "./MarkdownToolbar";
 import PostTimeline from "@/components/PostTimeline";
@@ -287,7 +287,7 @@ export default function PostsManager() {
                           <span>{formatDate(post.date, true)}</span>
                           {post.created_at && (
                             <span className="font-mono text-muted/60">
-                              {new Date(post.created_at).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false })}
+                              {formatTime(post.created_at)}
                             </span>
                           )}
                           {post.tags.length > 0 && (
