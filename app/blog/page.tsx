@@ -57,7 +57,7 @@ export default async function BlogPage() {
             </section>
           ))}
         </div>
-        <PostTimeline groups={groups} />
+        <PostTimeline groups={groups} slugs={posts.map((p) => p.slug)} />
       </div>
     </div>
   );
