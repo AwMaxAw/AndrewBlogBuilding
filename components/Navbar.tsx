@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Menu, Search } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { Menu, Search, Github, Twitter } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const PRIMARY_LINKS: { href: string; label: string }[] = [
@@ -43,6 +43,7 @@ export default function Navbar() {
   const [moreOpen, setMoreOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const moreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -55,6 +56,18 @@ export default function Navbar() {
     setMobileOpen(false);
     setMoreOpen(false);
   }, [pathname]);
+
+  // 点击外部关闭 More 下拉
+  useEffect(() => {
+    if (!moreOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
+        setMoreOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [moreOpen]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,8 +104,7 @@ export default function Navbar() {
           Andrew
         </Link>
 
-        {/* 桌面端链接区：PRIMARY + INTERNAL(展开时弹出)，紧贴排列 */}
-        <div className="hidden md:flex items-center gap-0">
+        <div className="hidden md:flex items-center gap-5">
           {PRIMARY_LINKS.map((link) => {
             const active = isActiveLink(link.href, pathname);
             return (
@@ -100,7 +112,7 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "group relative text-sm px-2 transition-colors whitespace-nowrap",
+                  "group relative text-sm transition-colors",
                   active ? "text-accent" : "text-muted hover:text-foreground"
                 )}
               >
@@ -114,51 +126,11 @@ export default function Navbar() {
               </Link>
             );
           })}
-
-          {/* INTERNAL_LINKS：展开时从 More 按钮左边向左弹出 */}
-          <div
-            className={cn(
-              "flex items-center transition-all duration-300 ease-out overflow-hidden",
-              moreOpen ? "opacity-100 ml-0" : "opacity-0 w-0 ml-0"
-            )}
-          >
-            {INTERNAL_LINKS.map((link) => {
-              const active = isActiveLink(link.href, pathname);
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    "group relative text-sm px-2 transition-colors whitespace-nowrap",
-                    active ? "text-accent" : "text-muted hover:text-foreground"
-                  )}
-                >
-                  {link.label}
-                  <span
-                    className={cn(
-                      "absolute -bottom-1 left-0 h-px transition-all duration-300 ease-out",
-                      active ? "w-full bg-accent" : "w-0 bg-foreground dark:bg-white group-hover:w-full"
-                    )}
-                  />
-                </Link>
-              );
-            })}
-          </div>
         </div>
 
-        {/* 桌面端右侧按钮区：More 在左，搜索在右，固定不被挤 */}
+        {/* 右侧操作区：搜索 + More 按钮，固定不被挤（仅桌面端） */}
         <div className="hidden md:flex items-center gap-1 shrink-0">
-          <button
-            onClick={() => {
-              setMoreOpen(!moreOpen);
-              if (!moreOpen) setSearchOpen(false);
-            }}
-            className="p-1.5 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50 shrink-0"
-            aria-label="Toggle more menu"
-          >
-            <Menu size={18} />
-          </button>
-
+          {/* 搜索 */}
           <div className="relative flex items-center">
             <form
               onSubmit={handleSearch}
@@ -195,25 +167,103 @@ export default function Navbar() {
               <Search size={18} />
             </button>
           </div>
+
+          {/* More 下拉 */}
+          <div className="relative" ref={moreRef}>
+            <button
+              onClick={() => {
+                setMoreOpen(!moreOpen);
+                if (!moreOpen) setSearchOpen(false);
+              }}
+              className="p-1.5 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50 shrink-0"
+              aria-label="Toggle more menu"
+            >
+              <Menu size={18} />
+            </button>
+
+            {moreOpen && (
+              <div className="absolute right-0 top-full mt-2 w-60 glass-card p-2 z-50">
+                <div className="relative z-10 max-h-[70vh] overflow-y-auto">
+                  {/* 内部页面 */}
+                  <div className="mb-2">
+                    <p className="px-3 py-1.5 text-xs font-semibold text-muted uppercase tracking-wide">
+                      Pages
+                    </p>
+                    {INTERNAL_LINKS.map((link) => {
+                      const active = isActiveLink(link.href, pathname);
+                      return (
+                        <Link
+                          key={link.href}
+                          href={link.href}
+                          className={cn(
+                            "block px-3 py-1.5 rounded-lg text-sm transition-colors",
+                            active ? "text-accent bg-accent/10" : "text-muted hover:text-foreground hover:bg-background/50"
+                          )}
+                        >
+                          {link.label}
+                        </Link>
+                      );
+                    })}
+                  </div>
+
+                  {/* Connect */}
+                  <div className="mb-2 pt-2 border-t border-border/40">
+                    <p className="px-3 py-1.5 text-xs font-semibold text-muted uppercase tracking-wide">
+                      Connect
+                    </p>
+                    {CONNECT_LINKS.map((link) => (
+                      <a
+                        key={link.href}
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm text-muted hover:text-foreground hover:bg-background/50 transition-colors"
+                      >
+                        {link.label === "GitHub" ? <Github size={14} /> : <Twitter size={14} />}
+                        {link.label}
+                      </a>
+                    ))}
+                  </div>
+
+                  {/* Friend Links */}
+                  <div className="pt-2 border-t border-border/40">
+                    <p className="px-3 py-1.5 text-xs font-semibold text-muted uppercase tracking-wide">
+                      Friend Links
+                    </p>
+                    {FRIEND_LINKS.map((link) => (
+                      <a
+                        key={link.href}
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block px-3 py-1.5 rounded-lg text-sm text-muted hover:text-foreground hover:bg-background/50 transition-colors"
+                      >
+                        {link.label}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* 移动端：logo 在左，中间链接区横向滚动，右侧搜索+汉堡固定 */}
-        <div className="md:hidden flex items-center gap-1 min-w-0">
+        {/* 移动端 */}
+        <div className="md:hidden flex items-center">
           <div
             className={cn(
-              "flex items-center gap-1 overflow-x-auto overflow-y-hidden scrollbar-hide transition-all duration-300 ease-out flex-nowrap min-w-0",
-              mobileOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+              "flex items-center gap-1 overflow-x-auto overflow-y-hidden scrollbar-hide transition-all duration-300 ease-out flex-nowrap",
+              mobileOpen ? "w-auto max-w-[65vw] opacity-100 mr-2" : "w-0 opacity-0 mr-0"
             )}
-            style={{ width: mobileOpen ? "auto" : 0, flex: mobileOpen ? "1 1 auto" : "0 0 0" }}
           >
-            {INTERNAL_LINKS.map((link) => {
+            {PRIMARY_LINKS.filter((link) => link.href !== "/").concat(INTERNAL_LINKS).map((link) => {
               const active = isActiveLink(link.href, pathname);
               return (
                 <Link
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    "group relative text-sm px-3 py-1.5 rounded-full transition-colors whitespace-nowrap shrink-0",
+                    "group relative text-sm px-3 py-1.5 rounded-full transition-colors whitespace-nowrap",
                     active ? "text-accent" : "text-muted hover:text-foreground"
                   )}
                 >
@@ -230,18 +280,7 @@ export default function Navbar() {
           </div>
 
           <button
-            onClick={() => {
-              setSearchOpen(!searchOpen);
-              if (!searchOpen) setMobileOpen(false);
-            }}
-            className="p-1.5 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50 shrink-0"
-            aria-label="Toggle search"
-          >
-            <Search size={18} />
-          </button>
-
-          <button
-            className="p-1.5 text-foreground shrink-0"
+            className="p-2 -mr-2 text-foreground"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
@@ -249,30 +288,6 @@ export default function Navbar() {
           </button>
         </div>
       </nav>
-
-      {/* 移动端搜索框（展开时覆盖在导航栏下方） */}
-      <div className={cn("md:hidden fixed top-14 left-4 right-4 z-50 transition-all duration-300", searchOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none")}>
-        <form
-          onSubmit={handleSearch}
-          className="relative"
-        >
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search"
-            className="w-full pl-10 pr-4 py-2 bg-white/90 dark:bg-gray-900/90 border border-border/40 dark:border-gray-700/40 rounded-full text-sm text-gray-900 dark:text-gray-100 placeholder:text-muted focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all"
-            autoFocus={searchOpen}
-          />
-          <button
-            type="submit"
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted hover:text-accent transition-colors"
-            aria-label="Search"
-          >
-            <Search size={16} />
-          </button>
-        </form>
-      </div>
     </header>
   );
 }
