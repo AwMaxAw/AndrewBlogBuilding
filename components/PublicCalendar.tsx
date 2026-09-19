@@ -1,7 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { ChevronLeft, ChevronRight, FileText, BookOpen, StickyNote } from "lucide-react";
+import { useState, useMemo, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { ChevronLeft, ChevronRight, FileText, BookOpen, StickyNote, Edit2, Plus } from "lucide-react";
+import { useAdmin } from "./AdminContext";
+import { MemoEditor, MemoDeleteButton, type MemoEditData } from "./MemoEditor";
 
 type ViewMode = "posts" | "docs" | "memos";
 
@@ -23,6 +26,7 @@ interface MemoItem {
   id: number;
   date: string;
   content: string;
+  created_at?: string;
 }
 
 interface Props {
@@ -34,11 +38,18 @@ interface Props {
 const WEEKDAYS = ["一", "二", "三", "四", "五", "六", "日"];
 
 export default function PublicCalendar({ posts, docs, memos }: Props) {
+  const { isAdmin } = useAdmin();
+  const router = useRouter();
   const [view, setView] = useState<ViewMode>("posts");
   const [current, setCurrent] = useState(() => {
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), 1);
   });
+  const [memoEditor, setMemoEditor] = useState<MemoEditData | null>(null);
+
+  const refresh = useCallback(() => {
+    router.refresh();
+  }, [router]);
 
   const postsByDate = useMemo(() => {
     const map: Record<string, PostItem[]> = {};
@@ -232,6 +243,20 @@ export default function PublicCalendar({ posts, docs, memos }: Props) {
                   >
                     {cell.date.getDate()}
                   </span>
+                  {isAdmin && view === "memos" && !dimmed && (
+                    <button
+                      onClick={() =>
+                        setMemoEditor({
+                          date: key,
+                          content: "",
+                        })
+                      }
+                      title="新建备忘"
+                      className="p-0.5 rounded text-muted hover:text-amber-500 hover:bg-amber-500/10 transition-colors"
+                    >
+                      <Plus size={12} />
+                    </button>
+                  )}
                 </div>
 
                 <div className="flex-1 overflow-y-auto space-y-1 min-h-0 scrollbar-thin">
@@ -280,10 +305,34 @@ export default function PublicCalendar({ posts, docs, memos }: Props) {
                     memosByDate[key]?.map((m) => (
                       <div
                         key={m.id}
-                        className="block border border-amber-500/30 bg-amber-500/5 rounded px-1.5 py-1 text-[11px] leading-tight"
+                        className="group block border border-amber-500/30 bg-amber-500/5 rounded px-1.5 py-1 text-[11px] leading-tight"
                       >
-                        <div className="line-clamp-2 text-foreground/90">
-                          {m.content}
+                        <div className="flex items-start gap-1">
+                          <div className="line-clamp-2 text-foreground/90 flex-1 min-w-0">
+                            {m.content}
+                          </div>
+                          {isAdmin && (
+                            <div className="flex items-center shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button
+                                onClick={() =>
+                                  setMemoEditor({
+                                    id: m.id,
+                                    date: m.date.slice(0, 10),
+                                    content: m.content,
+                                    created_at: m.created_at,
+                                  })
+                                }
+                                title="编辑"
+                                className="p-0.5 rounded text-muted hover:text-accent transition-colors"
+                              >
+                                <Edit2 size={10} />
+                              </button>
+                              <MemoDeleteButton
+                                memoId={m.id}
+                                onDeleted={refresh}
+                              />
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -293,6 +342,12 @@ export default function PublicCalendar({ posts, docs, memos }: Props) {
           })}
         </div>
       </div>
+
+      <MemoEditor
+        initial={memoEditor}
+        onClose={() => setMemoEditor(null)}
+        onSaved={refresh}
+      />
     </div>
   );
 }

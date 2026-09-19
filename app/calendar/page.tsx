@@ -45,6 +45,7 @@ export default async function CalendarPage() {
         id: m.id,
         date: m.date,
         content: m.content,
+        created_at: m.created_at,
       }))}
     />
   );
