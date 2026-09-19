@@ -24,9 +24,11 @@ export interface DocCategory {
 }
 
 export interface DocContent {
+  id: number;
   slug: string;
   title: string;
-  content: string;
+  content: string; // 渲染后的 HTML
+  rawContent: string; // 原始 markdown
   headings: DocHeading[];
   categoryId: string;
   createdAt: string;
@@ -39,6 +41,7 @@ interface CategoryRow {
 }
 
 interface DocRow {
+  id: number;
   slug: string;
   category_slug: string;
   title: string;
@@ -67,7 +70,7 @@ async function loadData() {
 
   const [catResult, docResult] = await Promise.all([
     db.prepare("SELECT slug, name, sort_order FROM doc_categories ORDER BY sort_order ASC").all<CategoryRow>(),
-    db.prepare("SELECT slug, category_slug, title, description, content, sort_order, created_at FROM docs ORDER BY category_slug, sort_order ASC").all<DocRow>(),
+    db.prepare("SELECT id, slug, category_slug, title, description, content, sort_order, created_at FROM docs ORDER BY category_slug, sort_order ASC").all<DocRow>(),
   ]);
 
   // 构建分类
@@ -85,9 +88,11 @@ async function loadData() {
     try {
       const html = renderMarkdown(row.content || "");
       docs.set(row.slug, {
+        id: row.id,
         slug: row.slug,
         title: row.title,
         content: html,
+        rawContent: row.content || "",
         headings: extractHeadingsFromHtml(html),
         categoryId: row.category_slug,
         createdAt: row.created_at || "",

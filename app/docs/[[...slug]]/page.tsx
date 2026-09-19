@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import DocsSidebar from "@/components/DocsSidebar";
 import DocsTOC from "@/components/DocsTOC";
 import DocsMobileMenu from "@/components/DocsMobileMenu";
+import { DocAdminControls } from "@/components/DocAdminControls";
 import { formatDateTime } from "@/lib/utils";
 import {
   getDocBySlug,
@@ -85,9 +86,22 @@ export default async function DocPage({ params }: DocPageProps) {
           <article className="prose-custom max-w-2xl mx-auto">
             <DocsMobileMenu categories={categories} />
             <div className="mt-6 lg:mt-0">
-              <h1 className="font-serif text-4xl font-semibold mb-2">
-                {doc.title}
-              </h1>
+              <div className="flex items-start justify-between gap-4 mb-2">
+                <h1 className="font-serif text-4xl font-semibold">
+                  {doc.title}
+                </h1>
+                <DocAdminControls
+                  doc={{
+                    id: doc.id,
+                    slug: doc.slug,
+                    category_slug: doc.categoryId,
+                    title: doc.title,
+                    description: "",
+                    content: doc.rawContent,
+                    createdAt: doc.createdAt,
+                  }}
+                />
+              </div>
               {doc.createdAt && (
                 <p className="text-xs text-muted font-mono mb-8">
                   {formatDateTime(doc.createdAt)}

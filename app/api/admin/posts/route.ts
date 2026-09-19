@@ -29,9 +29,10 @@ export async function POST(req: NextRequest) {
     description?: string;
     tags?: string[];
     content?: string;
+    published?: number;
   };
 
-  const { slug, title, date, description, tags, content } = body;
+  const { slug, title, date, description, tags, content, published } = body;
 
   if (!slug?.trim() || !title?.trim() || !content?.trim()) {
     return NextResponse.json({ error: "slug、标题、内容不能为空" }, { status: 400 });
@@ -40,6 +41,7 @@ export async function POST(req: NextRequest) {
   const db = process.env.blog_db as D1Database;
   const tagsJson = JSON.stringify(tags || []);
   const postDate = date || new Date().toISOString().slice(0, 10);
+  const publishedFlag = published ?? 0;
 
   // 计算阅读时间
   const wordsPerMinute = 200;
@@ -49,9 +51,9 @@ export async function POST(req: NextRequest) {
   try {
     await db
       .prepare(
-        "INSERT INTO posts (slug, title, date, description, tags, content, reading_time) VALUES (?, ?, ?, ?, ?, ?, ?)"
+        "INSERT INTO posts (slug, title, date, description, tags, content, reading_time, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
       )
-      .bind(slug.trim(), title.trim(), postDate, description || "", tagsJson, content, readingTime)
+      .bind(slug.trim(), title.trim(), postDate, description || "", tagsJson, content, readingTime, publishedFlag)
       .run();
     return NextResponse.json({ success: true, slug });
   } catch (e: any) {

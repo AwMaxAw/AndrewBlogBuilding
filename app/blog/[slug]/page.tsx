@@ -9,6 +9,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import PostComments from "@/components/PostComments";
 import BackToSearch from "@/components/BackToSearch";
+import { PostAdminControls } from "@/components/PostAdminControls";
 
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
@@ -50,22 +51,25 @@ export default async function PostPage({ params }: PostPageProps) {
     <article className="max-w-6xl mx-auto px-6 py-16">
       <div className="flex flex-col lg:flex-row gap-12">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-10">
-            <Link
-              href="/blog"
-              className="glass-btn text-sm text-foreground z-10"
-            >
-              <span className="relative z-10 inline-flex items-center gap-2">
-                <ArrowLeft size={14} />
-                Back to Posts
-              </span>
-            </Link>
-            <Suspense fallback={null}>
-              <BackToSearch />
-            </Suspense>
-          </div>
-
           <header className="mb-12">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/blog"
+                  className="glass-btn text-sm text-foreground z-10"
+                >
+                  <span className="relative z-10 inline-flex items-center gap-2">
+                    <ArrowLeft size={14} />
+                    Back to Posts
+                  </span>
+                </Link>
+                <Suspense fallback={null}>
+                  <BackToSearch />
+                </Suspense>
+              </div>
+              <PostAdminControls post={post} />
+            </div>
+
             <h1 className="font-serif text-4xl md:text-5xl font-semibold leading-tight mb-6">
               {post.title}
             </h1>

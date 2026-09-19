@@ -54,8 +54,8 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: "未授权" }, { status: 401 });
   }
 
-  const body = (await req.json()) as { id?: number; name?: string; message?: string };
-  const { id, name, message } = body;
+  const body = (await req.json()) as { id?: number; name?: string; message?: string; created_at?: string };
+  const { id, name, message, created_at } = body;
 
   if (!id) {
     return NextResponse.json({ error: "缺少 id" }, { status: 400 });
@@ -86,6 +86,11 @@ export async function PUT(req: NextRequest) {
       }
       fields.push("message = ?");
       values.push(message.trim());
+    }
+    // 只有显式传了 created_at 才更新
+    if (created_at !== undefined) {
+      fields.push("created_at = ?");
+      values.push(created_at);
     }
 
     if (fields.length === 0) {

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import PostCard from "@/components/PostCard";
 import PostTimeline from "@/components/PostTimeline";
 import { getAllPosts } from "@/lib/posts";
+import { NewPostButton } from "@/components/NewPostModal";
 
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
@@ -32,13 +33,16 @@ export default async function BlogPage() {
 
   return (
     <div className="max-w-3xl md:max-w-4xl lg:max-w-6xl mx-auto px-6 md:px-8 py-16">
-      <header className="mb-12">
-        <h1 className="font-serif text-4xl md:text-5xl font-semibold mb-4">
-          Posts
-        </h1>
-        <p className="text-muted text-lg">
-          {posts.length} {posts.length === 1 ? "article" : "articles"}
-        </p>
+      <header className="mb-12 flex items-center justify-between">
+        <div>
+          <h1 className="font-serif text-4xl md:text-5xl font-semibold mb-4">
+            Posts
+          </h1>
+          <p className="text-muted text-lg">
+            {posts.length} {posts.length === 1 ? "article" : "articles"}
+          </p>
+        </div>
+        <NewPostButton />
       </header>
       <div className="flex flex-col lg:flex-row gap-12">
         <div className="flex-1 min-w-0">

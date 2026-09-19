@@ -35,6 +35,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     description?: string;
     content?: string;
     sort_order?: number;
+    created_at?: string;
   };
 
   const db = process.env.blog_db as D1Database;
@@ -56,6 +57,8 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   if (body.description !== undefined) { fields.push("description = ?"); values.push(body.description); }
   if (body.content !== undefined) { fields.push("content = ?"); values.push(body.content); }
   if (body.sort_order !== undefined) { fields.push("sort_order = ?"); values.push(body.sort_order); }
+  // 只有显式传了 created_at 才更新
+  if (body.created_at !== undefined) { fields.push("created_at = ?"); values.push(body.created_at); }
 
   if (fields.length === 0) {
     return NextResponse.json({ success: true });

@@ -13,7 +13,7 @@ export async function GET(req: NextRequest, { params }: { params: { slug: string
   const slug = decodeSlug(params.slug);
   const db = process.env.blog_db as D1Database;
   const result = await db
-    .prepare("SELECT id, slug, title, date, description, tags, content, reading_time FROM posts WHERE slug = ?")
+    .prepare("SELECT id, slug, title, date, description, tags, content, reading_time, created_at, published FROM posts WHERE slug = ?")
     .bind(slug)
     .first();
 
@@ -46,6 +46,8 @@ export async function PUT(req: NextRequest, { params }: { params: { slug: string
     description?: string;
     tags?: string[];
     content?: string;
+    created_at?: string;
+    published?: number;
   };
 
   const db = process.env.blog_db as D1Database;
@@ -64,6 +66,8 @@ export async function PUT(req: NextRequest, { params }: { params: { slug: string
   const description = body.description ?? "";
   const tags = body.tags ? JSON.stringify(body.tags) : undefined;
   const content = body.content;
+  const createdAt = body.created_at;
+  const published = body.published;
 
   // 计算阅读时间
   let readingTime: string | undefined;
@@ -83,6 +87,9 @@ export async function PUT(req: NextRequest, { params }: { params: { slug: string
   if (tags !== undefined) { fields.push("tags = ?"); values.push(tags); }
   if (content !== undefined) { fields.push("content = ?"); values.push(content); }
   if (readingTime !== undefined) { fields.push("reading_time = ?"); values.push(readingTime); }
+  // 只有显式传了 created_at 才更新（保留原始时间）
+  if (createdAt !== undefined) { fields.push("created_at = ?"); values.push(createdAt); }
+  if (published !== undefined) { fields.push("published = ?"); values.push(published); }
 
   if (fields.length === 0) {
     return NextResponse.json({ success: true });

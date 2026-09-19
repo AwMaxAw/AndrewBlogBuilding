@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { formatDateTime } from "@/lib/utils";
-import { Reply } from "lucide-react";
+import { Reply, Edit2, Trash2, Clock, Save } from "lucide-react";
+import { useAdmin } from "@/components/AdminContext";
 
 interface GuestbookEntry {
   id: number;
@@ -17,6 +18,7 @@ interface TreeNode extends GuestbookEntry {
 }
 
 export default function GuestbookPage() {
+  const { isAdmin } = useAdmin();
   const [entries, setEntries] = useState<TreeNode[]>([]);
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
@@ -26,6 +28,13 @@ export default function GuestbookPage() {
   const [replyName, setReplyName] = useState("");
   const [replyMessage, setReplyMessage] = useState("");
   const [replySubmitting, setReplySubmitting] = useState(false);
+  // 编辑状态
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editMessage, setEditMessage] = useState("");
+  const [editCreatedAt, setEditCreatedAt] = useState("");
+  const [editShowTime, setEditShowTime] = useState(false);
+  const [editSaving, setEditSaving] = useState(false);
 
   const buildTree = (flat: GuestbookEntry[]): TreeNode[] => {
     const map = new Map<number, TreeNode>();
@@ -139,6 +148,69 @@ export default function GuestbookPage() {
     }
   };
 
+  const startEdit = (node: TreeNode) => {
+    setEditingId(node.id);
+    setEditName(node.name);
+    setEditMessage(node.message);
+    setEditCreatedAt(
+      node.created_at ? new Date(node.created_at).toISOString().slice(0, 16) : ""
+    );
+    setEditShowTime(false);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditName("");
+    setEditMessage("");
+    setEditCreatedAt("");
+    setEditShowTime(false);
+  };
+
+  const saveEdit = async (id: number) => {
+    if (!editName.trim() || !editMessage.trim()) return;
+    setEditSaving(true);
+    try {
+      const body: Record<string, unknown> = {
+        id,
+        name: editName.trim(),
+        message: editMessage.trim(),
+      };
+      if (editShowTime && editCreatedAt) {
+        body.created_at = new Date(editCreatedAt).toISOString();
+      }
+      const res = await fetch("/api/admin/guestbook", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (res.ok) {
+        cancelEdit();
+        loadEntries();
+      } else {
+        const err = (await res.json()) as { error?: string };
+        alert(err.error || "保存失败");
+      }
+    } catch {
+      alert("保存失败");
+    } finally {
+      setEditSaving(false);
+    }
+  };
+
+  const deleteEntry = async (id: number) => {
+    if (!confirm("确定删除该留言？所有回复也会一并删除。")) return;
+    try {
+      const res = await fetch(`/api/admin/guestbook?id=${id}`, { method: "DELETE" });
+      if (res.ok) {
+        loadEntries();
+      } else {
+        alert("删除失败");
+      }
+    } catch {
+      alert("删除失败");
+    }
+  };
+
   const findReplyTargetName = (nodes: TreeNode[], id: number): string => {
     for (const node of nodes) {
       if (node.id === id) return node.name;
@@ -151,8 +223,90 @@ export default function GuestbookPage() {
   // 递归渲染节点
   const renderNode = (node: TreeNode, depth: number) => {
     const isReplying = replyTo === node.id;
+    const isEditing = editingId === node.id;
     const targetName = findReplyTargetName(entries, node.parent_id || 0);
     const isRoot = depth === 0;
+
+    // admin 编辑面板
+    const editPanel = isEditing && (
+      <div className="mt-3 p-4 bg-background/40 rounded-lg space-y-3">
+        <input
+          type="text"
+          value={editName}
+          onChange={(e) => setEditName(e.target.value)}
+          placeholder="Your name"
+          maxLength={50}
+          className="w-full px-3 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60"
+        />
+        <textarea
+          value={editMessage}
+          onChange={(e) => setEditMessage(e.target.value)}
+          maxLength={500}
+          rows={3}
+          className="w-full px-3 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 resize-none"
+        />
+        <button
+          type="button"
+          onClick={() => setEditShowTime(!editShowTime)}
+          className="inline-flex items-center gap-1 text-xs text-muted hover:text-accent transition-colors"
+        >
+          <Clock size={12} />
+          {editShowTime ? "收起时间编辑" : "编辑时间"}
+        </button>
+        {editShowTime && (
+          <div>
+            <label className="text-xs text-muted block mb-1">
+              原时间：{formatDateTime(node.created_at)}
+            </label>
+            <input
+              type="datetime-local"
+              value={editCreatedAt}
+              onChange={(e) => setEditCreatedAt(e.target.value)}
+              className="px-3 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60"
+            />
+            <p className="text-xs text-muted mt-1">不修改则保留原时间</p>
+          </div>
+        )}
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => saveEdit(node.id)}
+            disabled={editSaving}
+            className="inline-flex items-center gap-1 px-4 py-1.5 bg-accent text-white rounded-lg text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+          >
+            <Save size={12} />
+            {editSaving ? "保存中..." : "保存"}
+          </button>
+          <button
+            type="button"
+            onClick={cancelEdit}
+            className="text-xs text-muted hover:text-foreground transition-colors"
+          >
+            取消
+          </button>
+        </div>
+      </div>
+    );
+
+    // admin 操作按钮
+    const adminButtons = isAdmin && !isEditing && (
+      <span className="inline-flex items-center gap-1">
+        <button
+          onClick={() => startEdit(node)}
+          title="编辑"
+          className="p-1 text-muted hover:text-accent transition-colors"
+        >
+          <Edit2 size={12} />
+        </button>
+        <button
+          onClick={() => deleteEntry(node.id)}
+          title="删除"
+          className="p-1 text-muted hover:text-red-500 transition-colors"
+        >
+          <Trash2 size={12} />
+        </button>
+      </span>
+    );
 
     // 回复内容（简洁样式，→ @被回复者）
     const replyBody = (
@@ -167,10 +321,12 @@ export default function GuestbookPage() {
           <time className="text-xs text-muted font-mono">
             {formatDateTime(node.created_at)}
           </time>
+          {adminButtons}
         </div>
         <p className="text-sm text-foreground/80 whitespace-pre-wrap break-words">
           {node.message}
         </p>
+        {editPanel}
         <button
           onClick={() => {
             setReplyTo(isReplying ? null : node.id);
@@ -234,13 +390,17 @@ export default function GuestbookPage() {
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-medium text-sm">{node.name}</span>
-                <time className="text-xs text-muted font-mono">
-                  {formatDateTime(node.created_at)}
-                </time>
+                <div className="flex items-center gap-2">
+                  <time className="text-xs text-muted font-mono">
+                    {formatDateTime(node.created_at)}
+                  </time>
+                  {adminButtons}
+                </div>
               </div>
               <p className="text-sm text-foreground/80 whitespace-pre-wrap break-words">
                 {node.message}
               </p>
+              {editPanel}
               <button
                 onClick={() => {
                   setReplyTo(isReplying ? null : node.id);
