@@ -389,7 +389,7 @@ export default function PostComments({ slug }: { slug: string }) {
     if (isRoot) {
       // 根评论：glass-card 包裹，回复也在同一个板块内
       return (
-        <div key={node.id} className="my-3">
+        <div key={node.id}>
           <div className="glass-card p-5 z-10">
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-2">
@@ -525,7 +525,7 @@ export default function PostComments({ slug }: { slug: string }) {
       </form>
 
       {/* 评论列表 */}
-      <div className="space-y-0">
+      <div className="space-y-6">
         {loading ? (
           <p className="text-muted text-center py-8">Loading...</p>
         ) : comments.length === 0 ? (
