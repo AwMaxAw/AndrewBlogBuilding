@@ -56,6 +56,7 @@ export async function GET() {
   let commentChars = 0;
   let guestbookCount = 0;
   let guestbookChars = 0;
+  let guestbookMessages = 0;
 
   if (db) {
     try {
@@ -77,6 +78,12 @@ export async function GET() {
         .first<{ count: number; total_chars: number }>();
       guestbookCount = g?.count ?? 0;
       guestbookChars = g?.total_chars ?? 0;
+
+      // 根留言数量（不含回复）
+      const gm = await db
+        .prepare("SELECT COUNT(*) as count FROM guestbook WHERE parent_id IS NULL")
+        .first<{ count: number }>();
+      guestbookMessages = gm?.count ?? 0;
     } catch {
       /* ignore */
     }
@@ -87,6 +94,6 @@ export async function GET() {
     docs: { count: docsCount, words: docsWords },
     siteWords: postsWords + docsWords,
     comments: { count: commentCount, chars: commentChars },
-    guestbook: { count: guestbookCount, chars: guestbookChars },
+    guestbook: { count: guestbookCount, chars: guestbookChars, messages: guestbookMessages },
   });
 }

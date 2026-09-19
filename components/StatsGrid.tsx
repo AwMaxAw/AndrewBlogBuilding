@@ -7,6 +7,7 @@ import {
   MessageSquare,
   ClipboardList,
   Type,
+  MessageCircle,
 } from "lucide-react";
 
 interface StatsData {
@@ -14,7 +15,7 @@ interface StatsData {
   docs: { count: number; words: number };
   siteWords: number;
   comments: { count: number; chars: number };
-  guestbook: { count: number; chars: number };
+  guestbook: { count: number; chars: number; messages: number };
 }
 
 interface StatItem {
@@ -83,6 +84,12 @@ export default function StatsGrid() {
           icon: <ClipboardList size={14} />,
           hint: `${stats.guestbook.chars.toLocaleString()} chars`,
         },
+        {
+          label: "Messages",
+          value: stats.guestbook.messages,
+          icon: <MessageCircle size={14} />,
+          hint: `${stats.guestbook.count - stats.guestbook.messages} replies`,
+        },
       ]
     : [
         { label: "Posts", value: "—", icon: <FileText size={14} /> },
@@ -90,6 +97,7 @@ export default function StatsGrid() {
         { label: "Site Words", value: "—", icon: <Type size={14} /> },
         { label: "Comments", value: "—", icon: <MessageSquare size={14} /> },
         { label: "Guestbook", value: "—", icon: <ClipboardList size={14} /> },
+        { label: "Messages", value: "—", icon: <MessageCircle size={14} /> },
       ];
 
   return (
