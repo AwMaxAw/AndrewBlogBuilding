@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { formatDateTime } from "@/lib/utils";
 import { Reply, Edit2, Trash2, Clock, Save } from "lucide-react";
 import { useAdmin } from "@/components/AdminContext";
+import Danmaku from "@/components/Danmaku";
 
 interface GuestbookEntry {
   id: number;
@@ -72,6 +73,19 @@ export default function GuestbookPage() {
     sortRepliesAsc(roots);
 
     return roots;
+  };
+
+  // 扁平化所有留言（根+回复）供弹幕使用
+  const flattenAll = (nodes: TreeNode[]): { name: string; message: string }[] => {
+    const result: { name: string; message: string }[] = [];
+    const walk = (list: TreeNode[]) => {
+      for (const n of list) {
+        result.push({ name: n.name, message: n.message });
+        walk(n.replies);
+      }
+    };
+    walk(nodes);
+    return result;
   };
 
   const loadEntries = async () => {
@@ -487,6 +501,14 @@ export default function GuestbookPage() {
         </h1>
         <p className="text-muted text-lg">Leave a message below</p>
       </header>
+
+      {/* 弹幕板块 */}
+      <section className="mb-10 text-center">
+        <p className="text-sm md:text-base text-muted mb-4">
+          Launch all messages flying across the screen — like bullet comments.
+        </p>
+        <Danmaku messages={flattenAll(entries)} />
+      </section>
 
       {/* 留言表单 */}
       <form onSubmit={handleSubmit} className="glass-card p-6 mb-10 z-10">
