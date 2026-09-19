@@ -86,12 +86,13 @@ export function MemoEditor({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 overflow-y-auto"
       style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(4px)" }}
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg bg-white/90 dark:bg-black/90 border border-black/10 dark:border-white/10 rounded-xl p-5 shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
+        className="w-full max-w-lg bg-white/90 dark:bg-black/90 border border-black/10 dark:border-white/10 rounded-xl p-5 shadow-[0_8px_32px_rgba(0,0,0,0.2)] my-4 sm:my-0"
+        style={{ maxHeight: "90vh", overflowY: "auto" }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">

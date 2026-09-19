@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Edit2, Trash2, Save, X, Eye, ExternalLink } from "lucide-react";
+import { Plus, Edit2, Trash2, Save, X, Eye, ExternalLink, FileEdit, Upload } from "lucide-react";
 import { formatDate, formatDateTime, formatTime } from "@/lib/utils";
 import { renderMarkdown } from "@/lib/markdown";
 import MarkdownToolbar from "./MarkdownToolbar";
@@ -17,6 +17,7 @@ interface Post {
   content: string;
   reading_time: string;
   created_at: string;
+  published?: number;
 }
 
 interface PostForm {
@@ -26,6 +27,7 @@ interface PostForm {
   description: string;
   tags: string;
   content: string;
+  published: boolean;
 }
 
 const emptyForm: PostForm = {
@@ -35,7 +37,10 @@ const emptyForm: PostForm = {
   description: "",
   tags: "",
   content: "",
+  published: false,
 };
+
+type Filter = "all" | "published" | "drafts";
 
 export default function PostsManager() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -45,6 +50,7 @@ export default function PostsManager() {
   const [originalSlug, setOriginalSlug] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [previewPost, setPreviewPost] = useState<Post | null>(null);
+  const [filter, setFilter] = useState<Filter>("all");
 
   const loadPosts = async () => {
     setLoading(true);
@@ -52,7 +58,7 @@ export default function PostsManager() {
       const res = await fetch("/api/admin/posts");
       if (res.ok) {
         const data = (await res.json()) as Post[];
-        setPosts(data.map((p) => ({ ...p, tags: typeof p.tags === "string" ? JSON.parse(p.tags) : p.tags })));
+        setPosts(data.map((p) => ({ ...p, tags: typeof p.tags === "string" ? JSON.parse(p.tags as any) : p.tags })));
       }
     } catch (e) {
       console.error(e);
@@ -79,6 +85,7 @@ export default function PostsManager() {
       description: post.description,
       tags: post.tags.join(", "),
       content: post.content,
+      published: post.published !== 0,
     });
     setOriginalSlug(post.slug);
     setEditing(true);
@@ -105,6 +112,7 @@ export default function PostsManager() {
         description: form.description,
         tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
         content: form.content,
+        published: form.published ? 1 : 0,
       };
 
       const url = originalSlug ? `/api/admin/posts/${originalSlug}` : "/api/admin/posts";
@@ -127,6 +135,22 @@ export default function PostsManager() {
       alert("网络错误");
     } finally {
       setSaving(false);
+    }
+  };
+
+  // 快速切换发布状态
+  const togglePublish = async (post: Post) => {
+    const newPublished = post.published === 1 ? 0 : 1;
+    try {
+      const res = await fetch(`/api/admin/posts/${post.slug}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ published: newPublished }),
+      });
+      if (res.ok) loadPosts();
+      else alert("更新失败");
+    } catch {
+      alert("网络错误");
     }
   };
 
@@ -226,14 +250,30 @@ export default function PostsManager() {
             placeholder="## 标题&#10;&#10;正文内容..."
           />
         </div>
+
+        <label className="flex items-center gap-2 text-sm cursor-pointer">
+          <input
+            type="checkbox"
+            checked={form.published}
+            onChange={(e) => setForm({ ...form, published: e.target.checked })}
+            className="rounded"
+          />
+          <span>{form.published ? "已发布" : "保存为草稿（不发布）"}</span>
+        </label>
       </div>
     );
   }
 
   // 按月份分组
+  const filteredPosts = posts.filter((p) => {
+    if (filter === "published") return p.published === 1;
+    if (filter === "drafts") return p.published !== 1;
+    return true;
+  });
+
   const groups: { id: string; label: string; count: number }[] = [];
   const groupMap: Record<string, Post[]> = {};
-  for (const post of posts) {
+  for (const post of filteredPosts) {
     const d = new Date(post.date);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
     const label = `${d.getFullYear()}年${d.getMonth() + 1}月`;
@@ -245,10 +285,12 @@ export default function PostsManager() {
     groups[groups.length - 1].count++;
   }
 
+  const draftCount = posts.filter((p) => p.published !== 1).length;
+
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-muted text-sm">{posts.length} 篇文章</p>
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+        <p className="text-muted text-sm">{filteredPosts.length} / {posts.length} 篇文章{draftCount > 0 && ` · ${draftCount} 草稿`}</p>
         <button
           onClick={startNew}
           className="flex items-center gap-2 px-4 py-2 bg-accent text-white rounded-lg text-sm hover:opacity-90"
@@ -258,10 +300,33 @@ export default function PostsManager() {
         </button>
       </div>
 
+      {/* 筛选器 */}
+      <div className="flex items-center gap-1 mb-6 bg-secondary/30 rounded-lg p-1 w-fit">
+        {([
+          { id: "all", label: "全部" },
+          { id: "published", label: "已发布" },
+          { id: "drafts", label: "草稿箱" },
+        ] as const).map((opt) => (
+          <button
+            key={opt.id}
+            onClick={() => setFilter(opt.id)}
+            className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+              filter === opt.id
+                ? "bg-accent text-white"
+                : "text-muted hover:text-foreground"
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
       {loading ? (
         <p className="text-muted text-center py-8">加载中...</p>
-      ) : posts.length === 0 ? (
-        <p className="text-muted text-center py-8">暂无文章</p>
+      ) : filteredPosts.length === 0 ? (
+        <p className="text-muted text-center py-8">
+          {posts.length === 0 ? "暂无文章" : "该筛选下没有文章"}
+        </p>
       ) : (
         <div className="flex flex-col lg:flex-row gap-12">
           <div className="flex-1 min-w-0">
@@ -279,8 +344,17 @@ export default function PostsManager() {
                       className="flex items-center gap-4 p-4 glass-card z-10"
                     >
                       <div className="relative z-10 flex-1 min-w-0">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 flex-wrap">
                           <h3 className="font-medium text-sm truncate">{post.title}</h3>
+                          <span
+                            className={`text-[10px] px-1.5 py-0.5 rounded ${
+                              post.published === 1
+                                ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+                                : "bg-amber-500/20 text-amber-600 dark:text-amber-400"
+                            }`}
+                          >
+                            {post.published === 1 ? "已发布" : "草稿"}
+                          </span>
                           <span className="text-xs text-muted font-mono">/{post.slug}</span>
                         </div>
                         <div className="flex items-center gap-3 mt-1 text-xs text-muted">
@@ -295,7 +369,18 @@ export default function PostsManager() {
                           )}
                         </div>
                       </div>
-                      <div className="flex gap-2 shrink-0">
+                      <div className="flex gap-2 shrink-0 items-center">
+                        <button
+                          onClick={() => togglePublish(post)}
+                          title={post.published === 1 ? "撤回发布" : "发布"}
+                          className={`p-2 rounded transition-colors ${
+                            post.published === 1
+                              ? "text-muted hover:text-amber-500"
+                              : "text-muted hover:text-emerald-500"
+                          }`}
+                        >
+                          {post.published === 1 ? <FileEdit size={16} /> : <Upload size={16} />}
+                        </button>
                         <button
                           onClick={() => setPreviewPost(post)}
                           className="p-2 text-muted hover:text-accent transition-colors"

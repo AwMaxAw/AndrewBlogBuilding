@@ -96,11 +96,12 @@ function NewPostModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className="glass-card p-6 z-10 w-full max-w-3xl max-h-[90vh] overflow-y-auto"
+        className="glass-card p-6 z-10 w-full max-w-3xl my-4 sm:my-0"
+        style={{ maxHeight: "90vh", overflowY: "auto" }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="relative z-10 space-y-4">
