@@ -43,7 +43,10 @@ export function AdminBadge() {
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-2 min-w-[160px] glass-card p-2 z-50">
+        <div
+          className="absolute top-full left-0 mt-2 min-w-[160px] p-2 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-lg shadow-[0_8px_32px_rgba(0,0,0,0.12)]"
+          style={{ position: "absolute" }}
+        >
           <div className="relative z-10">
             <Link
               href="/admin"
