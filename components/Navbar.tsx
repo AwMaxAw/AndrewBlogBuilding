@@ -110,7 +110,7 @@ export default function Navbar() {
           {/* INTERNAL_LINKS：展开时从 More 左边向左弹出 */}
           <div
             className={cn(
-              "flex items-center gap-4 overflow-hidden transition-all duration-300 ease-out",
+              "flex items-center gap-4 overflow-hidden transition-all duration-300 ease-out ml-4",
               moreOpen ? "w-auto opacity-100" : "w-0 opacity-0"
             )}
           >
