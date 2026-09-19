@@ -29,3 +29,16 @@ export async function GET(req: NextRequest) {
   const valid = (await verifyAdminRequest(req)) || (await verifyAdminCookie(req));
   return NextResponse.json({ authenticated: valid });
 }
+
+// 退出登录（清除 cookie）
+export async function DELETE() {
+  const res = NextResponse.json({ success: true });
+  res.cookies.set("admin_token", "", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    path: "/",
+    maxAge: 0,
+  });
+  return res;
+}

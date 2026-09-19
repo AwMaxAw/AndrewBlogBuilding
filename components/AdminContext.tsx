@@ -6,12 +6,14 @@ interface AdminContextValue {
   isAdmin: boolean;
   loading: boolean;
   refresh: () => void;
+  logout: () => Promise<void>;
 }
 
 const AdminContext = createContext<AdminContextValue>({
   isAdmin: false,
   loading: true,
   refresh: () => {},
+  logout: async () => {},
 });
 
 export function AdminProvider({ children }: { children: ReactNode }) {
@@ -30,12 +32,21 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const logout = async () => {
+    try {
+      await fetch("/api/admin/auth", { method: "DELETE" });
+    } catch {
+      // 忽略
+    }
+    setIsAdmin(false);
+  };
+
   useEffect(() => {
     checkAuth();
   }, []);
 
   return (
-    <AdminContext.Provider value={{ isAdmin, loading, refresh: checkAuth }}>
+    <AdminContext.Provider value={{ isAdmin, loading, refresh: checkAuth, logout }}>
       {children}
     </AdminContext.Provider>
   );

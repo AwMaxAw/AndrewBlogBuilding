@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Menu, Search, Shield } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAdmin } from "./AdminContext";
+import { AdminBadge } from "./AdminBadge";
 
 const PRIMARY_LINKS: { href: string; label: string }[] = [
   { href: "/", label: "Home" },
@@ -28,7 +28,6 @@ function isActiveLink(href: string, pathname: string) {
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { isAdmin } = useAdmin();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
@@ -81,15 +80,7 @@ export default function Navbar() {
         >
           Andrew
         </Link>
-        {isAdmin && (
-          <Link
-            href="/admin"
-            title="Admin mode (click to open dashboard)"
-            className="hidden md:inline-flex items-center justify-center p-1.5 -ml-1 text-accent hover:text-accent/80 transition-colors"
-          >
-            <Shield size={14} />
-          </Link>
-        )}
+        <AdminBadge />
 
         {/* 桌面端右侧：PRIMARY + INTERNAL(展开向左弹) + More + 搜索，全部靠右 */}
         <div className="hidden md:flex items-center shrink-0">
