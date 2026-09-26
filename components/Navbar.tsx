@@ -145,14 +145,14 @@ export default function Navbar() {
               setMoreOpen(!moreOpen);
               if (!moreOpen) setSearchOpen(false);
             }}
-            className="p-1.5 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50"
+            className="p-2 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50"
             aria-label="Toggle more menu"
           >
             <Menu size={18} />
           </button>
 
           {/* 搜索 */}
-          <div className="relative flex items-center">
+          <div className="relative flex items-center gap-1">
             <form
               onSubmit={handleSearch}
               className={cn(
@@ -170,7 +170,7 @@ export default function Navbar() {
               />
               <button
                 type="submit"
-                className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-accent transition-colors"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted hover:text-accent transition-colors"
                 aria-label="Search"
               >
                 <Search size={14} />
@@ -182,7 +182,7 @@ export default function Navbar() {
                 setSearchOpen(!searchOpen);
                 if (!searchOpen) setMoreOpen(false);
               }}
-              className="p-1.5 -mr-1.5 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50"
+              className="p-2 text-muted hover:text-foreground transition-colors rounded-full hover:bg-background/50"
               aria-label="Toggle search"
             >
               <Search size={18} />
@@ -191,11 +191,11 @@ export default function Navbar() {
         </div>
 
         {/* 移动端：链接横向滚动 + 折叠按钮 + 搜索按钮 */}
-        <div className="md:hidden flex items-center">
+        <div className="md:hidden flex items-center gap-1">
           <div
             className={cn(
               "flex items-center gap-1 overflow-x-auto overflow-y-hidden scrollbar-hide transition-all duration-300 ease-out flex-nowrap min-w-0",
-              mobileOpen ? "w-auto max-w-[50vw] opacity-100 mr-1" : "w-0 opacity-0 mr-0"
+              mobileOpen ? "w-auto max-w-[50vw] opacity-100" : "w-0 opacity-0"
             )}
           >
             {PRIMARY_LINKS.filter((link) => link.href !== "/").concat(INTERNAL_LINKS).map((link) => {

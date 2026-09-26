@@ -18,6 +18,44 @@
   --border: #E5E2DB;
   --input: #E5E2DB;
   --ring: #D97706;
+
+  /* ===== Design Tokens: 等差/等比体系 ===== */
+  /* 字号：1.25 等比数列，base = 16px */
+  --ds-fs-xs: 0.75rem;    /* 12px  — 辅助文字、时间戳 */
+  --ds-fs-sm: 0.875rem;   /* 14px  — 正文、导航 */
+  --ds-fs-base: 1rem;     /* 16px  — 正文基准 */
+  --ds-fs-lg: 1.25rem;    /* 20px  — 小标题 (16×1.25) */
+  --ds-fs-xl: 1.5625rem;  /* 25px  — 标题 (20×1.25) */
+  --ds-fs-2xl: 1.9531rem; /* 31px  — 大标题 */
+  --ds-fs-3xl: 2.4414rem; /* 39px  — 页面标题 */
+  --ds-fs-4xl: 3.0518rem; /* 49px  — H1 */
+  --ds-fs-5xl: 3.8147rem; /* 61px  — 大 H1 */
+
+  /* 行高 */
+  --ds-lh-tight: 1.2;
+  --ds-lh-snug: 1.35;
+  --ds-lh-normal: 1.5;
+  --ds-lh-relaxed: 1.7;
+
+  /* 间距：小尺度等差(4px 步)，大尺度等比(×2) */
+  --ds-space-1: 0.25rem;  /* 4px  — 图标间隙 */
+  --ds-space-2: 0.5rem;   /* 8px  — 紧凑元素 */
+  --ds-space-3: 0.75rem;  /* 12px — 输入框内 */
+  --ds-space-4: 1rem;     /* 16px — 常规 gap */
+  --ds-space-5: 1.25rem;  /* 20px — 卡片内 */
+  --ds-space-6: 1.5rem;   /* 24px — 表单内 space-y */
+  --ds-space-8: 2rem;     /* 32px — 板块间距 */
+  --ds-space-10: 2.5rem;  /* 40px */
+  --ds-space-12: 3rem;    /* 48px — 大板块 */
+  --ds-space-16: 4rem;    /* 64px — 页面垂直内边距 */
+  --ds-space-20: 5rem;    /* 80px */
+
+  /* 圆角：等差 */
+  --ds-radius-sm: 0.375rem;  /* 6px */
+  --ds-radius-md: 0.5rem;    /* 8px */
+  --ds-radius-lg: 0.75rem;   /* 12px */
+  --ds-radius-xl: 1rem;      /* 16px */
+  --ds-radius-full: 9999px;
 }
 
 .dark {

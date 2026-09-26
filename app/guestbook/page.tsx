@@ -250,7 +250,7 @@ export default function GuestbookPage() {
           onChange={(e) => setEditName(e.target.value)}
           placeholder="Your name"
           maxLength={50}
-          className="w-full px-3 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60"
+          className="w-full px-4 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60"
         />
         <textarea
           value={editMessage}
@@ -276,7 +276,7 @@ export default function GuestbookPage() {
               type="datetime-local"
               value={editCreatedAt}
               onChange={(e) => setEditCreatedAt(e.target.value)}
-              className="px-3 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60"
+              className="px-4 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60"
             />
             <p className="text-xs text-muted mt-1">不修改则保留原时间</p>
           </div>
@@ -286,7 +286,7 @@ export default function GuestbookPage() {
             type="button"
             onClick={() => saveEdit(node.id)}
             disabled={editSaving}
-            className="inline-flex items-center gap-1 px-4 py-1.5 bg-accent text-white rounded-lg text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="inline-flex items-center gap-1 px-4 py-2 bg-accent text-white rounded-lg text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             <Save size={12} />
             {editSaving ? "保存中..." : "保存"}
@@ -365,7 +365,7 @@ export default function GuestbookPage() {
               placeholder="Your name"
               maxLength={50}
               autoFocus
-              className="w-full px-3 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all"
+              className="w-full px-4 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all"
             />
             <textarea
               value={replyMessage}
@@ -373,13 +373,13 @@ export default function GuestbookPage() {
               placeholder={`Reply to ${node.name}...`}
               maxLength={500}
               rows={2}
-              className="w-full px-3 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all resize-none"
+              className="w-full px-4 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all resize-none"
             />
             <div className="flex items-center gap-3">
               <button
                 type="submit"
                 disabled={replySubmitting || !replyName.trim() || !replyMessage.trim()}
-                className="px-4 py-1.5 bg-accent text-white rounded-lg text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-accent text-white rounded-lg text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {replySubmitting ? "Sending..." : "Reply"}
               </button>
@@ -439,7 +439,7 @@ export default function GuestbookPage() {
                     placeholder="Your name"
                     maxLength={50}
                     autoFocus
-                    className="w-full px-3 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all"
+                    className="w-full px-4 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all"
                   />
                   <textarea
                     value={replyMessage}
@@ -447,13 +447,13 @@ export default function GuestbookPage() {
                     placeholder={`Reply to ${node.name}...`}
                     maxLength={500}
                     rows={2}
-                    className="w-full px-3 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all resize-none"
+                    className="w-full px-4 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all resize-none"
                   />
                   <div className="flex items-center gap-3">
                     <button
                       type="submit"
                       disabled={replySubmitting || !replyName.trim() || !replyMessage.trim()}
-                      className="px-4 py-1.5 bg-accent text-white rounded-lg text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-4 py-2 bg-accent text-white rounded-lg text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {replySubmitting ? "Sending..." : "Reply"}
                     </button>
@@ -520,7 +520,7 @@ export default function GuestbookPage() {
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
               maxLength={50}
-              className="w-full px-4 py-2.5 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all"
+              className="w-full px-4 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all"
             />
           </div>
           <div>
@@ -530,14 +530,14 @@ export default function GuestbookPage() {
               placeholder="Write your message..."
               maxLength={500}
               rows={4}
-              className="w-full px-4 py-2.5 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all resize-none"
+              className="w-full px-4 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all resize-none"
             />
             <p className="text-xs text-muted mt-1 text-right">{message.length}/500</p>
           </div>
           <button
             type="submit"
             disabled={submitting || !name.trim() || !message.trim()}
-            className="px-5 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitting ? "Sending..." : "Leave a message"}
           </button>
