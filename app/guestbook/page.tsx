@@ -494,17 +494,32 @@ export default function GuestbookPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-6 md:px-8 py-16 grid grid-cols-1 md:grid-cols-[1fr_16rem] gap-8 md:gap-10">
-      {/* 标题跨两列 */}
-      <header className="md:col-span-2 mb-12">
+    <div className="max-w-3xl mx-auto px-6 md:px-8 py-16 relative">
+      {/* 右侧弹幕模块：fixed 定位，不挤压主内容，sticky 效果由 fixed + top 实现 */}
+      <aside className="hidden lg:block fixed right-6 top-24 w-56 z-30">
+        <div className="glass-card p-4 z-10">
+          <div className="relative z-10">
+            <div className="flex items-center gap-2 mb-3">
+              <Play size={16} className="text-accent" />
+              <p className="text-sm font-medium text-foreground">Bullet Comments</p>
+            </div>
+            <p className="text-xs text-muted mb-3">
+              Launch all messages flying across the screen — like bullet comments.
+            </p>
+            <Danmaku messages={flattenAll(entries)} />
+          </div>
+        </div>
+      </aside>
+
+      <header className="mb-12">
         <h1 className="font-serif text-4xl md:text-5xl font-semibold mb-4">
           Guestbook
         </h1>
         <p className="text-muted text-lg">Leave a message below</p>
       </header>
 
-      {/* 留言表单（左列） */}
-      <form onSubmit={handleSubmit} className="glass-card p-6 mb-0 z-10 min-w-0">
+      {/* 留言表单 */}
+      <form onSubmit={handleSubmit} className="glass-card p-6 mb-10 z-10">
         <div className="relative z-10 space-y-4">
           <div>
             <input
@@ -537,26 +552,8 @@ export default function GuestbookPage() {
         </div>
       </form>
 
-      {/* 右侧弹幕侧边栏：与表单同行，顶部对齐 */}
-      <aside className="hidden md:block">
-        <div className="sticky top-24">
-          <div className="glass-card p-4 z-10">
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-3">
-                <Play size={16} className="text-accent" />
-                <p className="text-sm font-medium text-foreground">Bullet Comments</p>
-              </div>
-              <p className="text-xs text-muted mb-3">
-                Launch all messages flying across the screen — like bullet comments.
-              </p>
-              <Danmaku messages={flattenAll(entries)} />
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      {/* 留言列表跨两列 */}
-      <div className="md:col-span-2 space-y-6">
+      {/* 留言列表 */}
+      <div className="space-y-6">
         {loading ? (
           <p className="text-muted text-center py-8">Loading...</p>
         ) : entries.length === 0 ? (
