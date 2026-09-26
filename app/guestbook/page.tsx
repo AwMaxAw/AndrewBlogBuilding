@@ -502,7 +502,7 @@ export default function GuestbookPage() {
         <p className="text-muted text-lg">Leave a message below</p>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_16rem] gap-8 md:gap-10 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_16rem] gap-8 md:gap-10 md:items-stretch items-start">
         {/* 主内容列 */}
         <div className="min-w-0">
           {/* 留言表单 */}
