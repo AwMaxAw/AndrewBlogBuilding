@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { Play, Square } from "lucide-react";
 
 interface DanmakuMessage {
@@ -68,24 +69,27 @@ export default function Danmaku({ messages }: { messages: DanmakuMessage[] }) {
 
   return (
     <>
-      {/* 弹幕渲染层 */}
-      {active && (
-        <div className="fixed inset-0 z-[45] pointer-events-none">
-          {items.map((item) => (
-            <div
-              key={item.id}
-              className="danmaku-item"
-              style={{
-                top: `${item.top}px`,
-                animationDuration: `${item.duration}s`,
-              }}
-            >
-              <span className="text-accent font-medium">{item.name}: </span>
-              <span>{item.text}</span>
-            </div>
-          ))}
-        </div>
-      )}
+      {/* 弹幕渲染层：用 Portal 渲染到 body，避免被 glass-card 的 backdrop-filter 裁剪 */}
+      {active &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div className="fixed inset-0 z-[45] pointer-events-none">
+            {items.map((item) => (
+              <div
+                key={item.id}
+                className="danmaku-item"
+                style={{
+                  top: `${item.top}px`,
+                  animationDuration: `${item.duration}s`,
+                }}
+              >
+                <span className="text-accent font-medium">{item.name}: </span>
+                <span>{item.text}</span>
+              </div>
+            ))}
+          </div>,
+          document.body
+        )}
 
       {/* 启动按钮 */}
       <button
