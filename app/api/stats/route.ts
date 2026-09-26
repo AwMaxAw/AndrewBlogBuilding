@@ -57,6 +57,7 @@ export async function GET() {
   let guestbookCount = 0;
   let guestbookChars = 0;
   let guestbookMessages = 0;
+  let totalVisits = 0;
 
   if (db) {
     try {
@@ -87,6 +88,14 @@ export async function GET() {
     } catch {
       /* ignore */
     }
+    try {
+      const v = await db
+        .prepare("SELECT COALESCE(SUM(count), 0) as total FROM visits")
+        .first<{ total: number }>();
+      totalVisits = v?.total ?? 0;
+    } catch {
+      /* ignore */
+    }
   }
 
   return NextResponse.json({
@@ -95,5 +104,6 @@ export async function GET() {
     siteWords: postsWords + docsWords,
     comments: { count: commentCount, chars: commentChars },
     guestbook: { count: guestbookCount, chars: guestbookChars, messages: guestbookMessages },
+    visits: totalVisits,
   });
 }

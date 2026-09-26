@@ -8,6 +8,7 @@ import {
   ClipboardList,
   Type,
   MessageCircle,
+  Eye,
 } from "lucide-react";
 
 interface StatsData {
@@ -16,6 +17,7 @@ interface StatsData {
   siteWords: number;
   comments: { count: number; chars: number };
   guestbook: { count: number; chars: number; messages: number };
+  visits: number;
 }
 
 interface StatItem {
@@ -55,6 +57,12 @@ export default function StatsGrid() {
   const items: StatItem[] = stats
     ? [
         {
+          label: "Visits",
+          value: stats.visits.toLocaleString(),
+          icon: <Eye size={14} />,
+          hint: "all-time page views",
+        },
+        {
           label: "Posts",
           value: stats.posts.count,
           icon: <FileText size={14} />,
@@ -92,6 +100,7 @@ export default function StatsGrid() {
         },
       ]
     : [
+        { label: "Visits", value: "—", icon: <Eye size={14} /> },
         { label: "Posts", value: "—", icon: <FileText size={14} /> },
         { label: "Docs", value: "—", icon: <BookOpen size={14} /> },
         { label: "Site Words", value: "—", icon: <Type size={14} /> },

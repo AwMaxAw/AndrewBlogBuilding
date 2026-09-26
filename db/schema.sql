@@ -74,3 +74,14 @@ CREATE TABLE IF NOT EXISTS memos (
 );
 
 CREATE INDEX IF NOT EXISTS idx_memos_date ON memos(date);
+
+-- 访问量表（按路径+日期聚合）
+CREATE TABLE IF NOT EXISTS visits (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  path TEXT NOT NULL,
+  date TEXT NOT NULL DEFAULT (date('now')),
+  count INTEGER NOT NULL DEFAULT 0,
+  UNIQUE(path, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_visits_date ON visits(date DESC);

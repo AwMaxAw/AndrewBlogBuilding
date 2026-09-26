@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import LiquidGlassFilter from "@/components/LiquidGlassFilter";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AdminProvider } from "@/components/AdminContext";
+import VisitTracker from "@/components/VisitTracker";
 
 const playfairDisplay = Playfair_Display({
   subsets: ["latin"],
@@ -104,6 +105,7 @@ export default function RootLayout({
         <ThemeProvider>
           <AdminProvider>
             <LiquidGlassFilter />
+            <VisitTracker />
             <Navbar />
             <main className="flex-1 pt-16">{children}</main>
             <Footer />
