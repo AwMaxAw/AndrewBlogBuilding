@@ -494,80 +494,74 @@ export default function GuestbookPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-6 md:px-8 py-16 grid grid-cols-1 md:grid-cols-[1fr_16rem] gap-8 md:gap-10">
-      {/* 主内容列 */}
-      <div className="min-w-0">
-        <header className="mb-12">
-          <h1 className="font-serif text-4xl md:text-5xl font-semibold mb-4">
-            Guestbook
-          </h1>
-          <p className="text-muted text-lg">Leave a message below</p>
-        </header>
-
-        {/* 留言表单 */}
-        <form onSubmit={handleSubmit} className="glass-card p-6 mb-10 z-10">
-          <div className="relative z-10 space-y-4">
-            <div>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Your name"
-                maxLength={50}
-                className="w-full px-4 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all"
-              />
+    <div className="max-w-3xl mx-auto px-6 md:px-8 py-16 relative">
+      {/* 右侧弹幕模块：fixed 定位，不挤压主内容，sticky 效果由 fixed + top 实现 */}
+      <aside className="hidden lg:block fixed right-6 top-24 w-56 z-30">
+        <div className="glass-card p-4 z-10">
+          <div className="relative z-10">
+            <div className="flex items-center gap-2 mb-3">
+              <Play size={16} className="text-accent" />
+              <p className="text-sm font-medium text-foreground">Bullet Comments</p>
             </div>
-            <div>
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Write your message..."
-                maxLength={500}
-                rows={4}
-                className="w-full px-4 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all resize-none"
-              />
-              <p className="text-xs text-muted mt-1 text-right">{message.length}/500</p>
-            </div>
-            <button
-              type="submit"
-              disabled={submitting || !name.trim() || !message.trim()}
-              className="px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {submitting ? "Sending..." : "Leave a message"}
-            </button>
-          </div>
-        </form>
-
-        {/* 留言列表 */}
-        <div className="space-y-6">
-          {loading ? (
-            <p className="text-muted text-center py-8">Loading...</p>
-          ) : entries.length === 0 ? (
-            <p className="text-muted text-center py-8">No messages yet. Be the first!</p>
-          ) : (
-            entries.map((entry) => renderNode(entry, 0))
-          )}
-        </div>
-      </div>
-
-      {/* 右侧弹幕侧边栏：sticky 跟随滚动 */}
-      <aside className="hidden md:block">
-        <div className="sticky top-24 h-[calc(100%-0px)] min-h-[22rem]">
-          <div className="glass-card p-4 h-full flex flex-col z-10">
-            <div className="relative z-10 flex flex-col h-full">
-              <div className="flex items-center gap-2 mb-3">
-                <Play size={16} className="text-accent" />
-                <p className="text-sm font-medium text-foreground">Bullet Comments</p>
-              </div>
-              <p className="text-xs text-muted mb-3">
-                Launch all messages flying across the screen — like bullet comments.
-              </p>
-              <div className="flex-1" />
-              <Danmaku messages={flattenAll(entries)} />
-            </div>
+            <p className="text-xs text-muted mb-3">
+              Launch all messages flying across the screen — like bullet comments.
+            </p>
+            <Danmaku messages={flattenAll(entries)} />
           </div>
         </div>
       </aside>
+
+      <header className="mb-12">
+        <h1 className="font-serif text-4xl md:text-5xl font-semibold mb-4">
+          Guestbook
+        </h1>
+        <p className="text-muted text-lg">Leave a message below</p>
+      </header>
+
+      {/* 留言表单 */}
+      <form onSubmit={handleSubmit} className="glass-card p-6 mb-10 z-10">
+        <div className="relative z-10 space-y-4">
+          <div>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your name"
+              maxLength={50}
+              className="w-full px-4 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all"
+            />
+          </div>
+          <div>
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Write your message..."
+              maxLength={500}
+              rows={4}
+              className="w-full px-4 py-2 bg-white/50 dark:bg-black/30 border border-border/50 rounded-lg text-sm focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20 transition-all resize-none"
+            />
+            <p className="text-xs text-muted mt-1 text-right">{message.length}/500</p>
+          </div>
+          <button
+            type="submit"
+            disabled={submitting || !name.trim() || !message.trim()}
+            className="px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {submitting ? "Sending..." : "Leave a message"}
+          </button>
+        </div>
+      </form>
+
+      {/* 留言列表 */}
+      <div className="space-y-6">
+        {loading ? (
+          <p className="text-muted text-center py-8">Loading...</p>
+        ) : entries.length === 0 ? (
+          <p className="text-muted text-center py-8">No messages yet. Be the first!</p>
+        ) : (
+          entries.map((entry) => renderNode(entry, 0))
+        )}
+      </div>
     </div>
   );
 }
