@@ -552,9 +552,9 @@ export default function GuestbookPage() {
 
       {/* 右侧弹幕侧边栏：sticky 跟随滚动 */}
       <aside className="hidden md:block">
-        <div className="sticky top-24 h-[calc(100%-0px)] min-h-[22rem]">
-          <div className="glass-card p-4 h-full flex flex-col z-10">
-            <div className="relative z-10 flex flex-col h-full">
+        <div className="sticky top-24">
+          <div className="glass-card p-4 z-10">
+            <div className="relative z-10">
               <div className="flex items-center gap-2 mb-3">
                 <Play size={16} className="text-accent" />
                 <p className="text-sm font-medium text-foreground">Bullet Comments</p>
@@ -562,7 +562,6 @@ export default function GuestbookPage() {
               <p className="text-xs text-muted mb-3">
                 Launch all messages flying across the screen — like bullet comments.
               </p>
-              <div className="flex-1" />
               <Danmaku messages={flattenAll(entries)} />
             </div>
           </div>
