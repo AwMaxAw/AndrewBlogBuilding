@@ -502,9 +502,9 @@ export default function GuestbookPage() {
         <p className="text-muted text-lg">Leave a message below</p>
       </header>
 
-      {/* 弹幕板块 */}
-      <section className="mb-10 text-center">
-        <p className="text-sm md:text-base text-muted mb-4">
+      {/* 弹幕板块：靠右 */}
+      <section className="mb-10 flex flex-col items-end">
+        <p className="text-sm md:text-base text-muted mb-4 max-w-md text-right">
           Launch all messages flying across the screen — like bullet comments.
         </p>
         <Danmaku messages={flattenAll(entries)} />
