@@ -91,18 +91,18 @@ export default function Danmaku({ messages }: { messages: DanmakuMessage[] }) {
       <button
         onClick={toggle}
         disabled={messages.length === 0}
-        className="glass-btn text-sm md:text-base font-medium text-foreground z-10 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="glass-btn w-full text-xs text-accent z-10 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <span className="z-10 relative inline-flex items-center gap-2">
+        <span className="relative z-10 inline-flex items-center justify-center gap-1">
           {active ? (
             <>
-              <Square size={16} className="text-accent" />
-              Stop Danmaku
+              <Square size={12} />
+              Stop
             </>
           ) : (
             <>
-              <Play size={16} className="text-accent" />
-              Launch Danmaku
+              <Play size={12} />
+              Launch
             </>
           )}
         </span>

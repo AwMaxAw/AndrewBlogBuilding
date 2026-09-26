@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { formatDateTime } from "@/lib/utils";
-import { Reply, Edit2, Trash2, Clock, Save } from "lucide-react";
+import { Reply, Edit2, Trash2, Clock, Save, Play } from "lucide-react";
 import { useAdmin } from "@/components/AdminContext";
 import Danmaku from "@/components/Danmaku";
 
@@ -502,12 +502,20 @@ export default function GuestbookPage() {
         <p className="text-muted text-lg">Leave a message below</p>
       </header>
 
-      {/* 弹幕板块：靠右 */}
-      <section className="mb-10 flex flex-col items-end">
-        <p className="text-sm md:text-base text-muted mb-4 max-w-md text-right">
-          Launch all messages flying across the screen — like bullet comments.
-        </p>
-        <Danmaku messages={flattenAll(entries)} />
+      {/* 弹幕板块：右侧 glass-card，样式同 PostTimeline Shuffle 模块 */}
+      <section className="mb-10 flex justify-end">
+        <div className="glass-card p-4 w-full max-w-xs z-10">
+          <div className="relative z-10">
+            <div className="flex items-center gap-2 mb-3">
+              <Play size={16} className="text-accent" />
+              <p className="text-sm font-medium text-foreground">Bullet Comments</p>
+            </div>
+            <p className="text-xs text-muted mb-3">
+              Launch all messages flying across the screen — like bullet comments.
+            </p>
+            <Danmaku messages={flattenAll(entries)} />
+          </div>
+        </div>
       </section>
 
       {/* 留言表单 */}
