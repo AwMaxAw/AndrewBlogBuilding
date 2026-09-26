@@ -494,18 +494,19 @@ export default function GuestbookPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-6 md:px-8 py-16 grid grid-cols-1 md:grid-cols-[1fr_16rem] gap-8 md:gap-10">
-      {/* 主内容列 */}
-      <div className="min-w-0">
-        <header className="mb-12">
-          <h1 className="font-serif text-4xl md:text-5xl font-semibold mb-4">
-            Guestbook
-          </h1>
-          <p className="text-muted text-lg">Leave a message below</p>
-        </header>
+    <div className="max-w-5xl mx-auto px-6 md:px-8 py-16">
+      <header className="mb-12">
+        <h1 className="font-serif text-4xl md:text-5xl font-semibold mb-4">
+          Guestbook
+        </h1>
+        <p className="text-muted text-lg">Leave a message below</p>
+      </header>
 
-        {/* 留言表单 */}
-        <form onSubmit={handleSubmit} className="glass-card p-6 mb-10 z-10">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_16rem] gap-8 md:gap-10 items-start">
+        {/* 主内容列 */}
+        <div className="min-w-0">
+          {/* 留言表单 */}
+          <form onSubmit={handleSubmit} className="glass-card p-6 mb-10 z-10">
           <div className="relative z-10 space-y-4">
             <div>
               <input
@@ -567,6 +568,7 @@ export default function GuestbookPage() {
           </div>
         </div>
       </aside>
+      </div>
     </div>
   );
 }
