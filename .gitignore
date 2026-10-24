@@ -1,7 +1,42 @@
-node_modules/
-target/
-__pycache__/
-.env
-dist/
-*.log
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+/dist
+
+# misc
 .DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+.env
+
+# vercel
+.vercel
+
+# cloudflare wrangler
+.wrangler
+
+# local backups
+/backup
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+.trae-html-share-packages/
