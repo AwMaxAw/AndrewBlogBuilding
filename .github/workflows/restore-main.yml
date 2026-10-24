@@ -1,0 +1,22 @@
+name: Restore main from backup
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore project tree
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          TREE=$(git rev-parse bcef9ac7ddadac5f6817a11291dbe712408c51e0^{tree})
+          NEW_COMMIT=$(git commit-tree "$TREE" -p HEAD -m "restore: recover project files")
+          git push origin "$NEW_COMMIT:refs/heads/main"
